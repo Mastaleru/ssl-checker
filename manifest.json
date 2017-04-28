@@ -15,5 +15,7 @@
     "scripts": ["background.js"]
   },
   "permissions": [
+    "tabs",
+    "https://www.sslchecker.com/"
   ]
 }
