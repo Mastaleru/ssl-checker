@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "SSL Checker",
   "description": "See all information about current visited website SSL certificate ",
-  "version": "0.1",
+  "version": "0.3",
   "browser_action": {
     "default_icon": "ssl32.png",
     "default_popup": "popup.html"
@@ -15,7 +15,7 @@
     "scripts": ["background.js"]
   },
   "permissions": [
-    "tabs",
+    "activeTab",
     "https://www.sslchecker.com/"
   ]
 }
