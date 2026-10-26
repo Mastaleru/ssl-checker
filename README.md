@@ -86,12 +86,12 @@ The end-to-end tests need Chromium or Chrome for Testing, because Google Chrome 
 
 ## Code style
 
-Prettier formats the code and the other files it supports (`.prettierrc.json`: lines up to 120 characters, single quotes). Prettier never adds braces, so ESLint enforces that rule: the body of every `if`, `else`, `for`, `while` and `do` is a block in braces (`curly` in `eslint.config.mjs`).
+Prettier formats the code and the other files it supports (`.prettierrc.json`: lines up to 120 characters, single quotes). ESLint (`eslint.config.mjs`) runs its recommended rules, which catch likely mistakes such as undefined or unused variables, and requires braces around the body of every `if`, `else`, `for`, `while` and `do`, which Prettier never adds. Each part of the code is checked against the globals of the place where it runs: the service worker and `lib/` have no DOM, the popup and options pages do, and the notary, build, tests and store tools run in Node.js.
 
 ```bash
 npm install
-npm run lint                # checks the braces and the formatting, changes nothing
-npm run format              # adds the missing braces, then formats with Prettier
+npm run lint                # ESLint and the Prettier check; changes nothing
+npm run format              # fixes what ESLint can fix (braces included), then formats with Prettier
 ```
 
 The commit that reformatted the whole project is listed in `.git-blame-ignore-revs`: GitHub's blame view skips it, and `git config blame.ignoreRevsFile .git-blame-ignore-revs` makes `git blame` skip it too.

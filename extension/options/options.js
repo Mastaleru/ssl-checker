@@ -1,4 +1,4 @@
-import { localizeDocument, plural, t } from '../lib/i18n.js';
+import { plural, t } from '../lib/i18n.js';
 import {
   getSettings,
   localReadingAvailable,
@@ -8,7 +8,7 @@ import {
 } from '../lib/settings.js';
 import { countSites, forgetAllSites } from '../lib/site-memory-store.js';
 import { issuerLabel } from '../lib/verdict.js';
-import { clear, h } from '../ui/dom.js';
+import { clear, h, localizeDocument } from '../ui/dom.js';
 import { notaryErrorText } from '../ui/messages.js';
 
 const $ = (id) => document.getElementById(id);

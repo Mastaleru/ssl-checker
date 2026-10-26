@@ -1,4 +1,5 @@
-// Thin wrapper over chrome.i18n with plural support and DOM localisation.
+// Thin wrapper over chrome.i18n with plural support and dates in the UI language.
+// Localising static markup (localizeDocument) lives in ui/dom.js, with the DOM code.
 
 export function t(key, substitutions) {
   const subs = substitutions === undefined ? undefined : [].concat(substitutions).map(String);
@@ -17,26 +18,6 @@ export function plural(base, count) {
   const category = pluralRules.select(count);
   const key = category === 'one' ? `${base}One` : category === 'few' ? `${base}Few` : `${base}Other`;
   return t(key, [count]);
-}
-
-/**
- * Localises static markup:
- *   data-i18n="key"                      → textContent
- *   data-i18n-attr="placeholder:key,…"   → attributes
- */
-export function localizeDocument(root = document) {
-  document.documentElement.lang = uiLanguage();
-  for (const el of root.querySelectorAll('[data-i18n]')) {
-    el.textContent = t(el.dataset.i18n);
-  }
-  for (const el of root.querySelectorAll('[data-i18n-attr]')) {
-    for (const pair of el.dataset.i18nAttr.split(',')) {
-      const [attr, key] = pair.split(':').map((s) => s.trim());
-      if (attr && key) {
-        el.setAttribute(attr, t(key));
-      }
-    }
-  }
 }
 
 const dateFormat = new Intl.DateTimeFormat(uiLanguage(), { dateStyle: 'medium' });

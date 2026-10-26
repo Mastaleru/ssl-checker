@@ -662,6 +662,13 @@ async function main() {
           'trusted',
           { memory: r.memory, warnings: r.verdict.warnings },
         );
+        assert(
+          !ui.warnings.includes(msg('warnCaChanged', realCa, otherCa)) &&
+            !ui.buttons.includes(msg('actionTrustCa')) &&
+            ui.buttons.includes(msg('actionForgetSite')),
+          'popup after trusting: no warning, only "Forget this site"',
+          { warnings: ui.warnings, buttons: ui.buttons },
+        );
 
         await v.historyAction(msg('actionForgetSite'), msg('historyForgotten'));
         r = await v.result();

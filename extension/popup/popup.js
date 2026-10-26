@@ -1,7 +1,7 @@
-import { formatDate, formatDateTime, formatRelative, localizeDocument, plural, t } from '../lib/i18n.js';
+import { formatDate, formatDateTime, formatRelative, plural, t } from '../lib/i18n.js';
 import { parseTarget } from '../lib/hostnames.js';
 import { issuerLabel, RELATION } from '../lib/verdict.js';
-import { barcode, barcodeSkeleton, clear, h, icon } from '../ui/dom.js';
+import { barcode, barcodeSkeleton, clear, h, icon, localizeDocument } from '../ui/dom.js';
 import * as fmt from '../ui/format.js';
 import { localErrorText, notaryErrorText } from '../ui/messages.js';
 

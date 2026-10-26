@@ -1,6 +1,8 @@
 // DOM helpers. Everything is built with createElement/textContent: certificate
 // fields and notary answers are untrusted text and never touch innerHTML.
 
+import { t, uiLanguage } from '../lib/i18n.js';
+
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 export function h(tag, props, ...children) {
@@ -35,6 +37,26 @@ function append(el, children) {
 export function clear(el) {
   el.replaceChildren();
   return el;
+}
+
+/**
+ * Localises static markup:
+ *   data-i18n="key"                      → textContent
+ *   data-i18n-attr="placeholder:key,…"   → attributes
+ */
+export function localizeDocument(root = document) {
+  document.documentElement.lang = uiLanguage();
+  for (const el of root.querySelectorAll('[data-i18n]')) {
+    el.textContent = t(el.dataset.i18n);
+  }
+  for (const el of root.querySelectorAll('[data-i18n-attr]')) {
+    for (const pair of el.dataset.i18nAttr.split(',')) {
+      const [attr, key] = pair.split(':').map((s) => s.trim());
+      if (attr && key) {
+        el.setAttribute(attr, t(key));
+      }
+    }
+  }
 }
 
 function svg(tag, attrs) {
