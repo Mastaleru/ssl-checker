@@ -1,17 +1,17 @@
-# Notarul SSL Checker
+# SSL Checker notary
 
-Un server mic care se conectează la un site **din locul în care rulează** și raportează lanțul de certificate pe care îl primește acolo. Extensia compară răspunsul cu certificatul primit de browser: dacă diferă, iar certificatul local nu e înregistrat public, cineva de pe drumul tău re-semnează traficul.
+A small server that connects to a site **from wherever it runs** and reports the certificate chain it receives there. The extension compares that answer with the certificate the browser received: if they differ and the local certificate is not publicly logged, something on your path is re-signing the traffic.
 
-Un singur fișier (`server.mjs`), fără dependențe, Node.js 20 sau mai nou.
+One file (`server.mjs`), no dependencies, Node.js 20 or newer.
 
-## Pornire rapidă
+## Quick start
 
 ```bash
-NOTARY_NAME="Frankfurt (Hetzner)" NOTARY_TOKEN="un-token-lung-și-aleator" node server.mjs
-curl -H "Authorization: Bearer un-token-lung-și-aleator" "http://127.0.0.1:8080/v1/cert?host=example.com"
+NOTARY_NAME="Frankfurt (Hetzner)" NOTARY_TOKEN="a-long-random-token" node server.mjs
+curl -H "Authorization: Bearer a-long-random-token" "http://127.0.0.1:8080/v1/cert?host=example.com"
 ```
 
-Cu Docker:
+With Docker:
 
 ```bash
 docker build -t ssl-checker-notary .
@@ -20,52 +20,52 @@ docker run -d --restart unless-stopped -p 127.0.0.1:8080:8080 \
   ssl-checker-notary
 ```
 
-Extensia acceptă doar adrese HTTPS (în afară de `localhost`), deci pune notarul în spatele unui reverse proxy cu certificat. Cu Caddy, certificatul vine automat:
+The extension only accepts HTTPS addresses (except `localhost`), so put the notary behind a reverse proxy with a certificate. With Caddy the certificate is automatic:
 
 ```
-notar.exemplu.ro {
+notary.example.com {
     reverse_proxy 127.0.0.1:8080
 }
 ```
 
-În extensie: **Opțiuni → Surse externe → Adaugă o sursă**, cu adresa `https://notar.exemplu.ro/v1/cert` și tokenul.
+In the extension: **Options → External sources → Add a source**, with the address `https://notary.example.com/v1/cert` and the token.
 
-**Alege locul cu grijă.** Un notar e util doar dacă ajunge la site pe alt drum decât browserul tău. Un notar pe un VPS dintr-un datacenter vede internetul „curat”; unul în aceeași rețea de firmă cu tine trece prin același proxy și va vedea aceeași interceptare. Două-trei notare în țări și la furnizori diferiți dau cea mai bună acoperire.
+**Choose the location carefully.** A notary is only useful if it reaches the site by a different path than your browser. A notary on a VPS in a data center sees the "clean" internet; one inside the same company network as you goes through the same proxy and sees the same interception. Two or three notaries in different countries and with different providers give the best coverage.
 
-## Configurare
+## Configuration
 
-| Variabilă | Implicit | Rol |
+| Variable | Default | Purpose |
 |---|---|---|
-| `PORT` / `HOST` | `8080` / `0.0.0.0` | Unde ascultă serverul. |
-| `NOTARY_NAME` | numele mașinii | Eticheta afișată în extensie. |
-| `NOTARY_TOKEN` | — | Dacă e setat, cererile trebuie să trimită `Authorization: Bearer <token>`. Recomandat pentru orice notar public. |
-| `ALLOWED_PORTS` | `443,8443` | Porturile pe care notarul acceptă să le verifice. |
-| `CORS_ORIGIN` | `*` | Poți restrânge la `chrome-extension://<id-ul extensiei>`. |
-| `RATE_LIMIT` | `30` | Cereri pe minut per IP client. `0` dezactivează limita. |
-| `MAX_CONCURRENT` | `20` | Handshake-uri TLS simultane; peste limită răspunde `503 busy`. |
-| `CACHE_SECONDS` | `60` | Cât reutilizează un răspuns pentru același `host:port`. |
-| `TRUST_PROXY` | — | `1` = IP-ul clientului vine din `X-Forwarded-For`. Doar în spatele propriului reverse proxy. |
-| `UPSTREAM_PROXY` | — | `http://gazdă:port` — iese spre site-uri printr-un proxy HTTP CONNECT. Dacă acel proxy inspectează TLS, notarul va vedea și el interceptarea. |
-| `ALLOW_PRIVATE` | — | `1` permite adrese private (doar pentru teste: deschide SSRF). |
-| `LOG_HOSTS` | — | `1` scrie în jurnal și site-ul verificat. Implicit nu, pentru confidențialitate. |
+| `PORT` / `HOST` | `8080` / `0.0.0.0` | Where the server listens. |
+| `NOTARY_NAME` | host name | Label shown in the extension. |
+| `NOTARY_TOKEN` | — | When set, requests must send `Authorization: Bearer <token>`. Recommended for any public notary. |
+| `ALLOWED_PORTS` | `443,8443` | Ports the notary agrees to check. |
+| `CORS_ORIGIN` | `*` | Can be restricted to `chrome-extension://<extension id>`. |
+| `RATE_LIMIT` | `30` | Requests per minute per client IP. `0` disables the limit. |
+| `MAX_CONCURRENT` | `20` | Simultaneous TLS handshakes; above the limit it answers `503 busy`. |
+| `CACHE_SECONDS` | `60` | How long an answer for the same `host:port` is reused. |
+| `TRUST_PROXY` | — | `1` takes the client IP from `X-Forwarded-For`. Only behind your own reverse proxy. |
+| `UPSTREAM_PROXY` | — | `http://host:port`: reach the sites through an HTTP CONNECT proxy. If that proxy inspects TLS, the notary sees the interception too. |
+| `ALLOW_PRIVATE` | — | `1` allows private addresses (for testing only: it opens the door to SSRF). |
+| `LOG_HOSTS` | — | `1` also writes the checked site to the log. Off by default, for privacy. |
 
-## Securitate
+## Security
 
-- **SSRF:** numele e rezolvat întâi, iar adresele private, de loopback, link-local, CGNAT, multicast, de documentare și IPv6 echivalentele lor (inclusiv IPv4-mapped, NAT64 și 6to4) sunt refuzate cu `403 forbiddenTarget`. Conexiunea se face apoi la IP-ul deja verificat, deci un DNS rebinding nu poate schimba ținta între verificare și conectare.
-- **Porturi:** doar cele din `ALLOWED_PORTS`, ca notarul să nu devină scanner de porturi.
-- **Abuz:** token opțional, rate limit pe IP, limită de concurență, cache și timeout de 8 secunde per verificare.
-- **Confidențialitate:** notarul nu păstrează nimic în afară de cache-ul de 60 de secunde din memorie, iar jurnalul nu conține site-urile decât cu `LOG_HOSTS=1`.
+- **SSRF:** the name is resolved first, and private, loopback, link-local, CGNAT, multicast and documentation addresses, plus their IPv6 equivalents (including IPv4-mapped, NAT64 and 6to4), are refused with `403 forbiddenTarget`. Without `UPSTREAM_PROXY`, the connection then goes to the IP address that was already checked, so DNS rebinding cannot change the target between the check and the connection.
+- **Ports:** only those in `ALLOWED_PORTS`, so the notary cannot be used as a port scanner.
+- **Abuse:** optional token, per-IP rate limit, concurrency limit, cache and an 8-second timeout per check.
+- **Privacy:** the notary keeps nothing except the 60-second in-memory cache, and the log contains site names only with `LOG_HOSTS=1`.
 
-## Protocolul v1
+## Protocol v1
 
-Cerere:
+Request:
 
 ```
 GET /v1/cert?host=example.com&port=443
-Authorization: Bearer <token>        (opțional)
+Authorization: Bearer <token>        (optional)
 ```
 
-Răspuns `200`:
+`200` response:
 
 ```json
 {
@@ -78,20 +78,20 @@ Răspuns `200`:
   "trusted": true,
   "trustError": null,
   "tls": { "protocol": "TLSv1.3", "cipher": "TLS_AES_256_GCM_SHA384", "group": "X25519" },
-  "chain": ["<DER în base64, certificatul site-ului>", "<intermediar>", "…"]
+  "chain": ["<base64 DER of the site certificate>", "<intermediate>", "…"]
 }
 ```
 
-`trusted` spune dacă lanțul e de încredere pentru magazinul de certificate al Node.js de pe acel server; `trustError` dă motivul (de exemplu `CERT_HAS_EXPIRED`).
+`trusted` tells whether the chain is trusted by the Node.js certificate store on that server; `trustError` gives the reason when it is not (for example `CERT_HAS_EXPIRED`).
 
-Erori: status `4xx`/`5xx` și
+Errors use a `4xx` or `5xx` status and this body:
 
 ```json
 { "version": 1, "error": { "code": "forbiddenTarget", "message": "address is private or reserved" } }
 ```
 
-Coduri: `badRequest` (400), `unauthorized` (401), `forbiddenTarget`, `forbiddenPort` (403), `rateLimited` (429), `dnsFailed`, `connectFailed`, `tlsFailed` (502), `busy` (503), `timeout` (504).
+Codes: `badRequest` (400), `unauthorized` (401), `forbiddenTarget`, `forbiddenPort` (403), `rateLimited` (429), `dnsFailed`, `connectFailed`, `tlsFailed` (502), `busy` (503), `timeout` (504).
 
-`GET /v1/health` întoarce `{ "version": 1, "ok": true, "vantage": "…", "ports": [443, 8443], "auth": true }`.
+`GET /v1/health` returns `{ "version": 1, "ok": true, "vantage": "…", "ports": [443, 8443], "auth": true }`.
 
-Orice server care respectă acest contract poate fi folosit ca sursă; extensia nu are permisiuni pe site-uri, deci serverul **trebuie** să trimită headerele CORS (`Access-Control-Allow-Origin`, `Access-Control-Allow-Headers: Authorization`) și să răspundă la `OPTIONS`.
+Any server that follows this contract can be used as a source. The extension has no host permissions, so the server **must** send the CORS headers (`Access-Control-Allow-Origin`, `Access-Control-Allow-Headers: Authorization`) and answer `OPTIONS` requests.

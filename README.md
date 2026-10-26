@@ -1,82 +1,85 @@
 # SSL Checker 1.0
 
-Extensie Chrome (Manifest V3) care arată certificatul TLS al site-ului din tabul curent — cel primit **cu adevărat** de browser — și îl compară cu ce văd servere „notar” independente, ca să detecteze interceptarea HTTPS (proxy de firmă, antivirus, altceva).
+A Chrome extension (Manifest V3) that shows the TLS certificate of the site in the current tab — the one your browser **actually received** — and compares it with what independent "notary" servers see, to detect HTTPS interception (a company proxy, an antivirus or something else).
 
-## Ce s-a schimbat față de 0.3
+## What changed since 0.3
 
 | 0.3 (2017) | 1.0 |
 |---|---|
-| Manifest V2, oprit de Chrome 138 și scos din Store pe 31.08.2026 | Manifest V3, service worker, module ES |
-| Scraping pe HTML-ul sslchecker.com | Certificatul citit direct din Chrome + notari configurabili, cu protocol JSON documentat |
-| jQuery 3.2.1 și Bootstrap (cu vulnerabilități cunoscute), `innerHTML` cu date externe | Zero dependențe, DOM construit doar cu `textContent` |
-| Permisiune pe sslchecker.com | `activeTab`, `storage`, `debugger` (sau fără `debugger` în varianta lite); nicio permisiune pe site-uri |
-| Doar engleză | Engleză și română |
+| Manifest V2, disabled by Chrome 138 and removed from the Chrome Web Store on 31 August 2026 | Manifest V3, service worker, ES modules |
+| Scraped the HTML of sslchecker.com | Reads the certificate straight from Chrome, plus configurable notaries with a documented JSON protocol |
+| jQuery 3.2.1 and Bootstrap (with known vulnerabilities), `innerHTML` with external data | No dependencies; the DOM is built only with `textContent` |
+| Host permission for sslchecker.com | `activeTab`, `storage`, `debugger` (no `debugger` in the lite package); no host permissions |
+| English only | English and Romanian |
 
-## Structura
+## Layout
 
 ```
-extension/              ← asta se încarcă în Chrome (Load unpacked) și se împachetează
+extension/              what Chrome loads (Load unpacked) and what gets packaged
   manifest.json
-  background/           service worker: citire locală (chrome.debugger), interogare notari
-  lib/                  parser X.509, verdict, hostname-uri, interceptoare cunoscute, setări, i18n
-  popup/  options/  ui/ interfața
-  _locales/{en,ro}/     texte
+  background/           service worker: local reading (chrome.debugger), notary queries
+  lib/                  X.509 parser, verdict, host names, known interceptors, settings, i18n
+  popup/  options/  ui/ user interface
+  _locales/{en,ro}/     messages
   fonts/  icons/
-notary/                 serverul notar de referință (un fișier Node.js) + Dockerfile + README
-scripts/build.mjs       construiește dist/ssl-checker-<v>.zip și varianta lite
-store/                  texte, capturi, politica de confidențialitate, ghidul de publicare
-tests/                  teste unitare, de integrare (notar) și cap-coadă (Chromium)
+notary/                 reference notary server (one Node.js file), Dockerfile and README
+scripts/build.mjs       builds dist/ssl-checker-<version>.zip and the lite package
+build/package.cmd       Windows shortcut for scripts/build.mjs
+store/                  Chrome Web Store texts, screenshots, privacy policy and publishing guide
+tests/                  unit, integration (notary) and end-to-end (Chromium) tests
 ```
 
-## Încărcare locală
+## Load it locally
 
-`chrome://extensions` → **Developer mode** → **Load unpacked** → folderul `extension/`. Deschide un site HTTPS și apasă pe iconiță.
+`chrome://extensions` → turn on **Developer mode** → **Load unpacked** → select the `extension/` folder. Open an HTTPS site and click the toolbar icon.
 
-## Cum funcționează
+## How it works
 
-**Citirea locală.** Chrome nu are API pentru certificatul unei pagini, așa că extensia atașează `chrome.debugger` la tab cam o secundă: `Network.enable`, o cerere `HEAD /favicon.ico` fără cookie-uri dintr-o lume izolată (pagina nu o poate intercepta), apoi `Network.getCertificate`. Service worker-ul paginii e ocolit, ca răspunsul să vină din rețea. Pe paginile cu CSP strict cererea e blocată, iar popup-ul oferă „Reîncarcă pagina și citește”. Modul se alege în Opțiuni: *de fiecare dată*, *la cerere* sau *niciodată*. (`debugger` nu poate fi permisiune opțională în Chrome, de aceea există și pachetul lite fără ea.)
+**Local reading.** Chrome has no extension API for the certificate of a loaded page, so the extension attaches `chrome.debugger` to the tab for about a second: `Network.enable`, a cookie-less `HEAD /favicon.ico` request sent from an isolated world (the page cannot intercept it), then `Network.getCertificate`. The page's service worker is bypassed, so the response comes from the network. Pages with a strict Content Security Policy block that request; for them the popup offers "Reload page and read". The mode is chosen in Options: *every time*, *on demand* or *never*. Chrome does not allow `debugger` as an optional permission, which is why there is also a lite package without it.
 
-**Notarii.** Fiecare endpoint primește `?host=&port=` (sau un șablon cu `{host}`/`{port}`) și întoarce lanțul de certificate văzut din locul lui. Protocolul și serverul de referință sunt în [`notary/README.md`](notary/README.md).
+**Notaries.** Each endpoint receives `?host=&port=` (or a URL template with `{host}` and `{port}`) and returns the certificate chain it sees from where it runs. The protocol and the reference server are described in [`notary/README.md`](notary/README.md).
 
-**Verdictul** compară amprenta SHA-256 și cheia publică (SPKI) ale certificatului local cu ale notarilor, apoi emitentul. Certificate Transparency spune dacă certificatul local e public: Chrome raportează „compliant” doar pentru certificate înregistrate public; pentru rădăcini instalate local (exact unde stau interceptoarele) raportează „unknown”.
+**The verdict** compares the SHA-256 fingerprint and the public key (SPKI) of the local certificate with the notaries' ones, then the issuer. Certificate Transparency tells whether the local certificate is public: Chrome reports "compliant" only for publicly logged certificates, and "unknown" for locally installed roots, which is exactly where interceptors live.
 
-| Situație | Verdict |
+| Situation | Verdict |
 |---|---|
-| Același certificat (sau aceeași cheie) ca notarii | Confirmat |
-| Alt certificat, același emitent | Același emitent (normal la CDN-uri) |
-| Diferit de toți notarii, neconfirmat public | **Conexiune probabil interceptată** (numește emitentul și, dacă e cunoscut, produsul) |
-| Diferit de toți notarii, dar public | Surse cu certificate diferite |
-| Identic cu unii notari, diferit de alții, neconfirmat public | Sursele nu sunt de acord (explică ambele ipoteze) |
-| Identic cu unii, diferit de alții, public | Confirmat, cu notă despre sursele care diferă |
-| Fără notari: public / neconfirmat public | Certificat public / Neconfirmat ca public |
-| Doar notari (citirea locală oprită sau eșuată) | Văzut din surse externe |
-| Pagină HTTP | Pagină necriptată (+ certificatul de pe 443, dacă există) |
+| Same certificate (or same key) as the notaries | Confirmed |
+| Different certificate, same issuer | Same issuer (normal behind CDNs) |
+| Different from every notary, not confirmed as public | **Connection likely intercepted** (names the issuer and, when known, the product) |
+| Different from every notary, but public | Sources see different certificates |
+| Same as some notaries, different from others, not confirmed as public | Sources disagree (explains both possibilities) |
+| Same as some notaries, different from others, public | Confirmed, with a note about the sources that differ |
+| No notaries: public / not confirmed as public | Publicly logged certificate / Not confirmed as a public certificate |
+| Notaries only (local reading off or failed) | Seen by external sources |
+| Plain HTTP page | Unencrypted page (plus the certificate on port 443, if any) |
 
-Avertismente suplimentare: expirat / expiră în curând, numele nu e acoperit, SHA-1/MD5 în lanț, RSA sub 2048 de biți, TLS 1.0/1.1, notar care nu are încredere în ce vede.
+Additional warnings: expired or expiring soon, name not covered, SHA-1 or MD5 in the chain, RSA keys under 2048 bits, TLS 1.0/1.1, a notary that does not trust what it sees.
 
-## Teste
+## Tests
 
 ```bash
-npm test                    # parser X.509 (comparat cu pyca/cryptography), verdict, traduceri, notar
+npm test                    # X.509 parser (checked against pyca/cryptography), verdict, translations, notary
 npm install && npx playwright install chromium
-npm run test:e2e            # 13 scenarii în Chromium; E2E_LANG=ro pentru interfața în română
+npm run test:e2e            # 13 scenarios in Chromium; E2E_LANG=ro for the Romanian UI
 ```
 
-`npm test` nu are nevoie de `npm install`: folosește doar Node.js 20+.
+`npm test` needs no `npm install`: it only uses Node.js 20 or newer.
 
-Testele cap-coadă au nevoie de Chromium sau Chrome for Testing: Google Chrome de la versiunea 137 ignoră `--load-extension`. Interceptarea e simulată pe o singură mașină: browserul vizitează un server cu certificat „Contoso Inspection CA”, iar notarul e îndreptat spre serverul cu certificatul „real”.
+The end-to-end tests need Chromium or Chrome for Testing, because Google Chrome ignores `--load-extension` since version 137. Interception is simulated on a single machine: the browser visits a server with a "Contoso Inspection CA" certificate, while the notary is pointed at the server with the "real" certificate.
 
-## Build și publicare
+## Build and publish
 
 ```bash
-node scripts/build.mjs      # dist/ssl-checker-1.0.0.zip și dist/ssl-checker-lite-1.0.0.zip
+node scripts/build.mjs      # dist/ssl-checker-1.0.0.zip and dist/ssl-checker-lite-1.0.0.zip
 ```
 
-Pașii pentru Chrome Web Store, textele și capturile: [`store/PUBLICARE.md`](store/PUBLICARE.md).
+On Windows you can double-click `build\package.cmd` instead (it needs Node.js 20 or newer). From a terminal, `build\package.cmd full` or `build\package.cmd lite` builds a single package.
 
-## Limitări cunoscute
+Chrome Web Store steps, listing texts and screenshots: [`store/PUBLISHING.md`](store/PUBLISHING.md).
 
-- La citirea locală Chrome afișează bara de depanare câteva secunde; nu se poate ascunde fără flag-uri de linie de comandă.
-- Paginile de eroare pentru certificat și paginile interne Chrome nu pot fi citite local; acolo rămân doar notarii.
-- Un Chrome care nu și-a actualizat lista de jurnale CT raportează „unknown” și pentru certificate publice; verdictul rămâne prudent, iar comparația cu notarii face diferența.
-- Un notar aflat în aceeași rețea cu tine vede aceeași interceptare; pune notarii în rețele și țări diferite.
+## Known limitations
+
+- While the certificate is read locally, Chrome shows its debugging bar for a few seconds; it cannot be hidden without command-line flags.
+- Certificate error pages and Chrome's internal pages cannot be read locally; only the notaries are used there.
+- A Chrome that has not updated its list of CT logs reports "unknown" even for public certificates; the verdict stays cautious, and the comparison with notaries makes the difference.
+- A notary on the same network as you sees the same interception; put notaries on different networks and in different countries.

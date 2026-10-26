@@ -1,6 +1,6 @@
-# Privacy practices — texte pentru formularul din Chrome Web Store
+# Privacy practices — texts for the Chrome Web Store form
 
-Developer Dashboard → itemul → **Privacy practices**. Textele sunt în engleză, cum le cere formularul.
+Developer Dashboard → the item → **Privacy practices**. The quoted blocks are ready to paste into the form.
 
 ## Single purpose
 
@@ -26,25 +26,25 @@ Developer Dashboard → itemul → **Privacy practices**. Textele sunt în engle
 
 ## Data usage
 
-Bifează **Web history** și scrie în justificare:
+Tick **Web history** and write this in the justification:
 
 > Only when the user checks a site, its host name and port are sent to the notary servers that the user has configured in Options (none by default). The developer does not receive or store any data.
 
-Apoi bifează cele trei declarații:
+Then tick the three certifications:
 
 - I do not sell or transfer user data to third parties, outside of the approved use cases.
 - I do not use or transfer user data for purposes that are unrelated to my item's single purpose.
 - I do not use or transfer user data to determine creditworthiness or for lending purposes.
 
-> De ce „Web history”: Google consideră „colectare” orice transmitere de date în afara dispozitivului. Numele site-ului verificat ajunge la serverele notar alese de utilizator, deci declarația conservatoare e cea corectă. Dacă vei opera tu un notar implicit, rămâne aceeași bifă, iar politica de confidențialitate trebuie să spună ce păstrează acel server (implementarea de referință nu păstrează nimic, iar jurnalul nu conține site-urile).
+Why "Web history": Google counts any transfer of data off the device as collection. The name of the checked site reaches the notary servers the user picked, so the conservative declaration is the right one. If you ever operate a default notary yourself, keep the same box ticked, and the privacy policy must say what that server keeps (the reference implementation keeps nothing, and its log does not contain site names).
 
 ## Privacy policy URL
 
-Găzduiește `store/privacy-policy.html` (de exemplu pe GitHub Pages) și pune adresa în câmpul **Privacy policy**. Înainte, completează adresa de contact din pagină.
+Host `store/privacy-policy.html` (on GitHub Pages, for example) and put its address in the **Privacy policy** field. Fill in the contact address in the page first.
 
-## Test instructions (pentru reviewer)
+## Test instructions (for the reviewer)
 
 > 1. Open https://www.google.com and click the SSL Checker icon. Chrome shows the "SSL Checker started debugging this browser" bar for about one second while the certificate is read; the popup then shows "Publicly logged certificate" and the certificate details.
 > 2. Options → External sources → add the notary below, then click the icon again: the popup shows "Confirmed by 1 external source".
->    Notary: <URL-ul notarului tău>   Token: <token de test>
+>    Notary: <your notary URL>   Token: <your test token>
 > 3. Options → Reading from your browser → Never: the popup no longer attaches the debugger and shows only the external result.

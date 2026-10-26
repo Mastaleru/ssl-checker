@@ -1,6 +1,8 @@
-# SSL Checker — Privacy policy / Politica de confidențialitate
+# SSL Checker — Privacy policy
 
-_Last updated / Ultima actualizare: 26 October 2026_
+_Last updated: 26 October 2026_
+
+The published version is `privacy-policy.html`, which carries the same text and its Romanian translation.
 
 ## English
 
@@ -16,7 +18,9 @@ SSL Checker is a browser extension that shows the TLS certificate of the website
 
 **Contact.** [your contact e-mail]
 
-## Română
+## Romanian translation
+
+The policy as shown to Romanian-speaking users:
 
 SSL Checker este o extensie de browser care afișează certificatul TLS al site-ului din tabul activ și îl compară cu ce văd servere notar independente.
 

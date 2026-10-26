@@ -1,12 +1,12 @@
-# Fișa din Chrome Web Store
+# Chrome Web Store listing
 
-Texte gata de copiat în Developer Dashboard → **Store listing**. Engleza e limba implicită (`default_locale: en`); româna se adaugă ca localizare. Numele și descrierea scurtă vin automat din `_locales/*/messages.json` (`extName`, `extDescription`).
+Texts ready to paste into Developer Dashboard → **Store listing**. English is the default language (`default_locale: en`); Romanian is added as a localization. The name and the short description come from `_locales/*/messages.json` (`extName`, `extDescription`) automatically.
 
-- **Categorie:** Developer Tools
-- **Limbă implicită:** English
-- **Capturi:** `store/screenshots/en/1-…4-*.png` și `store/screenshots/ro/…` (1280×800)
-- **Tile promo mic:** `store/screenshots/<limbă>/promo-440x280.png`
-- **Iconiță:** `extension/icons/ssl128.png`
+- **Category:** Developer Tools
+- **Default language:** English
+- **Screenshots:** `store/screenshots/en/1-…4-*.png` and `store/screenshots/ro/…` (1280×800)
+- **Small promo tile:** `store/screenshots/<language>/promo-440x280.png`
+- **Icon:** `extension/icons/ssl128.png`
 
 ---
 
@@ -42,13 +42,15 @@ No analytics, no tracking, no account, nothing sent to the developer. Only the s
 
 ---
 
-## Română
+## Romanian (`ro` localization)
 
-**Nume:** SSL Checker
+These are the texts for the Romanian localization of the listing, so they stay in Romanian.
 
-**Rezumat (max. 132):** Vezi certificatul TLS real al site-ului curent și detectează interceptarea, comparându-l cu notari independenți.
+**Name:** SSL Checker
 
-**Descriere:**
+**Summary (132 max):** Vezi certificatul TLS real al site-ului curent și detectează interceptarea, comparându-l cu notari independenți.
+
+**Description:**
 
 SSL Checker îți arată certificatul TLS al site-ului din tabul curent — cel pe care browserul tău l-a primit cu adevărat — și îți spune dacă ceva dintre tine și site îl înlocuiește.
 
@@ -74,6 +76,6 @@ Fără analytics, fără urmărire, fără cont, nimic trimis dezvoltatorului. S
 
 ---
 
-## Varianta Lite (opțională, item separat)
+## Lite variant (optional, separate item)
 
-Dacă publici și `ssl-checker-lite-<versiune>.zip`, numele vine din `extNameLite` („SSL Checker Lite”) și rezumatul din `extDescriptionLite`. Folosește aceeași descriere, fără secțiunea „You decide when the debugger runs”, și precizează că varianta citește certificatele doar prin servere notar (deci are nevoie de cel puțin unul configurat).
+If you also publish `ssl-checker-lite-<version>.zip`, its name comes from `extNameLite` ("SSL Checker Lite") and its summary from `extDescriptionLite`. Use the same description without the "You decide when the debugger runs" section, and state that this variant reads certificates only through notary servers, so it needs at least one configured.
