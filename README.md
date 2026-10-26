@@ -94,6 +94,8 @@ npm run lint                # checks the braces and the formatting, changes noth
 npm run format              # adds the missing braces, then formats with Prettier
 ```
 
+The commit that reformatted the whole project is listed in `.git-blame-ignore-revs`: GitHub's blame view skips it, and `git config blame.ignoreRevsFile .git-blame-ignore-revs` makes `git blame` skip it too.
+
 ## Build and publish
 
 ```bash
