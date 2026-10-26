@@ -26,14 +26,14 @@ const COPY = {
     confirmed: ['See the certificate your browser really received', 'Chain, TLS version, key exchange and Certificate Transparency, read straight from Chrome and confirmed by independent notaries.'],
     intercepted: ['Catch HTTPS interception', 'Notaries show what the rest of the internet sees. A different, unlogged certificate means something on your path is re-signing your traffic.'],
     details: ['Every detail, one click away', 'Names, validity, chain, fingerprints, key pin, OCSP and CRL, SCTs and extensions. Copy the PEM or download the chain.'],
-    options: ['You decide when the debugger runs', 'Read the certificate every time, on demand or never, and add your own notary servers.'],
+    options: ['You decide when the debugger runs', 'Read the certificate every time, on demand or never, and choose whether SSL Checker remembers the sites you check.'],
     tagline: 'See the real certificate. Catch interception.',
   },
   ro: {
     confirmed: ['Vezi certificatul primit cu adevărat de browser', 'Lanțul, versiunea TLS, schimbul de chei și Certificate Transparency, citite direct din Chrome și confirmate de notari independenți.'],
     intercepted: ['Prinde interceptarea HTTPS', 'Notarii arată ce vede restul internetului. Un certificat diferit și neînregistrat public înseamnă că cineva de pe drum îți re-semnează traficul.'],
     details: ['Toate detaliile, la un clic', 'Nume, valabilitate, lanț, amprente, pin de cheie, OCSP și CRL, SCT-uri și extensii. Copiezi PEM-ul sau descarci lanțul.'],
-    options: ['Tu decizi când rulează <span class="nowrap">debugger-ul</span>', 'Citește certificatul de fiecare dată, la cerere sau niciodată și adaugă propriile servere notar.'],
+    options: ['Tu decizi când rulează <span class="nowrap">debugger-ul</span>', 'Citește certificatul de fiecare dată, la cerere sau niciodată și alege dacă SSL Checker ține minte site-urile verificate.'],
     tagline: 'Vezi certificatul real. Prinde interceptarea.',
   },
 };
@@ -90,19 +90,28 @@ async function popupShot(ctx, sw, extId, result, tabId, { expand = false } = {})
 }
 
 async function optionsShot(ctx, sw, extId) {
-  await sw.evaluate(() =>
-    chrome.storage.local.set({
+  await sw.evaluate(() => {
+    // A few remembered sites, so the site memory section shows a real count.
+    const sites = {};
+    for (let i = 1; i <= 37; i++) {
+      const host = `site${i}.example.com`;
+      sites[`site:${host}#443`] = { v: 1, host, port: 443, cas: [] };
+    }
+    return chrome.storage.local.set({
       localMode: 'always',
+      memoryEnabled: true,
       endpoints: [
         { id: 'fra', name: 'Frankfurt', url: 'https://notary-fra.example.net/v1/cert', token: 'x', enabled: true },
         { id: 'iad', name: 'Virginia', url: 'https://notary-iad.example.net/v1/cert', token: '', enabled: true },
       ],
-    }),
-  );
+      ...sites,
+    });
+  });
   const page = await ctx.newPage();
   await page.setViewportSize({ width: 640, height: 900 });
   await page.goto(`chrome-extension://${extId}/options/options.html`);
   await page.waitForSelector('.endpoint');
+  await page.waitForFunction(() => document.getElementById('memory-count').textContent !== '');
   await page.evaluate(() => document.querySelector('.page').style.setProperty('padding-top', '28px'));
   const png = await page.screenshot({ clip: { x: 0, y: 0, width: 640, height: 900 } });
   await page.close();
