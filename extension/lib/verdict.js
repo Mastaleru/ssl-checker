@@ -71,13 +71,54 @@ function certificateWarnings(chain, host, now, prefix) {
 }
 
 /**
+ * Folds the site memory (see site-memory.js) into the verdict. Only a change of
+ * certificate authority matters: towards a certificate that is not publicly
+ * logged it is an alarm, towards a public one it is just worth knowing.
+ */
+function applyMemory(result, memory) {
+  if (!memory || memory.status !== 'changed') return;
+  const change = {
+    source: 'memory',
+    kind: memory.kind,
+    sameName: memory.sameName,
+    previous: memory.previous ? memory.previous.label : null,
+    current: memory.current.label,
+  };
+  result.memoryChange = change;
+  switch (memory.kind) {
+    case 'publicToPrivate':
+      // The same browser saw a public certificate here before; one that is not
+      // publicly logged now points at the path, not at the site.
+      if (result.code === 'intercepted' || result.code === 'interceptorDetected') {
+        result.warnings.unshift({ code: memory.sameName ? 'caChangedSameName' : 'caChanged', ...change });
+      } else {
+        result.code = 'caChangedToPrivate';
+        result.level = 'danger';
+      }
+      break;
+    case 'privateToPrivate':
+      result.warnings.unshift({ code: memory.sameName ? 'caChangedSameName' : 'caChanged', ...change });
+      break;
+    case 'publicToPublic':
+      result.warnings.unshift({ code: 'caChangedPublic', ...change });
+      break;
+    case 'privateToPublic':
+      result.warnings.unshift({ code: 'caChangedNowPublic', ...change });
+      break;
+    default:
+      break;
+  }
+}
+
+/**
  * @param {object} input
  * @param {{secure:boolean, host:string}} input.target
  * @param {null|{chain:object[], security?:object}} input.local   local view (null when not read)
  * @param {Array<{id:string, state:string, chain?:object[], trusted?:boolean, trustError?:string}>} input.notaries
+ * @param {null|object} [input.memory]  site memory assessment (site-memory.js describe())
  * @param {number} [input.now]
  */
-export function computeVerdict({ target, local, notaries = [], now = Date.now() }) {
+export function computeVerdict({ target, local, notaries = [], memory = null, now = Date.now() }) {
   const answered = notaries.filter((n) => n.state === 'ok' && n.chain && n.chain.length);
   const warnings = [];
   const result = {
@@ -149,6 +190,7 @@ export function computeVerdict({ target, local, notaries = [], now = Date.now() 
     warnings.push(...certificateWarnings(local.chain, null, now, 'local'));
     const protocol = local.security && local.security.protocol;
     if (protocol && /^(SSL|TLS 1(\.0|\.1)?$)/.test(protocol)) warnings.push({ code: 'obsoleteProtocol', source: 'local', protocol });
+    applyMemory(result, memory);
   } else if (answered.length > 0) {
     const reference = answered[0].chain[0];
     const agree = answered.every((n) => isConsistent(compareLeaves(reference, n.chain[0])));

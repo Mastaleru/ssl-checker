@@ -1,5 +1,6 @@
-import { localizeDocument, t } from '../lib/i18n.js';
+import { localizeDocument, plural, t } from '../lib/i18n.js';
 import { getSettings, localReadingAvailable, newEndpointId, saveSettings, validateEndpointUrl } from '../lib/settings.js';
+import { countSites, forgetAllSites } from '../lib/site-memory-store.js';
 import { issuerLabel } from '../lib/verdict.js';
 import { clear, h } from '../ui/dom.js';
 import { notaryErrorText } from '../ui/messages.js';
@@ -8,12 +9,37 @@ const $ = (id) => document.getElementById(id);
 let settings = null;
 let savedTimer = null;
 
+function announce(text) {
+  $('saved').textContent = text;
+  clearTimeout(savedTimer);
+  savedTimer = setTimeout(() => ($('saved').textContent = ''), 1800);
+}
+
 async function persist(patch) {
   await saveSettings(patch);
   settings = await getSettings();
-  $('saved').textContent = t('saved');
-  clearTimeout(savedTimer);
-  savedTimer = setTimeout(() => ($('saved').textContent = ''), 1800);
+  announce(t('saved'));
+}
+
+async function renderMemoryCount() {
+  const count = await countSites();
+  $('memory-count').textContent = plural('memoryCount', count);
+  $('forget-all').disabled = count === 0;
+}
+
+async function initMemory() {
+  if (!localReadingAvailable()) {
+    $('memory-panel').hidden = true; // the memory needs certificates read from the browser
+    return;
+  }
+  $('memory-enabled').checked = settings.memoryEnabled;
+  $('memory-enabled').addEventListener('change', () => persist({ memoryEnabled: $('memory-enabled').checked }));
+  $('forget-all').addEventListener('click', async () => {
+    await forgetAllSites();
+    await renderMemoryCount();
+    announce(t('forgotAll'));
+  });
+  await renderMemoryCount();
 }
 
 function showFormError(message) {
@@ -129,6 +155,7 @@ async function init() {
 
   renderEndpoints();
   $('endpoint-form').addEventListener('submit', onAddEndpoint);
+  await initMemory();
 }
 
 init();

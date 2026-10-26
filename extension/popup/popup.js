@@ -162,6 +162,8 @@ function render(result, animate) {
   if (warnings) main.append(warnings);
   for (const callout of callouts(result)) main.append(callout);
   main.append(witnessSection(result, animate));
+  const history = historySection(result);
+  if (history) main.append(history);
 
   const reference = referenceOf(result);
   if (reference) {
@@ -210,6 +212,14 @@ function verdictText(r) {
       ];
     case 'conflictingPublic':
       return [t('verdictConflictTitle'), t('verdictConflictBody', [v.localIssuer, v.externalIssuer])];
+    case 'caChangedToPrivate': {
+      const change = r.memory || {};
+      const previous = change.previous ? change.previous.label : '?';
+      return [
+        t('verdictCaChangedTitle'),
+        change.sameName ? t('verdictCaChangedSameNameBody', [previous]) : t('verdictCaChangedBody', [previous, v.localIssuer]),
+      ];
+    }
     case 'externalOnly': {
       const reason = { error: 'verdictExternalBodyLocalFailed', notRequested: 'verdictExternalBodyAsk', unavailable: 'verdictExternalBodyLite' };
       return [plural('verdictExternalTitle', v.counts.answered), t(reason[r.local.state] || 'verdictExternalBody')];
@@ -274,6 +284,18 @@ function warningList(r) {
         break;
       case 'someSourcesDiffer':
         entry = ['info', t('warnSomeSourcesDiffer', [notaryNames(r, w.ids), w.issuer])];
+        break;
+      case 'caChanged':
+        entry = ['warn', t('warnCaChanged', [w.previous, w.current])];
+        break;
+      case 'caChangedSameName':
+        entry = ['warn', t('warnCaChangedSameName', [w.previous])];
+        break;
+      case 'caChangedPublic':
+        entry = ['info', t('warnCaChangedPublic', [w.previous, w.current])];
+        break;
+      case 'caChangedNowPublic':
+        entry = ['info', t('warnCaChangedNowPublic', [w.previous])];
         break;
       default:
         break;
@@ -392,6 +414,65 @@ function witnessSection(r, animate) {
     );
   }
   return section;
+}
+
+// --- Site memory --------------------------------------------------------------
+
+async function memoryAction(type, button) {
+  if (state.busy) return;
+  state.busy = true;
+  button.disabled = true;
+  try {
+    render(await call({ type, tabId: state.tabId, url: state.url }), false);
+  } catch (error) {
+    renderFailure(error);
+  } finally {
+    state.busy = false;
+  }
+}
+
+function historySection(r) {
+  const m = r.memory;
+  if (!m || !['first', 'known', 'changed', 'forgotten'].includes(m.status)) return null;
+  const lines = [];
+  const actions = [];
+  const forgetButton = () => {
+    const button = h('button', { class: 'button quiet', type: 'button' }, t('actionForgetSite'));
+    button.addEventListener('click', () => memoryAction('forgetSite', button));
+    return button;
+  };
+
+  if (m.status === 'forgotten') {
+    lines.push(t('historyForgotten'));
+  } else if (m.trusted) {
+    lines.push(t('historyTrusted', [m.current.label]));
+    actions.push(forgetButton());
+  } else if (m.status === 'first') {
+    lines.push(t('historyFirst', [m.current.label]));
+    actions.push(forgetButton());
+  } else if (m.status === 'known') {
+    lines.push(t('historyKnown', [m.current.label, plural('checks', m.entry.count), formatDate(m.entry.firstSeen)]));
+    actions.push(forgetButton());
+  } else if (m.learned) {
+    lines.push(t('historyLearned', [m.current.label]));
+    actions.push(forgetButton());
+  } else {
+    const p = m.previous;
+    if (p) lines.push(t('historyChangedBefore', [p.label, plural('checks', p.count), formatDate(p.lastSeen)]));
+    lines.push(t('historyChangedNow', [m.current.label]));
+    if (m.sameName) lines.push(t('historySameName'));
+    const trust = h('button', { class: 'button', type: 'button' }, t('actionTrustCa'));
+    trust.addEventListener('click', () => memoryAction('trustCa', trust));
+    actions.push(trust, forgetButton());
+  }
+
+  return h(
+    'section',
+    { class: 'section history' },
+    h('h3', {}, t('sectionHistory')),
+    lines.map((text) => h('p', {}, text)),
+    actions.length ? h('div', { class: 'history-actions' }, actions) : null,
+  );
 }
 
 // --- Certificate summary ------------------------------------------------------

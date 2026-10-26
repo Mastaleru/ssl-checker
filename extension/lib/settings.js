@@ -6,6 +6,7 @@ export const DEFAULTS = Object.freeze({
   localMode: 'always',
   endpoints: [],
   timeoutMs: 8000,
+  memoryEnabled: true,
 });
 
 /** True when this build ships the "debugger" permission (the full variant). */
@@ -15,11 +16,12 @@ export function localReadingAvailable() {
 }
 
 export async function getSettings() {
-  const stored = await chrome.storage.local.get(['localMode', 'endpoints', 'timeoutMs']);
+  const stored = await chrome.storage.local.get(['localMode', 'endpoints', 'timeoutMs', 'memoryEnabled']);
   const settings = { ...DEFAULTS, ...stored };
   if (!LOCAL_MODES.includes(settings.localMode)) settings.localMode = DEFAULTS.localMode;
   if (!Array.isArray(settings.endpoints)) settings.endpoints = [];
   settings.timeoutMs = clampTimeout(settings.timeoutMs);
+  settings.memoryEnabled = settings.memoryEnabled !== false;
   if (!localReadingAvailable()) settings.localMode = 'never';
   return settings;
 }
@@ -29,6 +31,7 @@ export async function saveSettings(patch) {
   if ('localMode' in patch && LOCAL_MODES.includes(patch.localMode)) clean.localMode = patch.localMode;
   if ('endpoints' in patch && Array.isArray(patch.endpoints)) clean.endpoints = patch.endpoints;
   if ('timeoutMs' in patch) clean.timeoutMs = clampTimeout(patch.timeoutMs);
+  if ('memoryEnabled' in patch) clean.memoryEnabled = Boolean(patch.memoryEnabled);
   await chrome.storage.local.set(clean);
 }
 

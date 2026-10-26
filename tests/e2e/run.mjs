@@ -176,7 +176,18 @@ class PopupView {
       warnings: [...document.querySelectorAll('.warnings li')].map((li) => li.textContent),
       buttons: [...document.querySelectorAll('#content button')].map((b) => b.textContent),
       notes: [...document.querySelectorAll('.witness-note')].map((n) => n.textContent),
+      history: [...document.querySelectorAll('.history p')].map((p) => p.textContent),
     }));
+  }
+
+  /** Clicks a history button and waits until the history shows `expected`. */
+  async historyAction(label, expected) {
+    await this.popup.getByRole('button', { name: label }).click();
+    await this.popup.waitForFunction(
+      (text) => [...document.querySelectorAll('.history p')].some((p) => p.textContent === text),
+      expected,
+      { timeout: 10000 },
+    );
   }
 
   async click(label) {
@@ -209,9 +220,17 @@ async function main() {
   const site = https.createServer({ key: read('site-leaf.key'), cert: siteChain }, siteHandler);
   const intercept = https.createServer({ key: read('intercept-leaf.key'), cert: interceptChain }, siteHandler);
   const plain = http.createServer(siteHandler);
+  // One more site whose certificate can be swapped, for the site memory: the
+  // same host and port first serves the "real" chain, then the interceptor's.
+  const memorySite = https.createServer({ key: read('site-leaf.key'), cert: siteChain }, siteHandler);
+  const serveOnMemorySite = (key, cert) => {
+    memorySite.setSecureContext({ key, cert }); // new ticket keys too, so no session resumption
+    memorySite.closeAllConnections();
+  };
   const sitePort = await listen(site);
   const interceptPort = await listen(intercept);
   const plainPort = await listen(plain);
+  const memoryPort = await listen(memorySite);
   const closedPort = await freePort();
   const TOKEN = 'e2e-secret-token';
   const notary = await startNotary({ ALLOW_PRIVATE: '1', ALLOWED_PORTS: `${sitePort},${interceptPort}`, RATE_LIMIT: '0', CACHE_SECONDS: '0', NOTARY_TOKEN: TOKEN });
@@ -377,6 +396,74 @@ async function main() {
       await page.screenshot({ path: path.join(OUT, 'options.png'), fullPage: true });
       await page.close();
     }],
+    ['site memory: first, known, changed, trusted, forgotten', async () => {
+      const url = `https://${HOST}:${memoryPort}/`;
+      const realCa = 'SSL Checker Test Issuing CA (SSL Checker Test PKI)';
+      const otherCa = 'Contoso Inspection CA (Contoso Ltd)';
+      serveOnMemorySite(read('site-leaf.key'), siteChain);
+
+      let v = await full.openPopup(url, { settings: { localMode: 'always', endpoints: [] }, shot: 'memory-first' });
+      let r = await v.result();
+      let ui = await v.ui();
+      await v.snap();
+      assert(r.memory.status === 'first' && ui.history[0] === msg('historyFirst', realCa), 'first check remembered', { memory: r.memory, ui });
+      await v.close();
+
+      v = await full.openPopup(url, { shot: 'memory-known' });
+      r = await v.result();
+      ui = await v.ui();
+      assert(r.memory.status === 'known' && r.memory.entry.count === 2 && ui.history[0].includes(realCa), 'second check known', { memory: r.memory, ui });
+      await v.close();
+
+      serveOnMemorySite(read('intercept-leaf.key'), interceptChain);
+      v = await full.openPopup(url, { shot: 'memory-changed' });
+      r = await v.result();
+      ui = await v.ui();
+      await v.snap();
+      // CT is "unknown" for both test chains, so this is a private-to-private change.
+      assert(r.memory.status === 'changed' && r.memory.kind === 'privateToPrivate' && !r.memory.learned, 'change detected', r.memory);
+      assert(r.verdict.warnings[0].code === 'caChanged' && ui.warnings.includes(msg('warnCaChanged', realCa, otherCa)), 'change warned', ui.warnings);
+      assert(ui.history.includes(msg('historyChangedNow', otherCa)), 'history shows the new CA', ui.history);
+      assert(ui.buttons.includes(msg('actionTrustCa')) && ui.buttons.includes(msg('actionForgetSite')), 'trust and forget offered', ui.buttons);
+
+      await v.historyAction(msg('actionTrustCa'), msg('historyTrusted', otherCa));
+      r = await v.result();
+      ui = await v.ui();
+      await v.snap('-trusted');
+      assert(r.memory.status === 'known' && r.memory.trusted && !r.verdict.warnings.some((w) => w.code === 'caChanged'), 'trusted', { memory: r.memory, warnings: r.verdict.warnings });
+
+      await v.historyAction(msg('actionForgetSite'), msg('historyForgotten'));
+      r = await v.result();
+      const keys = await full.sw.evaluate(async () => Object.keys(await chrome.storage.local.get(null)).filter((k) => k.startsWith('site:')));
+      assert(r.memory.status === 'forgotten' && keys.length === 0, 'forgotten', { memory: r.memory, keys });
+      await v.close();
+
+      v = await full.openPopup(url, {});
+      r = await v.result();
+      assert(r.memory.status === 'first' && r.memory.current.label === otherCa, 'history starts again', r.memory);
+      await v.close();
+
+      const pluralKey = (base, n) => {
+        const category = new Intl.PluralRules(LANG).select(n);
+        return `${base}${category === 'one' ? 'One' : category === 'few' ? 'Few' : 'Other'}`;
+      };
+      const page = await full.ctx.newPage();
+      full.watch(page, 'options (memory)');
+      await page.goto(`chrome-extension://${full.extId}/options/options.html`);
+      await page.waitForFunction(() => document.getElementById('memory-count').textContent !== '');
+      assert((await page.textContent('#memory-count')) === msg(pluralKey('memoryCount', 1), '1'), 'one site counted', await page.textContent('#memory-count'));
+      await page.click('#forget-all');
+      await page.waitForFunction((text) => document.getElementById('memory-count').textContent === text, msg(pluralKey('memoryCount', 0), '0'));
+      await page.uncheck('#memory-enabled');
+      await page.waitForFunction(async () => (await chrome.storage.local.get('memoryEnabled')).memoryEnabled === false);
+      await page.close();
+
+      v = await full.openPopup(url, {});
+      r = await v.result();
+      ui = await v.ui();
+      assert(r.memory.status === 'disabled' && ui.history.length === 0, 'memory off', { memory: r.memory, ui });
+      await v.close();
+    }],
   ];
 
   const results = [];
@@ -405,6 +492,7 @@ async function main() {
       await page.goto(`chrome-extension://${lite.extId}/options/options.html`);
       assert(await page.isVisible('#local-unavailable'), 'lite notice visible');
       assert(await page.isDisabled('input[name=localMode][value=always]'), 'modes disabled');
+      assert(await page.isHidden('#memory-panel'), 'site memory hidden: it needs local reading');
       results.push(['lite build', null]);
     } catch (error) {
       results.push(['lite build', error]);
@@ -417,6 +505,7 @@ async function main() {
   site.close();
   intercept.close();
   plain.close();
+  memorySite.close();
 
   let failed = 0;
   for (const [name, error] of results) {

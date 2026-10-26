@@ -94,6 +94,35 @@ body {
   cursor: default;
 }
 
+/* Site memory ------------------------------------------------------------- */
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+.check input {
+  margin: 3px 0 0;
+  accent-color: var(--brand);
+}
+.memory-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 16px 0 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--surface);
+}
+.hint {
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
 /* Endpoints --------------------------------------------------------------- */
 
 .endpoints {

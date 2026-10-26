@@ -4,6 +4,8 @@ import { describeChain } from '../lib/x509.js';
 import { computeVerdict } from '../lib/verdict.js';
 import { getSettings, localReadingAvailable } from '../lib/settings.js';
 import { isInternalHost, parseTarget } from '../lib/hostnames.js';
+import { assess, describe, learn, observationFrom } from '../lib/site-memory.js';
+import { forgetSite, loadSiteRecord, saveSiteRecord } from '../lib/site-memory-store.js';
 
 const RESULT_VERSION = 1;
 const resultKey = (tabId) => `result:${tabId}`;
@@ -41,6 +43,29 @@ async function readLocal(tabId, origin, reload) {
     };
   } catch (e) {
     return { state: 'error', reason: (e && e.code) || 'protocolError', detail: (e && e.detail) || (e && e.message) || null };
+  }
+}
+
+/**
+ * Compares a successful local reading with what is remembered for the site and
+ * records it when appropriate. Returns the memory part of the result, or null
+ * when nothing was read from the browser.
+ */
+async function updateSiteMemory(target, local, settings) {
+  if (local.state !== 'ok') return null;
+  if (!settings.memoryEnabled) return { status: 'disabled' };
+  try {
+    const observation = observationFrom(local, new Date().toISOString());
+    const record = await loadSiteRecord(target.host, target.port);
+    const assessment = assess(record, observation);
+    let stored = record;
+    if (assessment.autoLearn) {
+      stored = learn(record, observation, target);
+      await saveSiteRecord(stored);
+    }
+    return describe(assessment, stored, observation);
+  } catch {
+    return null; // storage trouble must not break the check itself
   }
 }
 
@@ -83,10 +108,12 @@ async function runCheck({ tabId, url, local, reload = false, reuseExternal = fal
       : Promise.all(endpoints.map((e) => queryNotary(e, target.host, target.port, settings.timeoutMs)));
 
   const [localResult, notaries] = await Promise.all([localTask, notaryTask]);
+  const memory = await updateSiteMemory(target, localResult, settings);
   const verdict = computeVerdict({
     target,
     local: localResult.state === 'ok' ? localResult : null,
     notaries,
+    memory,
   });
   const result = {
     v: RESULT_VERSION,
@@ -102,6 +129,7 @@ async function runCheck({ tabId, url, local, reload = false, reuseExternal = fal
     endpointsConfigured: endpoints.length,
     local: localResult,
     notaries,
+    memory,
     verdict,
   };
   try {
@@ -111,6 +139,46 @@ async function runCheck({ tabId, url, local, reload = false, reuseExternal = fal
   }
   await setBadge(tabId, verdict.level);
   return result;
+}
+
+/** Replaces the memory part of a stored result and recomputes its verdict. */
+async function updateStoredResult(result, target, memory) {
+  const updated = {
+    ...result,
+    memory,
+    verdict: computeVerdict({ target, local: result.local.state === 'ok' ? result.local : null, notaries: result.notaries, memory }),
+  };
+  try {
+    await chrome.storage.session.set({ [resultKey(result.tabId)]: updated });
+  } catch {
+    /* the popup still gets the result directly */
+  }
+  await setBadge(result.tabId, updated.verdict.level);
+  return updated;
+}
+
+async function resultForAction(tabId, url) {
+  if (inFlight.has(tabId)) await inFlight.get(tabId).catch(() => {});
+  const target = parseTarget(url);
+  const result = target ? await cachedResult(tabId, target.origin) : null;
+  if (!result) throw new Error('Check the site again first.');
+  return { target, result };
+}
+
+/** "Trust it for this site": remembers the CA the browser saw in the last check. */
+async function trustCurrentCa(tabId, url) {
+  const { target, result } = await resultForAction(tabId, url);
+  if (!result.local || result.local.state !== 'ok') throw new Error('Nothing was read from the browser for this site.');
+  const observation = observationFrom(result.local, new Date().toISOString());
+  const stored = learn(await loadSiteRecord(target.host, target.port), observation, target);
+  await saveSiteRecord(stored);
+  return updateStoredResult(result, target, { ...describe(assess(stored, observation), stored, observation), trusted: true });
+}
+
+async function forgetSiteOfTab(tabId, url) {
+  const { target, result } = await resultForAction(tabId, url);
+  await forgetSite(target.host, target.port);
+  return updateStoredResult(result, target, { status: 'forgotten' });
 }
 
 function checkTab(request) {
@@ -135,6 +203,8 @@ const handlers = {
   },
   isRunning: (m) => Promise.resolve(inFlight.has(m.tabId)),
   testEndpoint: (m) => testEndpoint(m.endpoint),
+  trustCa: (m) => trustCurrentCa(m.tabId, m.url),
+  forgetSite: (m) => forgetSiteOfTab(m.tabId, m.url),
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

@@ -140,6 +140,47 @@ test('warnings: expiry, host coverage, weak crypto, old TLS, untrusted at notary
   assert.deepEqual(codes(verdict({ local: local(cert(), 'unknown'), notaries: [notary('a', cert())] })), ['notPubliclyLogged']);
 });
 
+test('site memory: a switch to an unlogged certificate is an alarm, other switches are notes', () => {
+  const memory = (kind, sameName = false) => ({
+    status: 'changed',
+    kind,
+    sameName,
+    learned: kind.endsWith('ToPublic'),
+    current: { label: 'Now CA', public: kind.endsWith('ToPublic') },
+    previous: { label: 'Before CA', public: kind.startsWith('public') },
+  });
+  const v = (kind, opts = {}) => verdict({ local: local(opts.leaf || cert(), opts.ct || 'unknown'), notaries: opts.notaries || [], memory: memory(kind, opts.sameName) });
+
+  const alarm = v('publicToPrivate');
+  assert.equal(alarm.code, 'caChangedToPrivate');
+  assert.equal(alarm.level, 'danger');
+  assert.equal(alarm.memoryChange.previous, 'Before CA');
+  // Even notaries that "confirm" do not cancel it: their answer may be forged on the same path.
+  assert.equal(v('publicToPrivate', { notaries: [notary('n', cert())] }).code, 'caChangedToPrivate');
+  // A more specific interception verdict stays, with the history as a warning.
+  const zscaler = cert({ fp: 'ff', spki: 'z', issuerO: 'Zscaler Inc.', issuerCN: 'Zscaler Intermediate Root CA', aki: 'z' });
+  const named = v('publicToPrivate', { leaf: zscaler, sameName: true });
+  assert.equal(named.code, 'interceptorDetected');
+  assert.equal(named.warnings[0].code, 'caChangedSameName');
+
+  const private2 = v('privateToPrivate');
+  assert.equal(private2.code, 'privateCa');
+  assert.equal(private2.warnings[0].code, 'caChanged');
+  assert.deepEqual([private2.warnings[0].previous, private2.warnings[0].current], ['Before CA', 'Now CA']);
+
+  const public2 = v('publicToPublic', { ct: 'compliant' });
+  assert.equal(public2.code, 'publicLocalOnly');
+  assert.equal(public2.level, 'ok');
+  assert.equal(public2.warnings[0].code, 'caChangedPublic');
+  assert.equal(v('privateToPublic', { ct: 'compliant' }).warnings[0].code, 'caChangedNowPublic');
+
+  for (const status of ['first', 'known', 'forgotten', 'disabled']) {
+    const quiet = verdict({ local: local(cert(), 'compliant'), memory: { status } });
+    assert.equal(quiet.code, 'publicLocalOnly', status);
+    assert.equal(quiet.warnings.length, 0, status);
+  }
+});
+
 test('parseTarget', () => {
   assert.deepEqual(parseTarget('https://Example.com/path?q=1'), { secure: true, host: 'example.com', port: 443, origin: 'https://example.com' });
   assert.deepEqual(parseTarget('https://example.com:8443/'), { secure: true, host: 'example.com', port: 8443, origin: 'https://example.com:8443' });

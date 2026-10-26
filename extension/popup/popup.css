@@ -230,6 +230,25 @@ details.section > :not(summary) {
   }
 }
 
+/* Site memory ------------------------------------------------------------- */
+
+.history p {
+  margin: 0 0 4px;
+}
+.history-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+.history-actions .button.quiet {
+  margin-left: -6px;
+}
+.history-actions .button + .button.quiet {
+  margin-left: 0;
+}
+
 /* Facts ------------------------------------------------------------------- */
 
 .validity-track {

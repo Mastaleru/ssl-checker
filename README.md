@@ -18,7 +18,7 @@ A Chrome extension (Manifest V3) that shows the TLS certificate of the site in t
 extension/              what Chrome loads (Load unpacked) and what gets packaged
   manifest.json
   background/           service worker: local reading (chrome.debugger), notary queries
-  lib/                  X.509 parser, verdict, host names, known interceptors, settings, i18n
+  lib/                  X.509 parser, verdict, site memory, host names, known interceptors, settings, i18n
   popup/  options/  ui/ user interface
   _locales/{en,ro}/     messages
   fonts/  icons/
@@ -39,6 +39,8 @@ tests/                  unit, integration (notary) and end-to-end (Chromium) tes
 
 **Notaries.** Each endpoint receives `?host=&port=` (or a URL template with `{host}` and `{port}`) and returns the certificate chain it sees from where it runs. The protocol and the reference server are described in [`notary/README.md`](notary/README.md).
 
+**Site memory.** For every site checked with local reading, the extension remembers which certificate authority issued the certificate, in `chrome.storage.local` on the device. It remembers the authority, not the certificate, because certificates are renewed every few months: the authority is identified by the organization in the issuer name, and the keys of its issuing certificates are kept too, so a look-alike authority that borrows a known name is still told apart. A change towards another public (CT-logged) authority is only noted and learned. A change towards a certificate that is not publicly logged is not learned: the popup shows the change and offers "Trust it for this site" and "Forget this site". It can be turned off and wiped in Options; records unseen for 400 days are dropped, and at most 5,000 sites are kept.
+
 **The verdict** compares the SHA-256 fingerprint and the public key (SPKI) of the local certificate with the notaries' ones, then the issuer. Certificate Transparency tells whether the local certificate is public: Chrome reports "compliant" only for publicly logged certificates, and "unknown" for locally installed roots, which is exactly where interceptors live.
 
 | Situation | Verdict |
@@ -52,20 +54,23 @@ tests/                  unit, integration (notary) and end-to-end (Chromium) tes
 | No notaries: public / not confirmed as public | Publicly logged certificate / Not confirmed as a public certificate |
 | Notaries only (local reading off or failed) | Seen by external sources |
 | Plain HTTP page | Unencrypted page (plus the certificate on port 443, if any) |
+| Site memory: the site had a public certificate before, now one that is not publicly logged | **Certificate authority changed** (also when a known authority name appears with an unknown key) |
+| Site memory: another authority, neither of them public | Warning in the list, plus "Trust it for this site" |
+| Site memory: another public authority | Note in the list; the new authority is remembered |
 
 Additional warnings: expired or expiring soon, name not covered, SHA-1 or MD5 in the chain, RSA keys under 2048 bits, TLS 1.0/1.1, a notary that does not trust what it sees.
 
 ## Tests
 
 ```bash
-npm test                    # X.509 parser (checked against pyca/cryptography), verdict, translations, notary
+npm test                    # X.509 parser (checked against pyca/cryptography), verdict, site memory, translations, notary
 npm install && npx playwright install chromium
-npm run test:e2e            # 13 scenarios in Chromium; E2E_LANG=ro for the Romanian UI
+npm run test:e2e            # 14 scenarios in Chromium; E2E_LANG=ro for the Romanian UI
 ```
 
 `npm test` needs no `npm install`: it only uses Node.js 20 or newer.
 
-The end-to-end tests need Chromium or Chrome for Testing, because Google Chrome ignores `--load-extension` since version 137. Interception is simulated on a single machine: the browser visits a server with a "Contoso Inspection CA" certificate, while the notary is pointed at the server with the "real" certificate.
+The end-to-end tests need Chromium or Chrome for Testing, because Google Chrome ignores `--load-extension` since version 137. Interception is simulated on a single machine: the browser visits a server with a "Contoso Inspection CA" certificate, while the notary is pointed at the server with the "real" certificate. For the site memory, one server swaps its certificate between two checks.
 
 ## Build and publish
 
