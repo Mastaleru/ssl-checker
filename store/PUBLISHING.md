@@ -6,9 +6,9 @@
 
 ## Steps
 
-1. **Build the packages:** `node scripts/build.mjs`, or double-click `build\package.cmd` on Windows. You get `dist/ssl-checker-1.0.0.zip` (full) and `dist/ssl-checker-lite-1.0.0.zip`.
+1. **Build the packages:** `node scripts/build.mjs`, or double-click `build\package.cmd` on Windows. You get `dist/ssl-checker-<version>.zip` (full) and `dist/ssl-checker-lite-<version>.zip`, where `<version>` is the one in `extension/manifest.json`.
 2. **Test the zip locally:** unzip it, open `chrome://extensions` → *Developer mode* → *Load unpacked* and select the unzipped folder. Open an HTTPS site and click the icon.
-3. **Dashboard → the old "SSL Checker" item → Package → Upload new package** → `ssl-checker-1.0.0.zip`.
+3. **Dashboard → the old "SSL Checker" item → Package → Upload new package** → `ssl-checker-<version>.zip`.
    If the dashboard refuses it (removed item), create a **new item** with the same zip. It gets a new ID, and existing users have to install it again.
 4. **Store listing:** copy the texts from `store/listing.md` and add the **Romanian** localization. For each language, upload the screenshots from `store/screenshots/<language>/1-…4-*.png` and the `promo-440x280.png` tile. Category: *Developer Tools*.
 5. **Privacy practices:** fill them in from `store/permissions.md` (single purpose, justifications for `debugger`, `activeTab` and `storage`, "no remote code", data usage).
@@ -18,10 +18,10 @@
 
 ## The lite variant (optional)
 
-`ssl-checker-lite-1.0.0.zip` does not have the `debugger` permission, so it does not show the strong warning at install time either. It is published as a **separate item** ("SSL Checker Lite") with the same materials, minus the `debugger` justification. Without at least one configured notary it has nothing to show, so it is worth publishing only once you have a public notary you can recommend in the description.
+`ssl-checker-lite-<version>.zip` does not have the `debugger` permission, so it does not show the strong warning at install time either. It is published as a **separate item** ("SSL Checker Lite") with the same materials, minus the `debugger` justification. Without at least one configured notary it has nothing to show, so it is worth publishing only once you have a public notary you can recommend in the description.
 
 ## On every update
 
-- Increase `version` in `extension/manifest.json` (for example to `1.0.1`); the store refuses an equal or lower version.
+- Increase `version` in `extension/manifest.json` (for example from `2.0.0` to `2.0.1`), since the store refuses an equal or lower version, and keep `package.json` on the same version.
 - Run `npm test` and `npm run test:e2e`, then build the packages.
 - If you change the UI, `node store/tools/make-screenshots.mjs` regenerates the screenshots from the real code.
