@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SSL Checker — Privacy policy</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --ink: #16233a;
+        --ink-2: #485870;
+        --paper: #f5f7fa;
+        --line: #dde3ec;
+        --brand: #1f56aa;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --ink: #e5ebf4;
+          --ink-2: #aab6c8;
+          --paper: #0f1726;
+          --line: #26334b;
+          --brand: #9bbdf4;
+        }
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font: 16px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif;
+      }
+      main {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 48px 20px 64px;
+      }
+      h1 {
+        font-size: 28px;
+        line-height: 1.2;
+        margin: 0 0 6px;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 40px 0 12px;
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+      }
+      .updated {
+        color: var(--ink-2);
+        margin: 0;
+      }
+      p {
+        margin: 0 0 14px;
+      }
+      strong {
+        font-weight: 650;
+      }
+      code {
+        font-size: 14px;
+      }
+      a {
+        color: var(--brand);
+      }
+      nav {
+        margin-top: 14px;
+        color: var(--ink-2);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>SSL Checker — Privacy policy</h1>
+      <p class="updated">Last updated: 26 October 2026</p>
+      <nav><a href="#en">English</a> · <a href="#ro" lang="ro">Română</a></nav>
+
+      <section id="en">
+        <h2>English</h2>
+        <p>SSL Checker is a browser extension that shows the TLS certificate of the website in your active tab and compares it with what independent notary servers see.</p>
+        <p><strong>What the extension reads.</strong> Only when you open its popup: the address of the active tab (to know which site to check) and, if reading from the browser is enabled, the certificate chain and connection parameters of that tab, read through Chrome's debugger interface. It does not read page content, cookies, passwords, form data, other tabs or your browsing history.</p>
+        <p><strong>What leaves your device.</strong> The host name and port of the site you check are sent only to the notary servers you add in Options, together with the access token you entered for that server, if any. No notary is configured by default. Nothing is sent to the developer of SSL Checker. There is no analytics, tracking, advertising or account.</p>
+        <p><strong>What is stored.</strong> Your settings (reading mode, notary addresses and tokens, timeout) are stored with <code>chrome.storage.local</code> on your device. The result of the last check for each tab is kept with <code>chrome.storage.session</code> and is deleted when you close the tab or the browser.</p>
+        <p><strong>Third parties.</strong> The notary servers you add are operated by you or by whoever you choose; their own policies apply. The reference notary implementation does not store requests and does not log site names unless its operator turns that on.</p>
+        <p><strong>Contact.</strong> [your contact e-mail]</p>
+      </section>
+
+      <section id="ro" lang="ro">
+        <h2>Română</h2>
+        <p>SSL Checker este o extensie de browser care afișează certificatul TLS al site-ului din tabul activ și îl compară cu ce văd servere notar independente.</p>
+        <p><strong>Ce citește extensia.</strong> Doar când îi deschizi popup-ul: adresa tabului activ (ca să știe ce site verifică) și, dacă citirea din browser e activă, lanțul de certificate și parametrii conexiunii acelui tab, prin interfața de depanare a Chrome. Nu citește conținutul paginilor, cookie-uri, parole, date din formulare, alte taburi sau istoricul de navigare.</p>
+        <p><strong>Ce pleacă de pe dispozitivul tău.</strong> Numele site-ului verificat și portul sunt trimise doar serverelor notar pe care le adaugi în Opțiuni, împreună cu tokenul de acces introdus pentru acel server, dacă există. Implicit nu e configurat niciun notar. Nimic nu este trimis dezvoltatorului SSL Checker. Nu există analytics, urmărire, reclame sau cont.</p>
+        <p><strong>Ce se păstrează.</strong> Setările (modul de citire, adresele și tokenurile notarilor, timpul de așteptare) sunt păstrate cu <code>chrome.storage.local</code> pe dispozitivul tău. Rezultatul ultimei verificări pentru fiecare tab e păstrat cu <code>chrome.storage.session</code> și se șterge când închizi tabul sau browserul.</p>
+        <p><strong>Terți.</strong> Serverele notar pe care le adaugi sunt operate de tine sau de cine alegi tu; se aplică politicile lor. Implementarea de referință a notarului nu păstrează cererile și nu scrie site-urile în jurnal decât dacă operatorul activează asta.</p>
+        <p><strong>Contact.</strong> [adresa ta de e-mail de contact]</p>
+      </section>
+    </main>
+  </body>
+</html>

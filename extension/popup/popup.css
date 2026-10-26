@@ -1,0 +1,347 @@
+body {
+  width: 400px;
+  min-height: 140px;
+  background: var(--surface);
+}
+
+/* Header ------------------------------------------------------------------ */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 10px 11px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-logo {
+  flex: none;
+}
+.site {
+  flex: 1;
+  min-width: 0;
+}
+.host {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.25;
+  font-weight: 680;
+  overflow-wrap: anywhere;
+}
+.scheme {
+  margin: 1px 0 0;
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+
+/* Verdict ----------------------------------------------------------------- */
+
+.verdict {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 10px;
+  padding: 14px 16px 14px 13px;
+  border-left: 4px solid var(--tone);
+  background: var(--tone-wash);
+}
+.verdict-icon {
+  color: var(--tone);
+  padding-top: 1px;
+}
+.verdict-icon svg {
+  width: 24px;
+  height: 24px;
+}
+.verdict h2 {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.3;
+  font-weight: 680;
+}
+.verdict p {
+  margin: 4px 0 0;
+  color: var(--ink-2);
+}
+.verdict p + p {
+  margin-top: 6px;
+}
+
+.loading .verdict {
+  --tone: var(--line-strong);
+  --tone-wash: var(--paper);
+}
+
+/* Warnings & callouts ----------------------------------------------------- */
+
+.warnings {
+  list-style: none;
+  margin: 0;
+  padding: 8px 16px 4px;
+}
+.warnings li {
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  gap: 8px;
+  padding: 3px 0;
+  color: var(--ink);
+}
+.warnings svg {
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  color: var(--tone);
+}
+
+.callout {
+  margin: 10px 16px 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--paper);
+}
+.callout p {
+  margin: 0 0 8px;
+  color: var(--ink-2);
+}
+
+/* Sections ---------------------------------------------------------------- */
+
+.section {
+  padding: 12px 16px 12px;
+  border-top: 1px solid var(--line);
+}
+.callout + .section,
+.warnings + .section,
+.verdict + .section {
+  margin-top: 10px;
+}
+.section > h3,
+.section > summary {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+  font-weight: 680;
+  color: var(--ink-2);
+}
+
+details.section > summary {
+  margin: -12px -16px;
+  padding: 12px 16px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+details.section > summary::-webkit-details-marker {
+  display: none;
+}
+details.section > summary::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-right: 1.6px solid currentColor;
+  border-bottom: 1.6px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 120ms ease;
+  margin-right: 3px;
+}
+details.section[open] > summary::before {
+  transform: rotate(45deg);
+}
+details.section[open] > summary {
+  margin-bottom: 0;
+}
+details.section > :not(summary) {
+  margin-top: 14px;
+}
+
+/* Witnesses --------------------------------------------------------------- */
+
+.witness {
+  padding: 8px 0;
+}
+.witness + .witness {
+  border-top: 1px dashed var(--line);
+}
+.witness-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.witness-name {
+  font-weight: 650;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.witness-print {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-top: 5px;
+}
+.witness-print .barcode {
+  color: var(--bars, var(--ink));
+}
+.witness[data-bars='muted'] {
+  --bars: var(--ink-3);
+}
+.witness[data-bars='danger'] {
+  --bars: var(--danger);
+}
+.witness-hex {
+  font-size: 11.5px;
+  color: var(--ink-2);
+  line-height: 1;
+}
+.witness-meta,
+.witness-error {
+  margin: 4px 0 0;
+  font-size: 11.5px;
+  color: var(--ink-3);
+  overflow-wrap: anywhere;
+}
+.witness-error {
+  color: var(--ink-2);
+}
+.witness-note {
+  margin: 6px 0 0;
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+.witnesses .button.quiet {
+  margin: 4px 0 0 -6px;
+}
+
+.barcode.skeleton rect {
+  fill: var(--line-strong);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .barcode.skeleton {
+    animation: pulse 1.1s ease-in-out infinite alternate;
+  }
+}
+@keyframes pulse {
+  to {
+    opacity: 0.35;
+  }
+}
+
+/* Facts ------------------------------------------------------------------- */
+
+.validity-track {
+  display: block;
+  height: 4px;
+  margin: 6px 0 3px;
+  border-radius: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+.validity-track > span {
+  display: block;
+  height: 100%;
+  background: var(--tone);
+}
+.validity-note {
+  font-size: 11.5px;
+  color: var(--tone);
+  font-weight: 600;
+}
+.subtle {
+  color: var(--ink-3);
+}
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.list li + li {
+  margin-top: 2px;
+}
+.wrap-mono {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+/* Chain ------------------------------------------------------------------- */
+
+.chain {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.chain li {
+  position: relative;
+  padding: 0 0 10px 18px;
+}
+.chain li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.6px solid var(--ink-3);
+  background: var(--surface);
+}
+.chain li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 7.5px;
+  top: 15px;
+  bottom: 0;
+  border-left: 1.6px solid var(--line-strong);
+}
+.chain-name {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  font-weight: 650;
+}
+.chain-meta {
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+
+.detail-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 12px;
+}
+.detail-actions .button svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Footer & states --------------------------------------------------------- */
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 11.5px;
+  color: var(--ink-3);
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+}
+
+.empty-state {
+  padding: 22px 18px 24px;
+}
+.empty-state h2 {
+  margin: 0 0 6px;
+  font-size: 15.5px;
+  font-weight: 680;
+}
+.empty-state p {
+  margin: 0;
+  color: var(--ink-2);
+}

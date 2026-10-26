@@ -1,0 +1,228 @@
+body {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 36px 24px 48px;
+}
+
+.page-head {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+.page-head h1 {
+  margin: 2px 0 4px;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+.page-head p {
+  margin: 0;
+  color: var(--ink-2);
+  max-width: 60ch;
+}
+
+.panel {
+  padding: 22px 0 24px;
+  border-top: 1px solid var(--line);
+}
+.panel h2 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 700;
+}
+.panel h3 {
+  margin: 0 0 12px;
+  font-size: 14.5px;
+  font-weight: 700;
+}
+.lead {
+  margin: 0 0 16px;
+  color: var(--ink-2);
+  max-width: 64ch;
+}
+.notice {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--warn);
+  background: var(--warn-wash);
+}
+
+/* Local reading modes ----------------------------------------------------- */
+
+.modes {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: 8px;
+}
+.mode {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--surface);
+  cursor: pointer;
+}
+.mode:has(input:checked) {
+  border-color: var(--brand);
+  box-shadow: inset 0 0 0 1px var(--brand);
+}
+.mode input {
+  margin: 3px 0 0;
+  accent-color: var(--brand);
+}
+.mode strong {
+  display: block;
+  font-weight: 650;
+}
+.mode small {
+  display: block;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+.modes:disabled .mode {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Endpoints --------------------------------------------------------------- */
+
+.endpoints {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+}
+.endpoint {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 4px 12px;
+  align-items: start;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.endpoint:first-child {
+  border-top: 1px dashed var(--line);
+}
+.endpoint input[type='checkbox'] {
+  margin-top: 4px;
+  accent-color: var(--brand);
+}
+.endpoint-name {
+  font-weight: 650;
+}
+.endpoint-url {
+  display: block;
+  font-size: 12.5px;
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+.endpoint-token {
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+.endpoint-actions {
+  display: flex;
+  gap: 4px;
+}
+.endpoint-result {
+  grid-column: 2 / -1;
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--tone, var(--ink-2));
+}
+.empty {
+  margin: 0 0 18px;
+  color: var(--ink-3);
+}
+
+.endpoint-form {
+  margin-top: 18px;
+  padding: 16px 18px 18px;
+  border-radius: var(--radius-m);
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.field {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.field > span {
+  font-weight: 650;
+}
+.field small {
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+.field input {
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-s);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+}
+.field input.mono {
+  font-family: var(--mono);
+  font-size: 13px;
+}
+.field.inline {
+  grid-template-columns: max-content 90px;
+  align-items: center;
+  gap: 12px;
+}
+.form-error {
+  margin: 0 0 12px;
+  color: var(--danger);
+  font-weight: 600;
+}
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Protocol ---------------------------------------------------------------- */
+
+.protocol summary {
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: 700;
+}
+.protocol p {
+  color: var(--ink-2);
+  max-width: 64ch;
+}
+.protocol pre {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  font-size: 12.5px;
+  line-height: 1.55;
+  border-radius: var(--radius-m);
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.page-foot {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+.saved {
+  color: var(--ok);
+  font-weight: 600;
+}

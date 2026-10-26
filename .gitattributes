@@ -1,0 +1,4 @@
+# Store text files with LF in the repository; each checkout uses the local line endings.
+* text=auto
+*.png binary
+*.woff2 binary

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title data-i18n="optionsTitle">SSL Checker</title>
+    <link rel="stylesheet" href="../ui/base.css" />
+    <link rel="stylesheet" href="options.css" />
+    <script type="module" src="options.js"></script>
+  </head>
+  <body>
+    <main class="page">
+      <header class="page-head">
+        <img src="../icons/ssl48.png" width="40" height="40" alt="" />
+        <div>
+          <h1 data-i18n="optionsTitle"></h1>
+          <p data-i18n="optionsIntro"></p>
+        </div>
+      </header>
+
+      <section class="panel" aria-labelledby="local-title">
+        <h2 id="local-title" data-i18n="optLocalTitle"></h2>
+        <p class="lead" data-i18n="optLocalIntro"></p>
+        <p id="local-unavailable" class="notice" hidden data-i18n="optLocalUnavailable"></p>
+        <fieldset id="local-modes" class="modes">
+          <legend class="visually-hidden" data-i18n="optLocalTitle"></legend>
+          <label class="mode">
+            <input type="radio" name="localMode" value="always" />
+            <span><strong data-i18n="modeAlways"></strong><small data-i18n="modeAlwaysHelp"></small></span>
+          </label>
+          <label class="mode">
+            <input type="radio" name="localMode" value="ask" />
+            <span><strong data-i18n="modeAsk"></strong><small data-i18n="modeAskHelp"></small></span>
+          </label>
+          <label class="mode">
+            <input type="radio" name="localMode" value="never" />
+            <span><strong data-i18n="modeNever"></strong><small data-i18n="modeNeverHelp"></small></span>
+          </label>
+        </fieldset>
+      </section>
+
+      <section class="panel" aria-labelledby="sources-title">
+        <h2 id="sources-title" data-i18n="optSourcesTitle"></h2>
+        <p class="lead" data-i18n="optSourcesIntro"></p>
+        <ul id="endpoint-list" class="endpoints"></ul>
+        <p id="endpoint-empty" class="empty" data-i18n="optSourcesEmpty"></p>
+
+        <form id="endpoint-form" class="endpoint-form" novalidate>
+          <h3 data-i18n="optAddSourceTitle"></h3>
+          <label class="field">
+            <span data-i18n="fieldName"></span>
+            <input id="ep-name" name="name" type="text" maxlength="60" autocomplete="off" data-i18n-attr="placeholder:fieldNamePlaceholder" />
+          </label>
+          <label class="field">
+            <span data-i18n="fieldUrl"></span>
+            <input id="ep-url" name="url" type="url" required autocomplete="off" spellcheck="false" class="mono" placeholder="https://notary.example.net/v1/cert" />
+            <small data-i18n="fieldUrlHelp"></small>
+          </label>
+          <label class="field">
+            <span data-i18n="fieldToken"></span>
+            <input id="ep-token" name="token" type="password" autocomplete="off" spellcheck="false" class="mono" />
+            <small data-i18n="fieldTokenHelp"></small>
+          </label>
+          <p id="form-error" class="form-error" role="alert" hidden></p>
+          <div class="form-actions">
+            <button type="submit" class="button primary" data-i18n="actionAddSource"></button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="advanced-title">
+        <h2 id="advanced-title" data-i18n="optAdvancedTitle"></h2>
+        <label class="field inline">
+          <span data-i18n="fieldTimeout"></span>
+          <input id="timeout" type="number" min="2" max="30" step="1" />
+        </label>
+      </section>
+
+      <section class="panel">
+        <details class="protocol">
+          <summary data-i18n="optProtocolTitle"></summary>
+          <p data-i18n="optProtocolIntro"></p>
+          <pre class="mono">GET https://notary.example.net/v1/cert?host=example.com&amp;port=443
+Authorization: Bearer &lt;token&gt;
+
+200 OK
+Access-Control-Allow-Origin: *
+{
+  "version": 1,
+  "host": "example.com",
+  "port": 443,
+  "observedAt": "2026-10-26T15:00:00.000Z",
+  "vantage": "Frankfurt, DE",
+  "address": "93.184.215.14",
+  "trusted": true,
+  "trustError": null,
+  "tls": { "protocol": "TLSv1.3", "cipher": "TLS_AES_256_GCM_SHA384", "group": "X25519" },
+  "chain": ["MIIF…leaf", "MIIE…intermediate"]
+}</pre>
+          <p data-i18n="optProtocolErrors"></p>
+        </details>
+      </section>
+
+      <footer class="page-foot">
+        <span id="version"></span>
+        <span id="saved" class="saved" role="status" aria-live="polite"></span>
+      </footer>
+    </main>
+  </body>
+</html>

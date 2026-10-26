@@ -1,0 +1,20 @@
+{
+  "name": "ssl-checker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Chrome extension that shows the TLS certificate of the current tab and detects interception by comparing it with independent notaries.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test tests/x509.test.mjs tests/verdict.test.mjs tests/i18n.test.mjs tests/notary.test.mjs",
+    "test:e2e": "node tests/e2e/run.mjs",
+    "build": "node scripts/build.mjs",
+    "notary": "node notary/server.mjs",
+    "screenshots": "node store/tools/make-screenshots.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}
