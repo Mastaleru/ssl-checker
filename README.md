@@ -1,35 +1,20 @@
-# SSL Checker 1.0
+# SSL Checker
 
-A Chrome extension (Manifest V3) that shows the TLS certificate of the site in the current tab — the one your browser **actually received** — and compares it with what independent "notary" servers see, to detect HTTPS interception (a company proxy, an antivirus or something else).
+A Chrome extension (Manifest V3) that shows the TLS certificate of the site in the current tab — the one your browser **actually received** — and tells you whether something between you and the site is replacing it: a company proxy, an antivirus or something else.
 
-## What changed since 0.3
+## Features
 
-| 0.3 (2017) | 1.0 |
-|---|---|
-| Manifest V2, disabled by Chrome 138 and removed from the Chrome Web Store on 31 August 2026 | Manifest V3, service worker, ES modules |
-| Scraped the HTML of sslchecker.com | Reads the certificate straight from Chrome, plus configurable notaries with a documented JSON protocol |
-| jQuery 3.2.1 and Bootstrap (with known vulnerabilities), `innerHTML` with external data | No dependencies; the DOM is built only with `textContent` |
-| Host permission for sslchecker.com | `activeTab`, `storage`, `debugger` (no `debugger` in the lite package); no host permissions |
-| English only | English and Romanian |
+- **The real certificate.** Reads the certificate chain your browser received for the current tab, with the connection details: TLS version, key exchange (including post-quantum hybrids), cipher, Encrypted Client Hello and Certificate Transparency status.
+- **Interception detection.** Compares that certificate with what independent notary servers see from elsewhere on the internet. A different certificate that is not publicly logged means the traffic is decrypted and re-signed on your path; known inspection products (corporate proxies, cloud gateways, antivirus, debugging proxies) are named.
+- **Site memory.** Remembers which certificate authority each site you check uses, and warns you when a site you know suddenly arrives with a different one, even without notaries.
+- **One clear verdict.** A single verdict at the top, plus warnings for expired or expiring certificates, names not covered, SHA-1 or MD5 signatures, short RSA keys and TLS 1.0/1.1.
+- **Every detail.** Validity, validation level (DV, OV, EV), the full chain, SHA-256 and SHA-1 fingerprints, the public key pin, serial number, OCSP and CRL addresses, SCTs and all extensions. Copy the PEM or download the whole chain.
+- **You decide when the debugger runs.** Reading the certificate from the browser needs Chrome's debugger, so it can run every time, on demand or never. A lite package without the debugger permission is built as well.
+- **Your own notaries.** Any server that speaks the notary protocol can be a source; a reference implementation is in [`notary/`](notary/README.md).
+- **Private by design.** No analytics, no account, no host permissions. Only the host name and port go to the notaries you configure, and the site memory stays on the device.
+- **English and Romanian** user interface.
 
-## Layout
-
-```
-extension/              what Chrome loads (Load unpacked) and what gets packaged
-  manifest.json
-  background/           service worker: local reading (chrome.debugger), notary queries
-  lib/                  X.509 parser, verdict, site memory, host names, known interceptors, settings, i18n
-  popup/  options/  ui/ user interface
-  _locales/{en,ro}/     messages
-  fonts/  icons/
-notary/                 reference notary server (one Node.js file), Dockerfile and README
-scripts/build.mjs       builds dist/ssl-checker-<version>.zip and the lite package
-build/package.cmd       Windows shortcut for scripts/build.mjs
-store/                  Chrome Web Store texts, screenshots, privacy policy and publishing guide
-tests/                  unit, integration (notary) and end-to-end (Chromium) tests
-```
-
-## Load it locally
+## Try it
 
 `chrome://extensions` → turn on **Developer mode** → **Load unpacked** → select the `extension/` folder. Open an HTTPS site and click the toolbar icon.
 
@@ -60,6 +45,33 @@ tests/                  unit, integration (notary) and end-to-end (Chromium) tes
 
 Additional warnings: expired or expiring soon, name not covered, SHA-1 or MD5 in the chain, RSA keys under 2048 bits, TLS 1.0/1.1, a notary that does not trust what it sees.
 
+## Permissions
+
+| Permission | Used for |
+|---|---|
+| `activeTab` | The address of the tab being checked, only after you click the icon |
+| `storage` | Settings, the last result of each tab and the site memory, all on the device |
+| `debugger` | Reading the certificate from the browser (not included in the lite package) |
+
+There are no host permissions, so notaries must send CORS headers.
+
+## Project layout
+
+```
+extension/              what Chrome loads (Load unpacked) and what gets packaged
+  manifest.json
+  background/           service worker: local reading (chrome.debugger), notary queries
+  lib/                  X.509 parser, verdict, site memory, host names, known interceptors, settings, i18n
+  popup/  options/  ui/ user interface
+  _locales/{en,ro}/     messages
+  fonts/  icons/
+notary/                 reference notary server (one Node.js file), Dockerfile and README
+scripts/build.mjs       builds the full and the lite package into dist/
+build/package.cmd       Windows shortcut for scripts/build.mjs
+store/                  Chrome Web Store texts, screenshots, privacy policy and publishing guide
+tests/                  unit, integration (notary) and end-to-end (Chromium) tests
+```
+
 ## Tests
 
 ```bash
@@ -75,10 +87,10 @@ The end-to-end tests need Chromium or Chrome for Testing, because Google Chrome 
 ## Build and publish
 
 ```bash
-node scripts/build.mjs      # dist/ssl-checker-1.0.0.zip and dist/ssl-checker-lite-1.0.0.zip
+node scripts/build.mjs      # dist/ssl-checker-<version>.zip and dist/ssl-checker-lite-<version>.zip
 ```
 
-On Windows you can double-click `build\package.cmd` instead (it needs Node.js 20 or newer). From a terminal, `build\package.cmd full` or `build\package.cmd lite` builds a single package.
+On Windows you can double-click `build\package.cmd` instead (it needs Node.js 20 or newer). From a terminal, `build\package.cmd full` or `build\package.cmd lite` builds a single package. The version comes from `extension/manifest.json`.
 
 Chrome Web Store steps, listing texts and screenshots: [`store/PUBLISHING.md`](store/PUBLISHING.md).
 
