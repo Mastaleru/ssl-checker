@@ -1,4 +1,7 @@
 # Store text files with LF in the repository; each checkout uses the local line endings.
 * text=auto
+# Windows batch files only run reliably with CRLF line endings.
+*.cmd text eol=crlf
+*.bat text eol=crlf
 *.png binary
 *.woff2 binary
