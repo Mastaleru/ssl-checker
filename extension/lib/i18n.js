@@ -26,11 +26,15 @@ export function plural(base, count) {
  */
 export function localizeDocument(root = document) {
   document.documentElement.lang = uiLanguage();
-  for (const el of root.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
+  for (const el of root.querySelectorAll('[data-i18n]')) {
+    el.textContent = t(el.dataset.i18n);
+  }
   for (const el of root.querySelectorAll('[data-i18n-attr]')) {
     for (const pair of el.dataset.i18nAttr.split(',')) {
       const [attr, key] = pair.split(':').map((s) => s.trim());
-      if (attr && key) el.setAttribute(attr, t(key));
+      if (attr && key) {
+        el.setAttribute(attr, t(key));
+      }
     }
   }
 }
@@ -45,8 +49,14 @@ export const formatDateTime = (iso) => dateTimeFormat.format(new Date(iso));
 export function formatRelative(iso, now = Date.now()) {
   const seconds = Math.round((Date.parse(iso) - now) / 1000);
   const abs = Math.abs(seconds);
-  if (abs < 60) return relativeFormat.format(seconds, 'second');
-  if (abs < 3600) return relativeFormat.format(Math.round(seconds / 60), 'minute');
-  if (abs < 86400) return relativeFormat.format(Math.round(seconds / 3600), 'hour');
+  if (abs < 60) {
+    return relativeFormat.format(seconds, 'second');
+  }
+  if (abs < 3600) {
+    return relativeFormat.format(Math.round(seconds / 60), 'minute');
+  }
+  if (abs < 86400) {
+    return relativeFormat.format(Math.round(seconds / 3600), 'hour');
+  }
   return relativeFormat.format(Math.round(seconds / 86400), 'day');
 }

@@ -11,7 +11,9 @@ export function hostLabel(host, port) {
 }
 
 export function keyLabel(publicKey) {
-  if (!publicKey) return '';
+  if (!publicKey) {
+    return '';
+  }
   switch (publicKey.algorithm) {
     case 'EC':
       return `ECDSA ${publicKey.curve || ''}`.trim();
@@ -26,7 +28,9 @@ export function keyLabel(publicKey) {
 export function primaryNames(cert) {
   const san = cert.extensions.subjectAltName;
   const names = san ? [...san.dns, ...san.ip] : [];
-  if (names.length === 0 && cert.subject.commonName) names.push(cert.subject.commonName);
+  if (names.length === 0 && cert.subject.commonName) {
+    names.push(cert.subject.commonName);
+  }
   return names;
 }
 
@@ -59,7 +63,9 @@ const TLS_SIGNATURE_SCHEMES = {
 };
 
 export function tlsSignatureScheme(value) {
-  if (typeof value !== 'number') return null;
+  if (typeof value !== 'number') {
+    return null;
+  }
   return TLS_SIGNATURE_SCHEMES[value] || `0x${value.toString(16).padStart(4, '0')}`;
 }
 

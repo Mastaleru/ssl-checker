@@ -18,26 +18,42 @@ export function localReadingAvailable() {
 export async function getSettings() {
   const stored = await chrome.storage.local.get(['localMode', 'endpoints', 'timeoutMs', 'memoryEnabled']);
   const settings = { ...DEFAULTS, ...stored };
-  if (!LOCAL_MODES.includes(settings.localMode)) settings.localMode = DEFAULTS.localMode;
-  if (!Array.isArray(settings.endpoints)) settings.endpoints = [];
+  if (!LOCAL_MODES.includes(settings.localMode)) {
+    settings.localMode = DEFAULTS.localMode;
+  }
+  if (!Array.isArray(settings.endpoints)) {
+    settings.endpoints = [];
+  }
   settings.timeoutMs = clampTimeout(settings.timeoutMs);
   settings.memoryEnabled = settings.memoryEnabled !== false;
-  if (!localReadingAvailable()) settings.localMode = 'never';
+  if (!localReadingAvailable()) {
+    settings.localMode = 'never';
+  }
   return settings;
 }
 
 export async function saveSettings(patch) {
   const clean = {};
-  if ('localMode' in patch && LOCAL_MODES.includes(patch.localMode)) clean.localMode = patch.localMode;
-  if ('endpoints' in patch && Array.isArray(patch.endpoints)) clean.endpoints = patch.endpoints;
-  if ('timeoutMs' in patch) clean.timeoutMs = clampTimeout(patch.timeoutMs);
-  if ('memoryEnabled' in patch) clean.memoryEnabled = Boolean(patch.memoryEnabled);
+  if ('localMode' in patch && LOCAL_MODES.includes(patch.localMode)) {
+    clean.localMode = patch.localMode;
+  }
+  if ('endpoints' in patch && Array.isArray(patch.endpoints)) {
+    clean.endpoints = patch.endpoints;
+  }
+  if ('timeoutMs' in patch) {
+    clean.timeoutMs = clampTimeout(patch.timeoutMs);
+  }
+  if ('memoryEnabled' in patch) {
+    clean.memoryEnabled = Boolean(patch.memoryEnabled);
+  }
   await chrome.storage.local.set(clean);
 }
 
 export function clampTimeout(ms) {
   const n = Number(ms);
-  if (!Number.isFinite(n)) return DEFAULTS.timeoutMs;
+  if (!Number.isFinite(n)) {
+    return DEFAULTS.timeoutMs;
+  }
   return Math.min(30000, Math.max(2000, Math.round(n)));
 }
 
@@ -57,9 +73,15 @@ export function validateEndpointUrl(input) {
   } catch {
     return { ok: false, error: 'endpointErrorInvalidUrl' };
   }
-  if (u.username || u.password) return { ok: false, error: 'endpointErrorCredentialsInUrl' };
-  if (u.hash) return { ok: false, error: 'endpointErrorFragment' };
-  if (u.hostname.includes('host_placeholder')) return { ok: false, error: 'endpointErrorPlaceholderInHost' };
+  if (u.username || u.password) {
+    return { ok: false, error: 'endpointErrorCredentialsInUrl' };
+  }
+  if (u.hash) {
+    return { ok: false, error: 'endpointErrorFragment' };
+  }
+  if (u.hostname.includes('host_placeholder')) {
+    return { ok: false, error: 'endpointErrorPlaceholderInHost' };
+  }
   if (u.protocol !== 'https:' && !(u.protocol === 'http:' && LOOPBACK.has(u.hostname))) {
     return { ok: false, error: 'endpointErrorHttps' };
   }

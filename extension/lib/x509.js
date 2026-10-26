@@ -32,7 +32,9 @@ const HEX = Array.from({ length: 256 }, (_, i) => i.toString(16).padStart(2, '0'
 export function toHex(bytes, separator = '') {
   let out = '';
   for (let i = 0; i < bytes.length; i++) {
-    if (i && separator) out += separator;
+    if (i && separator) {
+      out += separator;
+    }
     out += HEX[bytes[i]];
   }
   return out;
@@ -41,7 +43,9 @@ export function toHex(bytes, separator = '') {
 export function base64ToBytes(b64) {
   const bin = atob(String(b64).replace(/\s+/g, ''));
   const out = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  for (let i = 0; i < bin.length; i++) {
+    out[i] = bin.charCodeAt(i);
+  }
   return out;
 }
 
@@ -61,7 +65,9 @@ export function toPem(der) {
 
 function latin1(bytes) {
   let s = '';
-  for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+  for (let i = 0; i < bytes.length; i++) {
+    s += String.fromCharCode(bytes[i]);
+  }
   return s;
 }
 
@@ -101,7 +107,9 @@ const T = {
  * `start`/`end` delimit the value; `headerStart` is where the tag byte is.
  */
 function readTlv(buf, pos, limit) {
-  if (pos >= limit) throw new CertificateParseError('Unexpected end of data');
+  if (pos >= limit) {
+    throw new CertificateParseError('Unexpected end of data');
+  }
   const first = buf[pos];
   const cls = first >> 6;
   const constructed = (first & 0x20) !== 0;
@@ -111,24 +119,34 @@ function readTlv(buf, pos, limit) {
     tag = 0;
     let b;
     do {
-      if (p >= limit) throw new CertificateParseError('Truncated tag');
+      if (p >= limit) {
+        throw new CertificateParseError('Truncated tag');
+      }
       b = buf[p++];
       tag = tag * 128 + (b & 0x7f);
     } while (b & 0x80);
   }
-  if (p >= limit) throw new CertificateParseError('Truncated length');
+  if (p >= limit) {
+    throw new CertificateParseError('Truncated length');
+  }
   let length = buf[p++];
   if (length & 0x80) {
     const count = length & 0x7f;
-    if (count === 0 || count > 4) throw new CertificateParseError('Unsupported length encoding');
+    if (count === 0 || count > 4) {
+      throw new CertificateParseError('Unsupported length encoding');
+    }
     length = 0;
     for (let i = 0; i < count; i++) {
-      if (p >= limit) throw new CertificateParseError('Truncated length');
+      if (p >= limit) {
+        throw new CertificateParseError('Truncated length');
+      }
       length = length * 256 + buf[p++];
     }
   }
   const end = p + length;
-  if (end > limit) throw new CertificateParseError('Length exceeds available data');
+  if (end > limit) {
+    throw new CertificateParseError('Length exceeds available data');
+  }
   return { cls, constructed, tag, headerStart: pos, start: p, end };
 }
 
@@ -149,7 +167,9 @@ const isUniversal = (node, tag) => node.cls === CLASS_UNIVERSAL && node.tag === 
 const isContext = (node, tag) => node.cls === CLASS_CONTEXT && node.tag === tag;
 
 function expectUniversal(node, tag, what) {
-  if (!node || !isUniversal(node, tag)) throw new CertificateParseError(`Expected ${what}`);
+  if (!node || !isUniversal(node, tag)) {
+    throw new CertificateParseError(`Expected ${what}`);
+  }
   return node;
 }
 
@@ -163,11 +183,17 @@ export function decodeOid(bytes) {
   let first = true;
   for (const b of bytes) {
     value = (value << 7n) | BigInt(b & 0x7f);
-    if (b & 0x80) continue;
+    if (b & 0x80) {
+      continue;
+    }
     if (first) {
-      if (value < 40n) arcs.push('0', value.toString());
-      else if (value < 80n) arcs.push('1', (value - 40n).toString());
-      else arcs.push('2', (value - 80n).toString());
+      if (value < 40n) {
+        arcs.push('0', value.toString());
+      } else if (value < 80n) {
+        arcs.push('1', (value - 40n).toString());
+      } else {
+        arcs.push('2', (value - 80n).toString());
+      }
       first = false;
     } else {
       arcs.push(value.toString());
@@ -179,7 +205,9 @@ export function decodeOid(bytes) {
 
 function decodeString(buf, node) {
   const bytes = valueOf(buf, node);
-  if (node.cls !== CLASS_UNIVERSAL) return toHex(bytes);
+  if (node.cls !== CLASS_UNIVERSAL) {
+    return toHex(bytes);
+  }
   switch (node.tag) {
     case T.UTF8_STRING:
       return utf8Decoder.decode(bytes);
@@ -209,12 +237,18 @@ function decodeTime(buf, node) {
   let year;
   if (isUniversal(node, T.UTC_TIME)) {
     m = /^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})?()(Z|[+-]\d{4})$/.exec(s);
-    if (m) year = Number(m[1]) + (Number(m[1]) >= 50 ? 1900 : 2000);
+    if (m) {
+      year = Number(m[1]) + (Number(m[1]) >= 50 ? 1900 : 2000);
+    }
   } else if (isUniversal(node, T.GENERALIZED_TIME)) {
     m = /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})?(?:[.,](\d+))?(Z|[+-]\d{4})?$/.exec(s);
-    if (m) year = Number(m[1]);
+    if (m) {
+      year = Number(m[1]);
+    }
   }
-  if (!m) throw new CertificateParseError(`Invalid time "${s}"`);
+  if (!m) {
+    throw new CertificateParseError(`Invalid time "${s}"`);
+  }
   const ms = m[7] ? Math.round(Number('0.' + m[7]) * 1000) : 0;
   let t = Date.UTC(year, Number(m[2]) - 1, Number(m[3]), Number(m[4]), Number(m[5]), Number(m[6] || 0), ms);
   const zone = m[8];
@@ -228,39 +262,55 @@ function decodeTime(buf, node) {
 /** INTEGER → lowercase hex without the DER sign byte. */
 function integerHex(buf, node) {
   let bytes = valueOf(buf, node);
-  while (bytes.length > 1 && bytes[0] === 0) bytes = bytes.subarray(1);
+  while (bytes.length > 1 && bytes[0] === 0) {
+    bytes = bytes.subarray(1);
+  }
   return toHex(bytes);
 }
 
 function integerNumber(buf, node) {
   const bytes = valueOf(buf, node);
-  if (bytes.length > 6) return Number.MAX_SAFE_INTEGER;
+  if (bytes.length > 6) {
+    return Number.MAX_SAFE_INTEGER;
+  }
   let v = 0;
-  for (const b of bytes) v = v * 256 + b;
+  for (const b of bytes) {
+    v = v * 256 + b;
+  }
   return v;
 }
 
 function bitLength(bytes) {
   let i = 0;
-  while (i < bytes.length && bytes[i] === 0) i++;
-  if (i === bytes.length) return 0;
+  while (i < bytes.length && bytes[i] === 0) {
+    i++;
+  }
+  if (i === bytes.length) {
+    return 0;
+  }
   return (bytes.length - i - 1) * 8 + (32 - Math.clz32(bytes[i]));
 }
 
 export function formatIp(bytes) {
-  if (bytes.length === 4) return Array.from(bytes).join('.');
+  if (bytes.length === 4) {
+    return Array.from(bytes).join('.');
+  }
   if (bytes.length === 16) {
     const groups = [];
-    for (let i = 0; i < 16; i += 2) groups.push((bytes[i] << 8) | bytes[i + 1]);
+    for (let i = 0; i < 16; i += 2) {
+      groups.push((bytes[i] << 8) | bytes[i + 1]);
+    }
     let bestStart = -1;
     let bestLen = 0;
-    for (let i = 0; i < 8; ) {
+    for (let i = 0; i < 8;) {
       if (groups[i] !== 0) {
         i++;
         continue;
       }
       let j = i;
-      while (j < 8 && groups[j] === 0) j++;
+      while (j < 8 && groups[j] === 0) {
+        j++;
+      }
       if (j - i > bestLen) {
         bestLen = j - i;
         bestStart = i;
@@ -268,7 +318,9 @@ export function formatIp(bytes) {
       i = j;
     }
     const hex = groups.map((g) => g.toString(16));
-    if (bestLen < 2) return hex.join(':');
+    if (bestLen < 2) {
+      return hex.join(':');
+    }
     return `${hex.slice(0, bestStart).join(':')}::${hex.slice(bestStart + bestLen).join(':')}`;
   }
   return toHex(bytes, ':');
@@ -280,8 +332,12 @@ export function formatIp(bytes) {
 
 function escapeDnValue(value) {
   let v = String(value).replace(/[\\,+"<>;=]/g, (c) => '\\' + c);
-  if (/^[ #]/.test(v)) v = '\\' + v;
-  if (/ $/.test(v)) v = v.slice(0, -1) + '\\ ';
+  if (/^[ #]/.test(v)) {
+    v = '\\' + v;
+  }
+  if (/ $/.test(v)) {
+    v = v.slice(0, -1) + '\\ ';
+  }
   return v;
 }
 
@@ -350,7 +406,13 @@ function describeSignatureAlgorithm(buf, alg) {
 function parsePublicKey(buf, node) {
   const [algNode, keyNode] = childrenOf(buf, expectUniversal(node, T.SEQUENCE, 'SubjectPublicKeyInfo'));
   const alg = parseAlgorithmIdentifier(buf, algNode);
-  const info = { oid: alg.oid, algorithm: PUBLIC_KEY_ALGORITHMS[alg.oid] || alg.oid, bits: null, curve: null, exponent: null };
+  const info = {
+    oid: alg.oid,
+    algorithm: PUBLIC_KEY_ALGORITHMS[alg.oid] || alg.oid,
+    bits: null,
+    curve: null,
+    exponent: null,
+  };
   const keyBits = valueOf(buf, expectUniversal(keyNode, T.BIT_STRING, 'subjectPublicKey')).subarray(1);
   if (info.algorithm === 'RSA' || info.algorithm === 'RSA-PSS') {
     try {
@@ -380,7 +442,9 @@ function parsePublicKey(buf, node) {
 
 function parseGeneralNames(buf, node, into) {
   for (const gn of childrenOf(buf, node)) {
-    if (gn.cls !== CLASS_CONTEXT) continue;
+    if (gn.cls !== CLASS_CONTEXT) {
+      continue;
+    }
     const bytes = valueOf(buf, gn);
     switch (gn.tag) {
       case 1:
@@ -410,7 +474,9 @@ const emptyGeneralNames = () => ({ dns: [], ip: [], email: [], uri: [], director
 function parseSctList(octets) {
   const outer = readTlv(octets, 0, octets.length);
   const data = valueOf(octets, expectUniversal(outer, T.OCTET_STRING, 'SCT list'));
-  if (data.length < 2) return [];
+  if (data.length < 2) {
+    return [];
+  }
   const end = Math.min(2 + ((data[0] << 8) | data[1]), data.length);
   const out = [];
   let p = 2;
@@ -419,9 +485,13 @@ function parseSctList(octets) {
     p += 2;
     const sct = data.subarray(p, p + len);
     p += len;
-    if (sct.length < 41) continue;
+    if (sct.length < 41) {
+      continue;
+    }
     let ts = 0;
-    for (let k = 33; k < 41; k++) ts = ts * 256 + sct[k];
+    for (let k = 33; k < 41; k++) {
+      ts = ts * 256 + sct[k];
+    }
     out.push({ version: sct[0] + 1, logId: bytesToBase64(sct.subarray(1, 33)), timestamp: new Date(ts).toISOString() });
   }
   return out;
@@ -446,7 +516,9 @@ function parseExtensions(buf, node) {
     nameConstraints: false,
     list: [],
   };
-  if (!node) return ext;
+  if (!node) {
+    return ext;
+  }
   for (const extNode of childrenOf(buf, expectUniversal(node, T.SEQUENCE, 'Extensions'))) {
     const parts = childrenOf(buf, extNode);
     const oid = decodeOid(valueOf(buf, expectUniversal(parts[0], T.OID, 'extnID')));
@@ -477,8 +549,12 @@ function decodeExtension(oid, octets, ext) {
     case EXTENSIONS.BASIC_CONSTRAINTS: {
       const bc = { ca: false, pathLen: null };
       for (const child of childrenOf(octets, root())) {
-        if (isUniversal(child, T.BOOLEAN)) bc.ca = octets[child.start] !== 0;
-        if (isUniversal(child, T.INTEGER)) bc.pathLen = integerNumber(octets, child);
+        if (isUniversal(child, T.BOOLEAN)) {
+          bc.ca = octets[child.start] !== 0;
+        }
+        if (isUniversal(child, T.INTEGER)) {
+          bc.pathLen = integerNumber(octets, child);
+        }
       }
       ext.basicConstraints = bc;
       break;
@@ -489,7 +565,9 @@ function decodeExtension(oid, octets, ext) {
       const total = (bits.length - 1) * 8 - unused;
       const usages = [];
       for (let i = 0; i < total; i++) {
-        if (bits[1 + (i >> 3)] & (0x80 >> (i & 7))) usages.push(KEY_USAGE_BITS[i] || `bit${i}`);
+        if (bits[1 + (i >> 3)] & (0x80 >> (i & 7))) {
+          usages.push(KEY_USAGE_BITS[i] || `bit${i}`);
+        }
       }
       ext.keyUsage = usages;
       break;
@@ -516,18 +594,27 @@ function decodeExtension(oid, octets, ext) {
       for (const desc of childrenOf(octets, root())) {
         const [methodNode, locationNode] = childrenOf(octets, desc);
         const method = decodeOid(valueOf(octets, methodNode));
-        if (!isContext(locationNode, 6)) continue;
+        if (!isContext(locationNode, 6)) {
+          continue;
+        }
         const uri = latin1(valueOf(octets, locationNode));
-        if (method === ACCESS_METHODS.OCSP) ext.ocsp.push(uri);
-        else if (method === ACCESS_METHODS.CA_ISSUERS) ext.caIssuers.push(uri);
+        if (method === ACCESS_METHODS.OCSP) {
+          ext.ocsp.push(uri);
+        } else if (method === ACCESS_METHODS.CA_ISSUERS) {
+          ext.caIssuers.push(uri);
+        }
       }
       break;
     case EXTENSIONS.CRL_DISTRIBUTION_POINTS:
       for (const dp of childrenOf(octets, root())) {
         for (const field of childrenOf(octets, dp)) {
-          if (!isContext(field, 0)) continue;
+          if (!isContext(field, 0)) {
+            continue;
+          }
           for (const name of childrenOf(octets, field)) {
-            if (!isContext(name, 0)) continue;
+            if (!isContext(name, 0)) {
+              continue;
+            }
             const names = parseGeneralNames(octets, name, emptyGeneralNames());
             ext.crl.push(...names.uri);
           }
@@ -539,7 +626,9 @@ function decodeExtension(oid, octets, ext) {
       break;
     case EXTENSIONS.AUTHORITY_KEY_ID:
       for (const child of childrenOf(octets, root())) {
-        if (isContext(child, 0)) ext.authorityKeyId = toHex(valueOf(octets, child));
+        if (isContext(child, 0)) {
+          ext.authorityKeyId = toHex(valueOf(octets, child));
+        }
       }
       break;
     case EXTENSIONS.SCT_LIST:
@@ -569,7 +658,9 @@ function decodeExtension(oid, octets, ext) {
 export function parseCertificate(input) {
   const der = input instanceof Uint8Array ? input : new Uint8Array(input);
   const certNode = expectUniversal(readTlv(der, 0, der.length), T.SEQUENCE, 'Certificate');
-  if (certNode.end !== der.length) throw new CertificateParseError('Trailing data after certificate');
+  if (certNode.end !== der.length) {
+    throw new CertificateParseError('Trailing data after certificate');
+  }
   const [tbsNode, sigAlgNode] = childrenOf(der, certNode);
   const tbs = childrenOf(der, expectUniversal(tbsNode, T.SEQUENCE, 'TBSCertificate'));
 
@@ -587,7 +678,9 @@ export function parseCertificate(input) {
   const { info: publicKey, spki } = parsePublicKey(der, tbs[i++]);
   let extensionsNode = null;
   for (; i < tbs.length; i++) {
-    if (isContext(tbs[i], 3)) extensionsNode = childrenOf(der, tbs[i])[0];
+    if (isContext(tbs[i], 3)) {
+      extensionsNode = childrenOf(der, tbs[i])[0];
+    }
   }
 
   return {

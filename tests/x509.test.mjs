@@ -9,7 +9,9 @@ const FIXTURES = new URL('./fixtures/certs/', import.meta.url);
 const expected = JSON.parse(readFileSync(new URL('./fixtures/expected.json', import.meta.url), 'utf8'));
 
 const pemBlocks = (text) =>
-  [...text.matchAll(/-----BEGIN CERTIFICATE-----([\s\S]+?)-----END CERTIFICATE-----/g)].map((m) => m[1].replace(/\s+/g, ''));
+  [...text.matchAll(/-----BEGIN CERTIFICATE-----([\s\S]+?)-----END CERTIFICATE-----/g)].map((m) =>
+    m[1].replace(/\s+/g, ''),
+  );
 const stripZeros = (hex) => hex.replace(/^0+(?=.)/, '');
 const nameAsArrays = (name) => name.rdns.map((rdn) => rdn.map((a) => [a.oid, a.value]));
 
@@ -32,8 +34,15 @@ for (const [key, exp] of Object.entries(expected)) {
     assert.equal(c.fingerprints.sha256, exp.sha256, 'sha256');
     assert.equal(c.fingerprints.sha1, exp.sha1, 'sha1');
     assert.equal(c.fingerprints.spkiSha256, exp.spkiSha256, 'spki pin');
-    assert.deepEqual(c.extensions.list.map((e) => [e.oid, e.critical]), exp.extensions, 'extension list');
-    assert.ok(c.extensions.list.every((e) => !e.error), 'no extension failed to decode');
+    assert.deepEqual(
+      c.extensions.list.map((e) => [e.oid, e.critical]),
+      exp.extensions,
+      'extension list',
+    );
+    assert.ok(
+      c.extensions.list.every((e) => !e.error),
+      'no extension failed to decode',
+    );
 
     const e = c.extensions;
     if (exp.san) {

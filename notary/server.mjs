@@ -60,21 +60,51 @@ const config = {
 // block every IPv4 address.
 const blockedV4 = new net.BlockList();
 for (const [address, prefix] of [
-  ['0.0.0.0', 8], ['10.0.0.0', 8], ['100.64.0.0', 10], ['127.0.0.0', 8], ['169.254.0.0', 16],
-  ['172.16.0.0', 12], ['192.0.0.0', 24], ['192.0.2.0', 24], ['192.88.99.0', 24], ['192.168.0.0', 16],
-  ['198.18.0.0', 15], ['198.51.100.0', 24], ['203.0.113.0', 24], ['224.0.0.0', 4], ['240.0.0.0', 4],
-]) blockedV4.addSubnet(address, prefix, 'ipv4');
+  ['0.0.0.0', 8],
+  ['10.0.0.0', 8],
+  ['100.64.0.0', 10],
+  ['127.0.0.0', 8],
+  ['169.254.0.0', 16],
+  ['172.16.0.0', 12],
+  ['192.0.0.0', 24],
+  ['192.0.2.0', 24],
+  ['192.88.99.0', 24],
+  ['192.168.0.0', 16],
+  ['198.18.0.0', 15],
+  ['198.51.100.0', 24],
+  ['203.0.113.0', 24],
+  ['224.0.0.0', 4],
+  ['240.0.0.0', 4],
+]) {
+  blockedV4.addSubnet(address, prefix, 'ipv4');
+}
 const blockedV6 = new net.BlockList();
 for (const [address, prefix] of [
   // IPv4-mapped (::ffff:0:0/96), NAT64 and 6to4 embed IPv4 addresses: refused outright.
-  ['::', 128], ['::1', 128], ['::ffff:0:0', 96], ['64:ff9b::', 96], ['64:ff9b:1::', 48], ['100::', 64],
-  ['2001::', 23], ['2001:db8::', 32], ['2002::', 16], ['fc00::', 7], ['fe80::', 10], ['ff00::', 8],
-]) blockedV6.addSubnet(address, prefix, 'ipv6');
+  ['::', 128],
+  ['::1', 128],
+  ['::ffff:0:0', 96],
+  ['64:ff9b::', 96],
+  ['64:ff9b:1::', 48],
+  ['100::', 64],
+  ['2001::', 23],
+  ['2001:db8::', 32],
+  ['2002::', 16],
+  ['fc00::', 7],
+  ['fe80::', 10],
+  ['ff00::', 8],
+]) {
+  blockedV6.addSubnet(address, prefix, 'ipv6');
+}
 
 function isBlockedAddress(address) {
   const family = net.isIP(address);
-  if (family === 4) return blockedV4.check(address, 'ipv4');
-  if (family === 6) return blockedV6.check(address, 'ipv6');
+  if (family === 4) {
+    return blockedV4.check(address, 'ipv4');
+  }
+  if (family === 6) {
+    return blockedV6.check(address, 'ipv6');
+  }
   return true;
 }
 
@@ -87,9 +117,17 @@ class NotaryError extends Error {
 }
 
 function normalizeHost(raw) {
-  const value = String(raw || '').trim().replace(/^\[|\]$/g, '').replace(/\.$/, '').toLowerCase();
-  if (!value || value.length > 253) throw new NotaryError(400, 'badRequest', 'host is missing or too long');
-  if (net.isIP(value)) return value;
+  const value = String(raw || '')
+    .trim()
+    .replace(/^\[|\]$/g, '')
+    .replace(/\.$/, '')
+    .toLowerCase();
+  if (!value || value.length > 253) {
+    throw new NotaryError(400, 'badRequest', 'host is missing or too long');
+  }
+  if (net.isIP(value)) {
+    return value;
+  }
   // Accept IDNs by converting them to their ASCII (punycode) form.
   let ascii;
   try {
@@ -97,7 +135,9 @@ function normalizeHost(raw) {
   } catch {
     throw new NotaryError(400, 'badRequest', 'host is not a valid name');
   }
-  if (!/^[a-z0-9-]+(\.[a-z0-9-]+)*$/.test(ascii)) throw new NotaryError(400, 'badRequest', 'host is not a valid name');
+  if (!/^[a-z0-9-]+(\.[a-z0-9-]+)*$/.test(ascii)) {
+    throw new NotaryError(400, 'badRequest', 'host is not a valid name');
+  }
   // Names are only validated for syntax; the resolved address decides whether
   // the target is public (resolveTarget), which also covers single-label names.
   return ascii;
@@ -105,18 +145,24 @@ function normalizeHost(raw) {
 
 async function resolveTarget(host) {
   if (net.isIP(host)) {
-    if (!config.allowPrivate && isBlockedAddress(host)) throw new NotaryError(403, 'forbiddenTarget', 'address is private or reserved');
+    if (!config.allowPrivate && isBlockedAddress(host)) {
+      throw new NotaryError(403, 'forbiddenTarget', 'address is private or reserved');
+    }
     return host;
   }
   let records;
   try {
     records = await withTimeout(dns.lookup(host, { all: true, verbatim: true }), 4000, 'dns');
   } catch (error) {
-    if (error instanceof NotaryError) throw error;
+    if (error instanceof NotaryError) {
+      throw error;
+    }
     throw new NotaryError(502, 'dnsFailed', `could not resolve ${host}`);
   }
   const usable = records.map((r) => r.address).filter((a) => config.allowPrivate || !isBlockedAddress(a));
-  if (usable.length === 0) throw new NotaryError(403, 'forbiddenTarget', 'name resolves only to private or reserved addresses');
+  if (usable.length === 0) {
+    throw new NotaryError(403, 'forbiddenTarget', 'name resolves only to private or reserved addresses');
+  }
   return usable[0];
 }
 
@@ -146,14 +192,19 @@ function connectThroughProxy(host, port, deadline) {
       timeout: Math.max(1, deadline - Date.now()),
     });
     request.once('connect', (response, socket) => {
-      if (response.statusCode === 200) resolve(socket);
-      else {
+      if (response.statusCode === 200) {
+        resolve(socket);
+      } else {
         socket.destroy();
         reject(new NotaryError(502, 'connectFailed', `upstream proxy answered ${response.statusCode}`));
       }
     });
     request.once('timeout', () => request.destroy(new NotaryError(504, 'timeout', 'upstream proxy timed out')));
-    request.once('error', (error) => reject(error instanceof NotaryError ? error : new NotaryError(502, 'connectFailed', 'upstream proxy unreachable')));
+    request.once('error', (error) =>
+      reject(
+        error instanceof NotaryError ? error : new NotaryError(502, 'connectFailed', 'upstream proxy unreachable'),
+      ),
+    );
     request.end();
   });
 }
@@ -165,7 +216,9 @@ function peerChain(socket) {
   while (cert && cert.raw && !seen.has(cert.fingerprint256)) {
     seen.add(cert.fingerprint256);
     chain.push(cert.raw.toString('base64'));
-    if (!cert.issuerCertificate || cert.issuerCertificate === cert) break;
+    if (!cert.issuerCertificate || cert.issuerCertificate === cert) {
+      break;
+    }
     cert = cert.issuerCertificate;
   }
   return chain;
@@ -174,7 +227,9 @@ function peerChain(socket) {
 async function probe(host, port) {
   const deadline = Date.now() + config.timeoutMs;
   const address = config.upstreamProxy ? null : await resolveTarget(host);
-  if (config.upstreamProxy) await resolveTarget(host); // still refuse private targets
+  if (config.upstreamProxy) {
+    await resolveTarget(host);
+  } // still refuse private targets
   const rawSocket = config.upstreamProxy ? await connectThroughProxy(host, port, deadline) : null;
 
   return new Promise((resolve, reject) => {
@@ -188,7 +243,10 @@ async function probe(host, port) {
       minVersion: 'TLSv1',
       ciphers: 'DEFAULT:@SECLEVEL=0',
     });
-    const timer = setTimeout(() => socket.destroy(new NotaryError(504, 'timeout', 'TLS handshake timed out')), Math.max(1, deadline - Date.now()));
+    const timer = setTimeout(
+      () => socket.destroy(new NotaryError(504, 'timeout', 'TLS handshake timed out')),
+      Math.max(1, deadline - Date.now()),
+    );
     socket.once('secureConnect', () => {
       clearTimeout(timer);
       const cipher = socket.getCipher() || {};
@@ -203,17 +261,28 @@ async function probe(host, port) {
         address: rawSocket ? null : socket.remoteAddress || address,
         trusted: socket.authorized === true,
         trustError: socket.authorized ? null : String(socket.authorizationError || 'unknown'),
-        tls: { protocol: socket.getProtocol() || null, cipher: cipher.standardName || cipher.name || null, group: ephemeral.name || null },
+        tls: {
+          protocol: socket.getProtocol() || null,
+          cipher: cipher.standardName || cipher.name || null,
+          group: ephemeral.name || null,
+        },
         chain: peerChain(socket),
       };
       socket.end();
-      if (result.chain.length === 0) reject(new NotaryError(502, 'tlsFailed', 'server sent no certificate'));
-      else resolve(result);
+      if (result.chain.length === 0) {
+        reject(new NotaryError(502, 'tlsFailed', 'server sent no certificate'));
+      } else {
+        resolve(result);
+      }
     });
     socket.once('error', (error) => {
       clearTimeout(timer);
-      if (error instanceof NotaryError) return reject(error);
-      const code = /ECONNREFUSED|EHOSTUNREACH|ENETUNREACH|ECONNRESET|EPIPE/.test(error.code || '') ? 'connectFailed' : 'tlsFailed';
+      if (error instanceof NotaryError) {
+        return reject(error);
+      }
+      const code = /ECONNREFUSED|EHOSTUNREACH|ENETUNREACH|ECONNRESET|EPIPE/.test(error.code || '')
+        ? 'connectFailed'
+        : 'tlsFailed';
       reject(new NotaryError(502, code, error.code || error.message));
     });
   });
@@ -225,19 +294,27 @@ async function probe(host, port) {
 
 const buckets = new Map();
 function allowRequest(ip) {
-  if (!config.ratePerMinute) return true;
+  if (!config.ratePerMinute) {
+    return true;
+  }
   const now = Date.now();
   const bucket = buckets.get(ip) || { tokens: config.ratePerMinute, at: now };
   bucket.tokens = Math.min(config.ratePerMinute, bucket.tokens + ((now - bucket.at) / 60000) * config.ratePerMinute);
   bucket.at = now;
   const ok = bucket.tokens >= 1;
-  if (ok) bucket.tokens -= 1;
+  if (ok) {
+    bucket.tokens -= 1;
+  }
   buckets.set(ip, bucket);
   return ok;
 }
 setInterval(() => {
   const cutoff = Date.now() - 120000;
-  for (const [ip, b] of buckets) if (b.at < cutoff) buckets.delete(ip);
+  for (const [ip, b] of buckets) {
+    if (b.at < cutoff) {
+      buckets.delete(ip);
+    }
+  }
 }, 60000).unref();
 
 const cache = new Map();
@@ -247,15 +324,23 @@ let active = 0;
 async function lookup(host, port) {
   const key = `${host}:${port}`;
   const hit = cache.get(key);
-  if (hit && hit.expires > Date.now()) return hit.value;
-  if (pending.has(key)) return pending.get(key);
-  if (active >= config.maxConcurrent) throw new NotaryError(503, 'busy', 'too many checks in progress');
+  if (hit && hit.expires > Date.now()) {
+    return hit.value;
+  }
+  if (pending.has(key)) {
+    return pending.get(key);
+  }
+  if (active >= config.maxConcurrent) {
+    throw new NotaryError(503, 'busy', 'too many checks in progress');
+  }
   active++;
   const task = probe(host, port)
     .then((value) => {
       if (config.cacheMs > 0) {
         cache.set(key, { value, expires: Date.now() + config.cacheMs });
-        if (cache.size > 2000) cache.delete(cache.keys().next().value);
+        if (cache.size > 2000) {
+          cache.delete(cache.keys().next().value);
+        }
       }
       return value;
     })
@@ -269,17 +354,25 @@ async function lookup(host, port) {
 
 const tokenDigest = config.token ? crypto.createHash('sha256').update(config.token).digest() : null;
 function authorized(req) {
-  if (!tokenDigest) return true;
+  if (!tokenDigest) {
+    return true;
+  }
   const match = /^Bearer\s+(.+)$/i.exec(req.headers.authorization || '');
-  if (!match) return false;
+  if (!match) {
+    return false;
+  }
   const given = crypto.createHash('sha256').update(match[1].trim()).digest();
   return crypto.timingSafeEqual(given, tokenDigest);
 }
 
 function clientIp(req) {
   if (config.trustProxy) {
-    const forwarded = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
-    if (forwarded) return forwarded;
+    const forwarded = String(req.headers['x-forwarded-for'] || '')
+      .split(',')[0]
+      .trim();
+    if (forwarded) {
+      return forwarded;
+    }
   }
   return req.socket.remoteAddress || 'unknown';
 }
@@ -301,7 +394,10 @@ function send(res, status, body) {
 function sendError(res, error) {
   const status = error instanceof NotaryError ? error.status : 500;
   const code = error instanceof NotaryError ? error.code : 'internal';
-  send(res, status, { version: 1, error: { code, message: error instanceof NotaryError ? error.message : 'internal error' } });
+  send(res, status, {
+    version: 1,
+    error: { code, message: error instanceof NotaryError ? error.message : 'internal error' },
+  });
 }
 
 async function handle(req, res) {
@@ -313,24 +409,42 @@ async function handle(req, res) {
       send(res, 204, null);
       return;
     }
-    if (req.method !== 'GET') throw new NotaryError(405, 'badRequest', 'only GET is supported');
+    if (req.method !== 'GET') {
+      throw new NotaryError(405, 'badRequest', 'only GET is supported');
+    }
     if (url.pathname === '/v1/health') {
-      send(res, 200, { version: 1, ok: true, vantage: config.name, ports: [...config.allowedPorts], auth: Boolean(tokenDigest) });
+      send(res, 200, {
+        version: 1,
+        ok: true,
+        vantage: config.name,
+        ports: [...config.allowedPorts],
+        auth: Boolean(tokenDigest),
+      });
       return;
     }
-    if (url.pathname !== '/v1/cert') throw new NotaryError(404, 'badRequest', 'unknown path; use /v1/cert or /v1/health');
-    if (!authorized(req)) throw new NotaryError(401, 'unauthorized', 'missing or wrong bearer token');
-    if (!allowRequest(clientIp(req))) throw new NotaryError(429, 'rateLimited', 'too many requests');
+    if (url.pathname !== '/v1/cert') {
+      throw new NotaryError(404, 'badRequest', 'unknown path; use /v1/cert or /v1/health');
+    }
+    if (!authorized(req)) {
+      throw new NotaryError(401, 'unauthorized', 'missing or wrong bearer token');
+    }
+    if (!allowRequest(clientIp(req))) {
+      throw new NotaryError(429, 'rateLimited', 'too many requests');
+    }
 
     const host = normalizeHost(url.searchParams.get('host'));
     const port = Number(url.searchParams.get('port') || 443);
     logHost = config.logHosts ? `${host}:${port}` : '*';
-    if (!Number.isInteger(port) || !config.allowedPorts.has(port)) throw new NotaryError(403, 'forbiddenPort', `port ${port} is not allowed here`);
+    if (!Number.isInteger(port) || !config.allowedPorts.has(port)) {
+      throw new NotaryError(403, 'forbiddenPort', `port ${port} is not allowed here`);
+    }
     send(res, 200, await lookup(host, port));
   } catch (error) {
     sendError(res, error);
   } finally {
-    console.log(`${new Date().toISOString()} ${req.method} ${url.pathname} ${logHost} ${res.statusCode} ${Date.now() - started}ms`);
+    console.log(
+      `${new Date().toISOString()} ${req.method} ${url.pathname} ${logHost} ${res.statusCode} ${Date.now() - started}ms`,
+    );
   }
 }
 
@@ -340,8 +454,12 @@ const server = http.createServer((req, res) => {
 server.requestTimeout = 15000;
 server.headersTimeout = 10000;
 server.listen(config.port, config.host, () => {
-  console.log(`SSL Checker notary "${config.name}" listening on ${config.host}:${config.port}` +
-    ` (ports ${[...config.allowedPorts].join(',')}, auth ${tokenDigest ? 'on' : 'off'}${config.allowPrivate ? ', PRIVATE TARGETS ALLOWED' : ''})`);
+  console.log(
+    `SSL Checker notary "${config.name}" listening on ${config.host}:${config.port}` +
+      ` (ports ${[...config.allowedPorts].join(',')}, auth ${tokenDigest ? 'on' : 'off'}${config.allowPrivate ? ', PRIVATE TARGETS ALLOWED' : ''})`,
+  );
 });
 
-for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => server.close(() => process.exit(0)));
+for (const signal of ['SIGINT', 'SIGTERM']) {
+  process.on(signal, () => server.close(() => process.exit(0)));
+}

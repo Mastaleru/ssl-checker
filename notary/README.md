@@ -34,20 +34,20 @@ In the extension: **Options → External sources → Add a source**, with the ad
 
 ## Configuration
 
-| Variable | Default | Purpose |
-|---|---|---|
-| `PORT` / `HOST` | `8080` / `0.0.0.0` | Where the server listens. |
-| `NOTARY_NAME` | host name | Label shown in the extension. |
-| `NOTARY_TOKEN` | — | When set, requests must send `Authorization: Bearer <token>`. Recommended for any public notary. |
-| `ALLOWED_PORTS` | `443,8443` | Ports the notary agrees to check. |
-| `CORS_ORIGIN` | `*` | Can be restricted to `chrome-extension://<extension id>`. |
-| `RATE_LIMIT` | `30` | Requests per minute per client IP. `0` disables the limit. |
-| `MAX_CONCURRENT` | `20` | Simultaneous TLS handshakes; above the limit it answers `503 busy`. |
-| `CACHE_SECONDS` | `60` | How long an answer for the same `host:port` is reused. |
-| `TRUST_PROXY` | — | `1` takes the client IP from `X-Forwarded-For`. Only behind your own reverse proxy. |
-| `UPSTREAM_PROXY` | — | `http://host:port`: reach the sites through an HTTP CONNECT proxy. If that proxy inspects TLS, the notary sees the interception too. |
-| `ALLOW_PRIVATE` | — | `1` allows private addresses (for testing only: it opens the door to SSRF). |
-| `LOG_HOSTS` | — | `1` also writes the checked site to the log. Off by default, for privacy. |
+| Variable         | Default            | Purpose                                                                                                                              |
+| ---------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `PORT` / `HOST`  | `8080` / `0.0.0.0` | Where the server listens.                                                                                                            |
+| `NOTARY_NAME`    | host name          | Label shown in the extension.                                                                                                        |
+| `NOTARY_TOKEN`   | —                  | When set, requests must send `Authorization: Bearer <token>`. Recommended for any public notary.                                     |
+| `ALLOWED_PORTS`  | `443,8443`         | Ports the notary agrees to check.                                                                                                    |
+| `CORS_ORIGIN`    | `*`                | Can be restricted to `chrome-extension://<extension id>`.                                                                            |
+| `RATE_LIMIT`     | `30`               | Requests per minute per client IP. `0` disables the limit.                                                                           |
+| `MAX_CONCURRENT` | `20`               | Simultaneous TLS handshakes; above the limit it answers `503 busy`.                                                                  |
+| `CACHE_SECONDS`  | `60`               | How long an answer for the same `host:port` is reused.                                                                               |
+| `TRUST_PROXY`    | —                  | `1` takes the client IP from `X-Forwarded-For`. Only behind your own reverse proxy.                                                  |
+| `UPSTREAM_PROXY` | —                  | `http://host:port`: reach the sites through an HTTP CONNECT proxy. If that proxy inspects TLS, the notary sees the interception too. |
+| `ALLOW_PRIVATE`  | —                  | `1` allows private addresses (for testing only: it opens the door to SSRF).                                                          |
+| `LOG_HOSTS`      | —                  | `1` also writes the checked site to the log. Off by default, for privacy.                                                            |
 
 ## Security
 

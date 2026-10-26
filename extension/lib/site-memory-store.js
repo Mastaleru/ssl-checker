@@ -32,15 +32,21 @@ export async function countSites() {
 
 export async function forgetAllSites() {
   const keys = (await siteEntries()).map(([key]) => key);
-  if (keys.length) await chrome.storage.local.remove(keys);
+  if (keys.length) {
+    await chrome.storage.local.remove(keys);
+  }
 }
 
 /** Drops records unseen for a long time, at most once a day. */
 async function pruneDaily(now = Date.now()) {
   const { [PRUNED_AT]: last = 0 } = await chrome.storage.local.get(PRUNED_AT);
-  if (now - last < DAY) return;
+  if (now - last < DAY) {
+    return;
+  }
   const entries = (await siteEntries()).map(([key, record]) => ({ key, lastSeen: lastSeenOf(record) }));
   const stale = recordsToPrune(entries, now);
-  if (stale.length) await chrome.storage.local.remove(stale);
+  if (stale.length) {
+    await chrome.storage.local.remove(stale);
+  }
   await chrome.storage.local.set({ [PRUNED_AT]: now });
 }

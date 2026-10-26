@@ -14,7 +14,9 @@ import {
 
 const TLS = new URL('./fixtures/tls/', import.meta.url);
 const pemChain = (file) =>
-  [...readFileSync(new URL(file, TLS), 'utf8').matchAll(/-----BEGIN CERTIFICATE-----([\s\S]+?)-----END/g)].map((m) => m[1].replace(/\s+/g, ''));
+  [...readFileSync(new URL(file, TLS), 'utf8').matchAll(/-----BEGIN CERTIFICATE-----([\s\S]+?)-----END/g)].map((m) =>
+    m[1].replace(/\s+/g, ''),
+  );
 const site = { host: 'www.example.com', port: 443 };
 const local = (chain, ct) => ({ chain, security: { certificateTransparencyCompliance: ct } });
 
@@ -87,8 +89,14 @@ test('the direction of a change decides whether it is learned', () => {
   const priv = learn(null, obs('corp', { pub: false }), site);
   assert.deepEqual([assess(pub, obs('beta')).kind, assess(pub, obs('beta')).autoLearn], ['publicToPublic', true]);
   assert.deepEqual([assess(priv, obs('beta')).kind, assess(priv, obs('beta')).autoLearn], ['privateToPublic', true]);
-  assert.deepEqual([assess(pub, obs('evil', { pub: false })).kind, assess(pub, obs('evil', { pub: false })).autoLearn], ['publicToPrivate', false]);
-  assert.deepEqual([assess(priv, obs('evil', { pub: false })).kind, assess(priv, obs('evil', { pub: false })).autoLearn], ['privateToPrivate', false]);
+  assert.deepEqual(
+    [assess(pub, obs('evil', { pub: false })).kind, assess(pub, obs('evil', { pub: false })).autoLearn],
+    ['publicToPrivate', false],
+  );
+  assert.deepEqual(
+    [assess(priv, obs('evil', { pub: false })).kind, assess(priv, obs('evil', { pub: false })).autoLearn],
+    ['privateToPrivate', false],
+  );
 });
 
 test('a borrowed CA name with an unknown key is a change unless the certificate is public', () => {
@@ -120,10 +128,14 @@ test('learn keeps public sticky and bounds what it stores', () => {
   let record = learn(null, obs('ca', { pub: true }), site);
   record = learn(record, obs('ca', { pub: false }), site);
   assert.equal(record.cas[0].public, true);
-  for (let i = 0; i < 12; i++) record = learn(record, obs('ca', { issuerKey: `k${i}` }), site);
+  for (let i = 0; i < 12; i++) {
+    record = learn(record, obs('ca', { issuerKey: `k${i}` }), site);
+  }
   assert.equal(record.cas[0].issuerKeys.length, 8);
   assert.equal(record.cas[0].issuerKeys.at(-1), 'k11');
-  for (let i = 0; i < 12; i++) record = learn(record, obs(`ca${i}`, { at: `2026-10-${String(10 + i).padStart(2, '0')}T00:00:00.000Z` }), site);
+  for (let i = 0; i < 12; i++) {
+    record = learn(record, obs(`ca${i}`, { at: `2026-10-${String(10 + i).padStart(2, '0')}T00:00:00.000Z` }), site);
+  }
   assert.equal(record.cas.length, 10);
   assert.ok(record.cas.some((ca) => ca.key === 'o:ca11'));
 });

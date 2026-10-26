@@ -2,8 +2,12 @@
   "localeCode": { "message": "ro", "description": "BCP 47 tag used to format dates and plurals in this language." },
   "extName": { "message": "SSL Checker" },
   "extNameLite": { "message": "SSL Checker Lite" },
-  "extDescription": { "message": "Vezi certificatul TLS real al site-ului curent și detectează interceptarea, comparându-l cu notari independenți." },
-  "extDescriptionLite": { "message": "Vezi certificatul TLS al site-ului curent așa cum îl primesc servere notar independente." },
+  "extDescription": {
+    "message": "Vezi certificatul TLS real al site-ului curent și detectează interceptarea, comparându-l cu notari independenți."
+  },
+  "extDescriptionLite": {
+    "message": "Vezi certificatul TLS al site-ului curent așa cum îl primesc servere notar independente."
+  },
   "actionTitle": { "message": "Verifică certificatul acestui site" },
 
   "schemeHttps": { "message": "Conexiune HTTPS" },
@@ -11,10 +15,14 @@
   "actionRecheck": { "message": "Verifică din nou" },
   "actionSettings": { "message": "Opțiuni" },
   "unsupportedTitle": { "message": "Nimic de verificat aici" },
-  "unsupportedBody": { "message": "Deschide un site web (http sau https) și apasă din nou pe iconiță ca să-i vezi certificatul." },
+  "unsupportedBody": {
+    "message": "Deschide un site web (http sau https) și apasă din nou pe iconiță ca să-i vezi certificatul."
+  },
   "loadingTitle": { "message": "Verific certificatul…" },
   "loadingReload": { "message": "Reîncarc pagina ca să citesc certificatul…" },
-  "loadingDebuggerBar": { "message": "Cât timp citesc certificatul, Chrome afișează câteva secunde o bară care spune că SSL Checker depanează browserul." },
+  "loadingDebuggerBar": {
+    "message": "Cât timp citesc certificatul, Chrome afișează câteva secunde o bară care spune că SSL Checker depanează browserul."
+  },
   "checkFailedTitle": { "message": "Verificarea nu a putut rula" },
   "checkFailedBody": { "message": "Eroare: $1" },
   "checkedAt": { "message": "Verificat $1" },
@@ -28,9 +36,15 @@
   "fingerprintLabel": { "message": "Amprentă SHA-256 $1" },
   "externalSkippedInternal": { "message": "Site intern: sursele externe nu ajung la el, așa că nu le-am întrebat." },
   "noSourcesNote": { "message": "Adaugă o sursă externă ca să compari ce primește browserul tău cu ce văd alții." },
-  "noSourcesNoteLite": { "message": "Această variantă citește certificatele doar prin surse externe. Adaugă una în Opțiuni." },
-  "askLocalText": { "message": "Citirea din browser e setată la cerere. Chrome va afișa câteva secunde bara de depanare." },
-  "probeBlockedText": { "message": "Pagina blochează cererea mică folosită pentru citirea certificatului (Content Security Policy). Reîncărcarea paginii îl citește sigur." },
+  "noSourcesNoteLite": {
+    "message": "Această variantă citește certificatele doar prin surse externe. Adaugă una în Opțiuni."
+  },
+  "askLocalText": {
+    "message": "Citirea din browser e setată la cerere. Chrome va afișa câteva secunde bara de depanare."
+  },
+  "probeBlockedText": {
+    "message": "Pagina blochează cererea mică folosită pentru citirea certificatului (Content Security Policy). Reîncărcarea paginii îl citește sigur."
+  },
 
   "actionAddSource": { "message": "Adaugă o sursă" },
   "actionReadLocal": { "message": "Citește din browser" },
@@ -51,40 +65,72 @@
   "verdictConfirmedTitleOne": { "message": "Confirmat de $1 sursă externă" },
   "verdictConfirmedTitleFew": { "message": "Confirmat de $1 surse externe" },
   "verdictConfirmedTitleOther": { "message": "Confirmat de $1 de surse externe" },
-  "verdictConfirmedBody": { "message": "Browserul tău primește același certificat pe care îl văd sursele externe. Nimeni nu îl înlocuiește pe drum." },
+  "verdictConfirmedBody": {
+    "message": "Browserul tău primește același certificat pe care îl văd sursele externe. Nimeni nu îl înlocuiește pe drum."
+  },
   "verdictSameCaTitle": { "message": "Același emitent, alt certificat" },
-  "verdictSameCaBody": { "message": "Sursele externe primesc alt certificat de la aceeași autoritate ($1). E normal la CDN-uri și când certificatele sunt rotite." },
+  "verdictSameCaBody": {
+    "message": "Sursele externe primesc alt certificat de la aceeași autoritate ($1). E normal la CDN-uri și când certificatele sunt rotite."
+  },
   "verdictPublicTitle": { "message": "Certificat înregistrat public" },
-  "verdictPublicBody": { "message": "Chrome a confirmat că certificatul apare în jurnalele publice Certificate Transparency, deci nu l-a fabricat un proxy sau un antivirus local. Adaugă surse externe pentru o verificare încrucișată." },
-  "verdictPublicBodyNoAnswer": { "message": "Chrome a confirmat că certificatul apare în jurnalele publice Certificate Transparency, deci nu l-a fabricat un proxy sau un antivirus local. Sursele externe nu au răspuns." },
+  "verdictPublicBody": {
+    "message": "Chrome a confirmat că certificatul apare în jurnalele publice Certificate Transparency, deci nu l-a fabricat un proxy sau un antivirus local. Adaugă surse externe pentru o verificare încrucișată."
+  },
+  "verdictPublicBodyNoAnswer": {
+    "message": "Chrome a confirmat că certificatul apare în jurnalele publice Certificate Transparency, deci nu l-a fabricat un proxy sau un antivirus local. Sursele externe nu au răspuns."
+  },
   "verdictPrivateCaTitle": { "message": "Neconfirmat ca certificat public" },
-  "verdictPrivateCaBody": { "message": "Chrome nu a confirmat că acest certificat, emis de $1, apare în jurnalele publice Certificate Transparency. Se întâmplă când vine de la o autoritate instalată local (rețea de firmă, antivirus, server intern) sau când lista de jurnale CT a browserului e veche. Adaugă surse externe ca să afli dacă conexiunea e interceptată." },
+  "verdictPrivateCaBody": {
+    "message": "Chrome nu a confirmat că acest certificat, emis de $1, apare în jurnalele publice Certificate Transparency. Se întâmplă când vine de la o autoritate instalată local (rețea de firmă, antivirus, server intern) sau când lista de jurnale CT a browserului e veche. Adaugă surse externe ca să afli dacă conexiunea e interceptată."
+  },
   "verdictInterceptedTitle": { "message": "Conexiune probabil interceptată" },
   "verdictInterceptedByTitle": { "message": "Interceptat de $1" },
-  "verdictInterceptedBody": { "message": "Browserul tău primește un certificat emis de $1, dar sursele externe văd unul emis de $2, iar Chrome nu a confirmat că al tău e înregistrat public. Cel mai probabil ceva între tine și site (proxy de firmă, antivirus sau altceva) decriptează și re-semnează traficul." },
+  "verdictInterceptedBody": {
+    "message": "Browserul tău primește un certificat emis de $1, dar sursele externe văd unul emis de $2, iar Chrome nu a confirmat că al tău e înregistrat public. Cel mai probabil ceva între tine și site (proxy de firmă, antivirus sau altceva) decriptează și re-semnează traficul."
+  },
   "verdictSplitTitle": { "message": "Sursele nu sunt de acord" },
-  "verdictSplitBody": { "message": "Același certificat ca al tău: $1. Altul, emis de $2: $3. Fie conexiunea ta e interceptată și sursele care se potrivesc sunt în aceeași rețea cu tine, fie rețeaua celorlalte surse e interceptată." },
-  "verdictInterceptorBody": { "message": "Certificatul e emis de $1 și nu apare în jurnalele publice Certificate Transparency, exact cum lucrează produsele care inspectează HTTPS." },
+  "verdictSplitBody": {
+    "message": "Același certificat ca al tău: $1. Altul, emis de $2: $3. Fie conexiunea ta e interceptată și sursele care se potrivesc sunt în aceeași rețea cu tine, fie rețeaua celorlalte surse e interceptată."
+  },
+  "verdictInterceptorBody": {
+    "message": "Certificatul e emis de $1 și nu apare în jurnalele publice Certificate Transparency, exact cum lucrează produsele care inspectează HTTPS."
+  },
   "interceptorIdentified": { "message": "$1 este $2." },
   "verdictConflictTitle": { "message": "Sursele văd certificate diferite" },
-  "verdictConflictBody": { "message": "Browserul tău și sursele externe văd certificate publice diferite (al tău emis de $1, al lor de $2). Site-urile din spatele mai multor CDN-uri fac asta, dar merită verificat." },
+  "verdictConflictBody": {
+    "message": "Browserul tău și sursele externe văd certificate publice diferite (al tău emis de $1, al lor de $2). Site-urile din spatele mai multor CDN-uri fac asta, dar merită verificat."
+  },
   "verdictExternalTitleOne": { "message": "Văzut de $1 sursă externă" },
   "verdictExternalTitleFew": { "message": "Văzut de $1 surse externe" },
   "verdictExternalTitleOther": { "message": "Văzut de $1 de surse externe" },
-  "verdictExternalBody": { "message": "Citirea din browser e oprită, deci o interceptare în rețeaua ta nu poate fi detectată. Iată ce văd sursele." },
+  "verdictExternalBody": {
+    "message": "Citirea din browser e oprită, deci o interceptare în rețeaua ta nu poate fi detectată. Iată ce văd sursele."
+  },
   "verdictExternalBodyAsk": { "message": "Citește certificatul din browser ca să-l compari cu ce văd sursele." },
-  "verdictExternalBodyLocalFailed": { "message": "Certificatul nu a putut fi citit din browser, deci o interceptare în rețeaua ta nu poate fi exclusă. Iată ce văd sursele." },
-  "verdictExternalBodyLite": { "message": "Această variantă nu poate citi certificatul din browser, deci o interceptare în rețeaua ta nu poate fi detectată. Iată ce văd sursele." },
+  "verdictExternalBodyLocalFailed": {
+    "message": "Certificatul nu a putut fi citit din browser, deci o interceptare în rețeaua ta nu poate fi exclusă. Iată ce văd sursele."
+  },
+  "verdictExternalBodyLite": {
+    "message": "Această variantă nu poate citi certificatul din browser, deci o interceptare în rețeaua ta nu poate fi detectată. Iată ce văd sursele."
+  },
   "verdictExternalDisagreeTitle": { "message": "Sursele externe nu se potrivesc" },
   "verdictExternalDisagreeBody": { "message": "Sursele externe văd certificate diferite între ele." },
   "verdictHttpTitle": { "message": "Pagină necriptată" },
-  "verdictHttpBody": { "message": "Pagina s-a încărcat prin HTTP simplu, deci oricine din rețea o poate citi sau modifica. Niciun certificat nu o protejează." },
-  "verdictHttpBodyWithCert": { "message": "Pagina s-a încărcat prin HTTP simplu, deci oricine din rețea o poate citi sau modifica. Mai jos e certificatul pe care serverul îl oferă prin HTTPS (portul 443)." },
+  "verdictHttpBody": {
+    "message": "Pagina s-a încărcat prin HTTP simplu, deci oricine din rețea o poate citi sau modifica. Niciun certificat nu o protejează."
+  },
+  "verdictHttpBodyWithCert": {
+    "message": "Pagina s-a încărcat prin HTTP simplu, deci oricine din rețea o poate citi sau modifica. Mai jos e certificatul pe care serverul îl oferă prin HTTPS (portul 443)."
+  },
   "verdictNoSourcesTitle": { "message": "Niciun certificat de afișat" },
   "verdictNoSourcesBody": { "message": "Pornește citirea din browser sau adaugă o sursă externă în Opțiuni." },
   "verdictNoSourcesLite": { "message": "Adaugă o sursă externă în Opțiuni ca să vezi certificatul acestui site." },
-  "verdictNoSourcesLocalFailed": { "message": "Certificatul nu a putut fi citit din browser și nicio sursă externă nu a răspuns." },
-  "verdictInternalBody": { "message": "Sursele externe nu ajung la site-urile interne, iar certificatul nu a fost citit din browser." },
+  "verdictNoSourcesLocalFailed": {
+    "message": "Certificatul nu a putut fi citit din browser și nicio sursă externă nu a răspuns."
+  },
+  "verdictInternalBody": {
+    "message": "Sursele externe nu ajung la site-urile interne, iar certificatul nu a fost citit din browser."
+  },
   "verdictAllSourcesFailed": { "message": "Niciuna dintre sursele externe nu a răspuns. Verifică-le în Opțiuni." },
   "verdictAskTitle": { "message": "Gata de citit certificatul" },
   "verdictAskBody": { "message": "Citirea din browser e setată la cerere." },
@@ -105,7 +151,9 @@
   "warnObsoleteProtocol": { "message": "Protocol învechit: $1." },
   "warnNotaryUntrusted": { "message": "$1 nu are încredere în certificatul pe care îl vede: $2." },
   "warnNotPubliclyLogged": { "message": "Chrome nu a confirmat că acest certificat e înregistrat public." },
-  "warnSomeSourcesDiffer": { "message": "Alt certificat văzut de $1 (emis de $2). Al tău e înregistrat public, deci diferența vine probabil din partea lor." },
+  "warnSomeSourcesDiffer": {
+    "message": "Alt certificat văzut de $1 (emis de $2). Al tău e înregistrat public, deci diferența vine probabil din partea lor."
+  },
 
   "sectionCertificate": { "message": "Certificat" },
   "sectionCertificateExternal": { "message": "Certificat văzut de $1" },
@@ -165,7 +213,9 @@
   "detailExtensions": { "message": "Extensii" },
   "critical": { "message": "critică" },
 
-  "localErr_restrictedPage": { "message": "Chrome nu permite citirea acestei pagini (pagină internă, pagină de eroare sau pagina altei extensii)." },
+  "localErr_restrictedPage": {
+    "message": "Chrome nu permite citirea acestei pagini (pagină internă, pagină de eroare sau pagina altei extensii)."
+  },
   "localErr_blockedByPolicy": { "message": "Politica organizației tale blochează citirea certificatelor din browser." },
   "localErr_probeBlocked": { "message": "Pagina a blocat cererea folosită pentru citirea certificatului." },
   "localErr_reloadFailed": { "message": "Pagina nu s-a încărcat la timp." },
@@ -196,32 +246,52 @@
   "notaryErr_other": { "message": "Eroare $1 $2" },
 
   "sectionHistory": { "message": "Istoric" },
-  "historyFirst": { "message": "Prima verificare a acestui site. De acum SSL Checker ține minte că certificatul lui vine de la $1." },
-  "historyKnown": { "message": "Aceeași autoritate de certificare ca la verificările anterioare: $1, $2 începând cu $3." },
+  "historyFirst": {
+    "message": "Prima verificare a acestui site. De acum SSL Checker ține minte că certificatul lui vine de la $1."
+  },
+  "historyKnown": {
+    "message": "Aceeași autoritate de certificare ca la verificările anterioare: $1, $2 începând cu $3."
+  },
   "historyLearned": { "message": "De acum SSL Checker ține minte și $1 pentru acest site." },
   "historyChangedBefore": { "message": "Până acum: $1, $2, ultima la $3." },
   "historyChangedNow": { "message": "Acum: $1." },
-  "historySameName": { "message": "Autoritatea are același nume ca înainte, dar semnează cu o cheie nemaivăzută la acest site." },
+  "historySameName": {
+    "message": "Autoritatea are același nume ca înainte, dar semnează cu o cheie nemaivăzută la acest site."
+  },
   "historyTrusted": { "message": "$1 e acum de încredere pentru acest site." },
   "historyForgotten": { "message": "Site-ul a fost uitat. Următoarea verificare îi începe din nou istoricul." },
-  "historyIncognito": { "message": "Memoria site-urilor e oprită în ferestrele incognito: nu se înregistrează și nu se compară nimic." },
+  "historyIncognito": {
+    "message": "Memoria site-urilor e oprită în ferestrele incognito: nu se înregistrează și nu se compară nimic."
+  },
   "checksOne": { "message": "$1 verificare" },
   "checksFew": { "message": "$1 verificări" },
   "checksOther": { "message": "$1 de verificări" },
   "actionTrustCa": { "message": "Acceptă-o pentru acest site" },
   "actionForgetSite": { "message": "Uită acest site" },
   "verdictCaChangedTitle": { "message": "Autoritatea de certificare s-a schimbat" },
-  "verdictCaChangedBody": { "message": "La verificările anterioare acest site a avut mereu un certificat public de la $1. Acum browserul tău primește unul de la $2, care nu e înregistrat public. Cel mai probabil ceva între tine și site interceptează conexiunea." },
-  "verdictCaChangedSameNameBody": { "message": "Certificatul pretinde că vine de la $1, ca înainte, dar e semnat cu o cheie nemaivăzută la acest site și nu e înregistrat public. Cel mai probabil ceva între tine și site interceptează conexiunea." },
+  "verdictCaChangedBody": {
+    "message": "La verificările anterioare acest site a avut mereu un certificat public de la $1. Acum browserul tău primește unul de la $2, care nu e înregistrat public. Cel mai probabil ceva între tine și site interceptează conexiunea."
+  },
+  "verdictCaChangedSameNameBody": {
+    "message": "Certificatul pretinde că vine de la $1, ca înainte, dar e semnat cu o cheie nemaivăzută la acest site și nu e înregistrat public. Cel mai probabil ceva între tine și site interceptează conexiunea."
+  },
   "warnCaChanged": { "message": "Autoritatea de certificare a acestui site s-a schimbat: înainte $1, acum $2." },
-  "warnCaChangedSameName": { "message": "Certificatul pretinde că vine de la $1, ca înainte, dar e semnat cu o cheie nemaivăzută la acest site." },
+  "warnCaChangedSameName": {
+    "message": "Certificatul pretinde că vine de la $1, ca înainte, dar e semnat cu o cheie nemaivăzută la acest site."
+  },
   "warnCaChangedPublic": { "message": "Site-ul a trecut de la $1 la $2. Noul certificat e înregistrat public." },
-  "warnCaChangedNowPublic": { "message": "Verificările anterioare ale acestui site treceau prin $1, o autoritate instalată pe acest calculator sau în rețea (de exemplu un proxy de firmă). Acum certificatul e public." },
+  "warnCaChangedNowPublic": {
+    "message": "Verificările anterioare ale acestui site treceau prin $1, o autoritate instalată pe acest calculator sau în rețea (de exemplu un proxy de firmă). Acum certificatul e public."
+  },
 
   "optMemoryTitle": { "message": "Memoria site-urilor" },
-  "optMemoryIntro": { "message": "Când certificatul e citit din browser, SSL Checker ține minte ce autoritate l-a emis pentru fiecare site verificat și te avertizează când un site cunoscut apare brusc cu alta. Totul rămâne pe acest dispozitiv, iar în ferestrele incognito nu se înregistrează nimic." },
+  "optMemoryIntro": {
+    "message": "Când certificatul e citit din browser, SSL Checker ține minte ce autoritate l-a emis pentru fiecare site verificat și te avertizează când un site cunoscut apare brusc cu alta. Totul rămâne pe acest dispozitiv, iar în ferestrele incognito nu se înregistrează nimic."
+  },
   "fieldMemoryEnabled": { "message": "Ține minte autoritatea de certificare a site-urilor pe care le verific" },
-  "optMemoryHelp": { "message": "Dacă o oprești, nu se mai înregistrează nimic. Ca să ștergi ce e deja salvat, folosește Uită toate site-urile." },
+  "optMemoryHelp": {
+    "message": "Dacă o oprești, nu se mai înregistrează nimic. Ca să ștergi ce e deja salvat, folosește Uită toate site-urile."
+  },
   "memoryCountOne": { "message": "$1 site memorat" },
   "memoryCountFew": { "message": "$1 site-uri memorate" },
   "memoryCountOther": { "message": "$1 de site-uri memorate" },
@@ -231,8 +301,12 @@
   "optionsTitle": { "message": "Opțiuni SSL Checker" },
   "optionsIntro": { "message": "Alege cum se citește certificatul și cu ce surse externe e comparat." },
   "optLocalTitle": { "message": "Citirea din browser" },
-  "optLocalIntro": { "message": "Așa vezi exact certificatul primit de browserul tău, deci poate fi detectată o interceptare în rețeaua ta. Chrome nu are un API dedicat, așa că extensia își atașează debugger-ul la tab cam o secundă; între timp Chrome afișează o bară care spune că SSL Checker depanează browserul." },
-  "optLocalUnavailable": { "message": "Această variantă de SSL Checker nu include permisiunea debugger, deci certificatele se citesc doar prin surse externe." },
+  "optLocalIntro": {
+    "message": "Așa vezi exact certificatul primit de browserul tău, deci poate fi detectată o interceptare în rețeaua ta. Chrome nu are un API dedicat, așa că extensia își atașează debugger-ul la tab cam o secundă; între timp Chrome afișează o bară care spune că SSL Checker depanează browserul."
+  },
+  "optLocalUnavailable": {
+    "message": "Această variantă de SSL Checker nu include permisiunea debugger, deci certificatele se citesc doar prin surse externe."
+  },
   "modeAlways": { "message": "De fiecare dată" },
   "modeAlwaysHelp": { "message": "Citește certificatul de fiecare dată când deschizi SSL Checker." },
   "modeAsk": { "message": "La cerere" },
@@ -240,13 +314,17 @@
   "modeNever": { "message": "Niciodată" },
   "modeNeverHelp": { "message": "Folosește doar surse externe. Bara de depanare nu apare niciodată." },
   "optSourcesTitle": { "message": "Surse externe" },
-  "optSourcesIntro": { "message": "Fiecare sursă e un server notar care se conectează la site din alt punct al internetului și raportează certificatul primit. I se trimit doar numele site-ului și portul." },
+  "optSourcesIntro": {
+    "message": "Fiecare sursă e un server notar care se conectează la site din alt punct al internetului și raportează certificatul primit. I se trimit doar numele site-ului și portul."
+  },
   "optSourcesEmpty": { "message": "Nicio sursă încă." },
   "optAddSourceTitle": { "message": "Adaugă o sursă" },
   "fieldName": { "message": "Nume" },
   "fieldNamePlaceholder": { "message": "Serverul din Frankfurt" },
   "fieldUrl": { "message": "Adresă" },
-  "fieldUrlHelp": { "message": "Adresa HTTPS a notarului. Pune {host} și {port} în ea dacă serverul le așteaptă în cale; altfel sunt adăugate ca ?host=…&port=…" },
+  "fieldUrlHelp": {
+    "message": "Adresa HTTPS a notarului. Pune {host} și {port} în ea dacă serverul le așteaptă în cale; altfel sunt adăugate ca ?host=…&port=…"
+  },
   "fieldToken": { "message": "Token de acces (opțional)" },
   "fieldTokenHelp": { "message": "Trimis ca Authorization: Bearer. Păstrat doar pe acest dispozitiv." },
   "endpointEnabled": { "message": "Folosește $1" },
@@ -255,17 +333,25 @@
   "testOk": { "message": "Funcționează: vede certificatul example.com emis de $1, din $2, în $3 ms." },
   "testFailed": { "message": "Eșuat: $1" },
   "endpointErrorInvalidUrl": { "message": "Introdu o adresă validă." },
-  "endpointErrorCredentialsInUrl": { "message": "Nu pune nume de utilizator sau parolă în adresă; folosește câmpul pentru token." },
+  "endpointErrorCredentialsInUrl": {
+    "message": "Nu pune nume de utilizator sau parolă în adresă; folosește câmpul pentru token."
+  },
   "endpointErrorFragment": { "message": "Scoate partea cu # din adresă." },
   "endpointErrorPlaceholderInHost": { "message": "{host} poate apărea doar în calea sau în query-ul adresei." },
-  "endpointErrorHttps": { "message": "Adresa trebuie să folosească HTTPS (HTTP simplu e permis doar pentru localhost)." },
+  "endpointErrorHttps": {
+    "message": "Adresa trebuie să folosească HTTPS (HTTP simplu e permis doar pentru localhost)."
+  },
   "endpointErrorDuplicate": { "message": "Sursa asta e deja în listă." },
   "endpointErrorToken": { "message": "Tokenul poate conține doar caractere ASCII vizibile." },
   "optAdvancedTitle": { "message": "Avansat" },
   "fieldTimeout": { "message": "Cât aștept fiecare sursă (secunde)" },
   "optProtocolTitle": { "message": "Protocolul notarilor" },
-  "optProtocolIntro": { "message": "Orice server care răspunde la această cerere poate fi o sursă. Implementarea de referință e un singur fișier Node.js pe care îl poți rula pe serverul tău." },
-  "optProtocolErrors": { "message": "La erori, răspunde cu un status 4xx sau 5xx și {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}}. Extensia nu are permisiuni pe site-uri, deci serverul trebuie să trimită headere CORS." },
+  "optProtocolIntro": {
+    "message": "Orice server care răspunde la această cerere poate fi o sursă. Implementarea de referință e un singur fișier Node.js pe care îl poți rula pe serverul tău."
+  },
+  "optProtocolErrors": {
+    "message": "La erori, răspunde cu un status 4xx sau 5xx și {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}}. Extensia nu are permisiuni pe site-uri, deci serverul trebuie să trimită headere CORS."
+  },
   "saved": { "message": "Salvat" },
   "versionLabel": { "message": "Versiunea $1" }
 }

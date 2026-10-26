@@ -42,7 +42,11 @@ async function readLocal(tabId, origin, reload) {
       httpProtocol: raw.httpProtocol,
     };
   } catch (e) {
-    return { state: 'error', reason: (e && e.code) || 'protocolError', detail: (e && e.detail) || (e && e.message) || null };
+    return {
+      state: 'error',
+      reason: (e && e.code) || 'protocolError',
+      detail: (e && e.detail) || (e && e.message) || null,
+    };
   }
 }
 
@@ -63,9 +67,15 @@ async function isIncognitoTab(tabId) {
  * incognito windows, so recording there would outlive the private session.
  */
 async function updateSiteMemory(target, local, settings, incognito) {
-  if (local.state !== 'ok') return null;
-  if (incognito) return { status: 'incognito' };
-  if (!settings.memoryEnabled) return { status: 'disabled' };
+  if (local.state !== 'ok') {
+    return null;
+  }
+  if (incognito) {
+    return { status: 'incognito' };
+  }
+  if (!settings.memoryEnabled) {
+    return { status: 'disabled' };
+  }
   try {
     const observation = observationFrom(local, new Date().toISOString());
     const record = await loadSiteRecord(target.host, target.port);
@@ -84,8 +94,12 @@ async function updateSiteMemory(target, local, settings, incognito) {
 async function cachedResult(tabId, origin, maxAgeMs) {
   const key = resultKey(tabId);
   const stored = (await chrome.storage.session.get(key))[key];
-  if (!stored || stored.v !== RESULT_VERSION || stored.origin !== origin) return null;
-  if (maxAgeMs !== undefined && Date.now() - Date.parse(stored.checkedAt) > maxAgeMs) return null;
+  if (!stored || stored.v !== RESULT_VERSION || stored.origin !== origin) {
+    return null;
+  }
+  if (maxAgeMs !== undefined && Date.now() - Date.parse(stored.checkedAt) > maxAgeMs) {
+    return null;
+  }
   return stored;
 }
 
@@ -100,7 +114,9 @@ async function cachedResult(tabId, origin, maxAgeMs) {
  */
 async function runCheck({ tabId, url, local, reload = false, reuseExternal = false }) {
   const target = parseTarget(url);
-  if (!target) return { v: RESULT_VERSION, tabId, unsupported: true };
+  if (!target) {
+    return { v: RESULT_VERSION, tabId, unsupported: true };
+  }
 
   const settings = await getSettings();
   const localAvailable = localReadingAvailable();
@@ -159,7 +175,12 @@ async function updateStoredResult(result, target, memory) {
   const updated = {
     ...result,
     memory,
-    verdict: computeVerdict({ target, local: result.local.state === 'ok' ? result.local : null, notaries: result.notaries, memory }),
+    verdict: computeVerdict({
+      target,
+      local: result.local.state === 'ok' ? result.local : null,
+      notaries: result.notaries,
+      memory,
+    }),
   };
   try {
     await chrome.storage.session.set({ [resultKey(result.tabId)]: updated });
@@ -171,22 +192,33 @@ async function updateStoredResult(result, target, memory) {
 }
 
 async function resultForAction(tabId, url) {
-  if (inFlight.has(tabId)) await inFlight.get(tabId).catch(() => {});
+  if (inFlight.has(tabId)) {
+    await inFlight.get(tabId).catch(() => {});
+  }
   const target = parseTarget(url);
   const result = target ? await cachedResult(tabId, target.origin) : null;
-  if (!result) throw new Error('Check the site again first.');
-  if (result.incognito || (await isIncognitoTab(tabId))) throw new Error('Site memory is off in incognito windows.');
+  if (!result) {
+    throw new Error('Check the site again first.');
+  }
+  if (result.incognito || (await isIncognitoTab(tabId))) {
+    throw new Error('Site memory is off in incognito windows.');
+  }
   return { target, result };
 }
 
 /** "Trust it for this site": remembers the CA the browser saw in the last check. */
 async function trustCurrentCa(tabId, url) {
   const { target, result } = await resultForAction(tabId, url);
-  if (!result.local || result.local.state !== 'ok') throw new Error('Nothing was read from the browser for this site.');
+  if (!result.local || result.local.state !== 'ok') {
+    throw new Error('Nothing was read from the browser for this site.');
+  }
   const observation = observationFrom(result.local, new Date().toISOString());
   const stored = learn(await loadSiteRecord(target.host, target.port), observation, target);
   await saveSiteRecord(stored);
-  return updateStoredResult(result, target, { ...describe(assess(stored, observation), stored, observation), trusted: true });
+  return updateStoredResult(result, target, {
+    ...describe(assess(stored, observation), stored, observation),
+    trusted: true,
+  });
 }
 
 async function forgetSiteOfTab(tabId, url) {
@@ -198,7 +230,9 @@ async function forgetSiteOfTab(tabId, url) {
 function checkTab(request) {
   // One check per tab at a time: a second popup or click joins the running one.
   const running = inFlight.get(request.tabId);
-  if (running) return running;
+  if (running) {
+    return running;
+  }
   const task = runCheck(request).finally(() => inFlight.delete(request.tabId));
   inFlight.set(request.tabId, task);
   return task;
@@ -210,7 +244,8 @@ async function testEndpoint(endpoint) {
 }
 
 const handlers = {
-  check: (m) => checkTab({ tabId: m.tabId, url: m.url, local: m.local, reload: m.reload, reuseExternal: m.reuseExternal }),
+  check: (m) =>
+    checkTab({ tabId: m.tabId, url: m.url, local: m.local, reload: m.reload, reuseExternal: m.reuseExternal }),
   cached: (m) => {
     const target = parseTarget(m.url);
     return target ? cachedResult(m.tabId, target.origin) : Promise.resolve(null);
@@ -222,7 +257,9 @@ const handlers = {
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (sender.id !== chrome.runtime.id || !message || !Object.hasOwn(handlers, message.type)) return false;
+  if (sender.id !== chrome.runtime.id || !message || !Object.hasOwn(handlers, message.type)) {
+    return false;
+  }
   handlers[message.type](message).then(
     (value) => sendResponse({ ok: true, value }),
     (error) => sendResponse({ ok: false, error: String((error && error.message) || error) }),
@@ -237,5 +274,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   // A new page load makes the badge stale; the stored result stays and is
   // re-validated by origin when the popup opens.
-  if (changeInfo.status === 'loading' && !inFlight.has(tabId)) setBadge(tabId, null);
+  if (changeInfo.status === 'loading' && !inFlight.has(tabId)) {
+    setBadge(tabId, null);
+  }
 });

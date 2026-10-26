@@ -1,5 +1,11 @@
 import { localizeDocument, plural, t } from '../lib/i18n.js';
-import { getSettings, localReadingAvailable, newEndpointId, saveSettings, validateEndpointUrl } from '../lib/settings.js';
+import {
+  getSettings,
+  localReadingAvailable,
+  newEndpointId,
+  saveSettings,
+  validateEndpointUrl,
+} from '../lib/settings.js';
 import { countSites, forgetAllSites } from '../lib/site-memory-store.js';
 import { issuerLabel } from '../lib/verdict.js';
 import { clear, h } from '../ui/dom.js';
@@ -63,7 +69,9 @@ async function runTest(endpoint, output, button) {
   output.textContent = t('testRunning');
   try {
     const reply = await chrome.runtime.sendMessage({ type: 'testEndpoint', endpoint });
-    if (!reply || !reply.ok) throw new Error(reply ? reply.error : '');
+    if (!reply || !reply.ok) {
+      throw new Error(reply ? reply.error : '');
+    }
     const result = reply.value;
     if (result.state === 'ok') {
       output.dataset.tone = 'ok';
@@ -85,7 +93,9 @@ function endpointItem(endpoint) {
   const toggle = h('input', { type: 'checkbox', 'aria-label': t('endpointEnabled', [endpoint.name]) });
   toggle.checked = endpoint.enabled !== false;
   toggle.addEventListener('change', () =>
-    persist({ endpoints: settings.endpoints.map((e) => (e.id === endpoint.id ? { ...e, enabled: toggle.checked } : e)) }),
+    persist({
+      endpoints: settings.endpoints.map((e) => (e.id === endpoint.id ? { ...e, enabled: toggle.checked } : e)),
+    }),
   );
   const testButton = h('button', { class: 'button', type: 'button' }, t('actionTest'));
   testButton.addEventListener('click', () => runTest(endpoint, output, testButton));
@@ -113,7 +123,9 @@ function endpointItem(endpoint) {
 function renderEndpoints() {
   const list = clear($('endpoint-list'));
   $('endpoint-empty').hidden = settings.endpoints.length > 0;
-  for (const endpoint of settings.endpoints) list.append(endpointItem(endpoint));
+  for (const endpoint of settings.endpoints) {
+    list.append(endpointItem(endpoint));
+  }
 }
 
 async function onAddEndpoint(event) {
@@ -122,9 +134,15 @@ async function onAddEndpoint(event) {
   const url = $('ep-url').value.trim();
   const token = $('ep-token').value.trim();
   const valid = validateEndpointUrl(url);
-  if (!valid.ok) return showFormError(t(valid.error));
-  if (settings.endpoints.some((e) => e.url === valid.url)) return showFormError(t('endpointErrorDuplicate'));
-  if (token && !/^[\x21-\x7e]{1,512}$/.test(token)) return showFormError(t('endpointErrorToken'));
+  if (!valid.ok) {
+    return showFormError(t(valid.error));
+  }
+  if (settings.endpoints.some((e) => e.url === valid.url)) {
+    return showFormError(t('endpointErrorDuplicate'));
+  }
+  if (token && !/^[\x21-\x7e]{1,512}$/.test(token)) {
+    return showFormError(t('endpointErrorToken'));
+  }
   showFormError('');
   const endpoint = { id: newEndpointId(), name: name || endpointHost(valid.url), url: valid.url, token, enabled: true };
   await persist({ endpoints: [...settings.endpoints, endpoint] });

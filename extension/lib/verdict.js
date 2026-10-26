@@ -23,18 +23,28 @@ const EXPIRY_WARNING_DAYS = 14;
 const DAY = 86400000;
 
 function norm(text) {
-  return String(text || '').trim().toLowerCase();
+  return String(text || '')
+    .trim()
+    .toLowerCase();
 }
 
 /** How the certificate a notary saw relates to the one the browser saw. */
 export function compareLeaves(a, b) {
-  if (a.fingerprints.sha256 === b.fingerprints.sha256) return RELATION.SAME_CERTIFICATE;
-  if (a.fingerprints.spkiSha256 === b.fingerprints.spkiSha256) return RELATION.SAME_KEY;
+  if (a.fingerprints.sha256 === b.fingerprints.sha256) {
+    return RELATION.SAME_CERTIFICATE;
+  }
+  if (a.fingerprints.spkiSha256 === b.fingerprints.spkiSha256) {
+    return RELATION.SAME_KEY;
+  }
   const akiA = a.extensions.authorityKeyId;
   const akiB = b.extensions.authorityKeyId;
-  if (a.issuer.raw === b.issuer.raw && (!akiA || !akiB || akiA === akiB)) return RELATION.SAME_ISSUER;
+  if (a.issuer.raw === b.issuer.raw && (!akiA || !akiB || akiA === akiB)) {
+    return RELATION.SAME_ISSUER;
+  }
   const orgA = norm(a.issuer.organization);
-  if (orgA && orgA === norm(b.issuer.organization)) return RELATION.SAME_CA;
+  if (orgA && orgA === norm(b.issuer.organization)) {
+    return RELATION.SAME_CA;
+  }
   return RELATION.DIFFERENT;
 }
 
@@ -42,7 +52,9 @@ const isConsistent = (r) => r === RELATION.SAME_CERTIFICATE || r === RELATION.SA
 const isSameCa = (r) => r === RELATION.SAME_ISSUER || r === RELATION.SAME_CA;
 
 export function issuerLabel(cert) {
-  if (!cert) return '';
+  if (!cert) {
+    return '';
+  }
   const { commonName, organization } = cert.issuer;
   if (organization && commonName && !commonName.includes(organization)) {
     return commonName.includes('(') ? `${commonName}, ${organization}` : `${commonName} (${organization})`;
@@ -52,18 +64,26 @@ export function issuerLabel(cert) {
 
 function certificateWarnings(chain, host, now, prefix) {
   const out = [];
-  if (!chain || !chain.length) return out;
+  if (!chain || !chain.length) {
+    return out;
+  }
   const leaf = chain[0];
   const notAfter = Date.parse(leaf.notAfter);
   const notBefore = Date.parse(leaf.notBefore);
-  if (now > notAfter) out.push({ code: 'expired', source: prefix });
-  else if (now < notBefore) out.push({ code: 'notYetValid', source: prefix });
-  else if (notAfter - now < EXPIRY_WARNING_DAYS * DAY) {
+  if (now > notAfter) {
+    out.push({ code: 'expired', source: prefix });
+  } else if (now < notBefore) {
+    out.push({ code: 'notYetValid', source: prefix });
+  } else if (notAfter - now < EXPIRY_WARNING_DAYS * DAY) {
     out.push({ code: 'expiresSoon', source: prefix, days: Math.max(0, Math.floor((notAfter - now) / DAY)) });
   }
-  if (host && !certificateCoversHost(leaf, host)) out.push({ code: 'hostMismatch', source: prefix });
+  if (host && !certificateCoversHost(leaf, host)) {
+    out.push({ code: 'hostMismatch', source: prefix });
+  }
   const nonRoot = chain.filter((c, i) => i === 0 || !c.selfIssued);
-  if (nonRoot.some((c) => c.signatureAlgorithm.weak)) out.push({ code: 'weakSignature', source: prefix });
+  if (nonRoot.some((c) => c.signatureAlgorithm.weak)) {
+    out.push({ code: 'weakSignature', source: prefix });
+  }
   if (leaf.publicKey.algorithm === 'RSA' && leaf.publicKey.bits && leaf.publicKey.bits < 2048) {
     out.push({ code: 'weakKey', source: prefix, bits: leaf.publicKey.bits });
   }
@@ -76,7 +96,9 @@ function certificateWarnings(chain, host, now, prefix) {
  * logged it is an alarm, towards a public one it is just worth knowing.
  */
 function applyMemory(result, memory) {
-  if (!memory || memory.status !== 'changed') return;
+  if (!memory || memory.status !== 'changed') {
+    return;
+  }
   const change = {
     source: 'memory',
     kind: memory.kind,
@@ -130,7 +152,13 @@ export function computeVerdict({ target, local, notaries = [], memory = null, no
     comparisons: [],
     agreeing: [],
     differing: [],
-    counts: { asked: notaries.filter((n) => n.state !== 'skipped').length, answered: answered.length, consistent: 0, sameCa: 0, different: 0 },
+    counts: {
+      asked: notaries.filter((n) => n.state !== 'skipped').length,
+      answered: answered.length,
+      consistent: 0,
+      sameCa: 0,
+      different: 0,
+    },
     ct: null,
     warnings,
   };
@@ -147,13 +175,19 @@ export function computeVerdict({ target, local, notaries = [], memory = null, no
     for (const n of answered) {
       const relation = compareLeaves(leaf, n.chain[0]);
       result.comparisons.push({ id: n.id, relation });
-      if (isConsistent(relation)) result.counts.consistent++;
-      else if (isSameCa(relation)) result.counts.sameCa++;
-      else result.counts.different++;
+      if (isConsistent(relation)) {
+        result.counts.consistent++;
+      } else if (isSameCa(relation)) {
+        result.counts.sameCa++;
+      } else {
+        result.counts.different++;
+      }
       (relation === RELATION.DIFFERENT ? result.differing : result.agreeing).push(n.id);
     }
     const firstDifferent = answered.find((n, i) => result.comparisons[i].relation === RELATION.DIFFERENT);
-    if (firstDifferent) result.externalIssuer = issuerLabel(firstDifferent.chain[0]);
+    if (firstDifferent) {
+      result.externalIssuer = issuerLabel(firstDifferent.chain[0]);
+    }
     const agreeingCount = result.counts.consistent + result.counts.sameCa;
     const confirmedCode = result.counts.consistent > 0 ? 'confirmed' : 'consistentSameCa';
 
@@ -165,7 +199,12 @@ export function computeVerdict({ target, local, notaries = [], memory = null, no
         // out are seeing something else on their own side.
         result.code = confirmedCode;
         result.level = 'ok';
-        warnings.push({ code: 'someSourcesDiffer', source: 'external', ids: result.differing.slice(), issuer: result.externalIssuer });
+        warnings.push({
+          code: 'someSourcesDiffer',
+          source: 'external',
+          ids: result.differing.slice(),
+          issuer: result.externalIssuer,
+        });
       } else {
         result.code = 'split';
         result.level = 'warn';
@@ -176,7 +215,9 @@ export function computeVerdict({ target, local, notaries = [], memory = null, no
     } else if (answered.length > 0) {
       result.code = confirmedCode;
       result.level = 'ok';
-      if (!publiclyLogged) warnings.push({ code: 'notPubliclyLogged', source: 'local' });
+      if (!publiclyLogged) {
+        warnings.push({ code: 'notPubliclyLogged', source: 'local' });
+      }
     } else if (interceptor) {
       result.code = 'interceptorDetected';
       result.level = 'danger';
@@ -189,7 +230,9 @@ export function computeVerdict({ target, local, notaries = [], memory = null, no
     }
     warnings.push(...certificateWarnings(local.chain, null, now, 'local'));
     const protocol = local.security && local.security.protocol;
-    if (protocol && /^(SSL|TLS 1(\.0|\.1)?$)/.test(protocol)) warnings.push({ code: 'obsoleteProtocol', source: 'local', protocol });
+    if (protocol && /^(SSL|TLS 1(\.0|\.1)?$)/.test(protocol)) {
+      warnings.push({ code: 'obsoleteProtocol', source: 'local', protocol });
+    }
     applyMemory(result, memory);
   } else if (answered.length > 0) {
     const reference = answered[0].chain[0];
@@ -201,7 +244,9 @@ export function computeVerdict({ target, local, notaries = [], memory = null, no
   }
 
   for (const n of answered) {
-    if (n.trusted === false) warnings.push({ code: 'notaryUntrusted', source: n.id, reason: n.trustError || null });
+    if (n.trusted === false) {
+      warnings.push({ code: 'notaryUntrusted', source: n.id, reason: n.trustError || null });
+    }
   }
 
   if (!target.secure) {

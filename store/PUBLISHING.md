@@ -7,10 +7,10 @@
 ## Steps
 
 1. **Build the packages:** `node scripts/build.mjs`, or double-click `build\package.cmd` on Windows. You get `dist/ssl-checker-<version>.zip` (full) and `dist/ssl-checker-lite-<version>.zip`, where `<version>` is the one in `extension/manifest.json`.
-2. **Test the zip locally:** unzip it, open `chrome://extensions` → *Developer mode* → *Load unpacked* and select the unzipped folder. Open an HTTPS site and click the icon.
+2. **Test the zip locally:** unzip it, open `chrome://extensions` → _Developer mode_ → _Load unpacked_ and select the unzipped folder. Open an HTTPS site and click the icon.
 3. **Dashboard → the old "SSL Checker" item → Package → Upload new package** → `ssl-checker-<version>.zip`.
    If the dashboard refuses it (removed item), create a **new item** with the same zip. It gets a new ID, and existing users have to install it again.
-4. **Store listing:** copy the texts from `store/listing.md` and add the **Romanian** localization. For each language, upload the screenshots from `store/screenshots/<language>/1-…4-*.png` and the `promo-440x280.png` tile. Category: *Developer Tools*.
+4. **Store listing:** copy the texts from `store/listing.md` and add the **Romanian** localization. For each language, upload the screenshots from `store/screenshots/<language>/1-…4-*.png` and the `promo-440x280.png` tile. Category: _Developer Tools_.
 5. **Privacy practices:** fill them in from `store/permissions.md` (single purpose, justifications for `debugger`, `activeTab` and `storage`, "no remote code", data usage).
 6. **Privacy policy:** add your contact address to `store/privacy-policy.html`, host the page (on GitHub Pages, for example) and put its URL in the dashboard.
 7. **Test instructions:** use the text from `store/permissions.md`, with the address and token of a test notary, so that the reviewer can see the external comparison too.

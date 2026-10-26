@@ -34,7 +34,10 @@ const messages = JSON.parse(readFileSync(path.join(ROOT, 'extension/_locales', L
 const msg = (key, ...subs) => subs.reduce((m, s, i) => m.replace(`$${i + 1}`, s), messages[key].message);
 
 const read = (f) => readFileSync(path.join(TLS, f));
-const spkiPin = (pem) => createHash('sha256').update(new X509Certificate(pem).publicKey.export({ type: 'spki', format: 'der' })).digest('base64');
+const spkiPin = (pem) =>
+  createHash('sha256')
+    .update(new X509Certificate(pem).publicKey.export({ type: 'spki', format: 'der' }))
+    .digest('base64');
 
 function freePort() {
   return new Promise((resolve) => {
@@ -52,7 +55,9 @@ function siteHandler(req, res) {
     return res.end();
   }
   const headers = { 'content-type': 'text/html; charset=utf-8' };
-  if (pathname === '/csp') headers['content-security-policy'] = "default-src 'none'";
+  if (pathname === '/csp') {
+    headers['content-security-policy'] = "default-src 'none'";
+  }
   res.writeHead(200, headers);
   res.end(`<!doctype html><title>Test site</title><h1>${pathname === '/csp' ? 'Strict CSP page' : 'Test site'}</h1>`);
 }
@@ -97,7 +102,9 @@ class Harness {
         args: [`--disable-extensions-except=${this.extDir}`, `--load-extension=${this.extDir}`, ...common],
       });
       [this.sw] = this.ctx.serviceWorkers();
-      if (!this.sw) this.sw = await this.ctx.waitForEvent('serviceworker');
+      if (!this.sw) {
+        this.sw = await this.ctx.waitForEvent('serviceworker');
+      }
     } else {
       // --load-extension cannot allow incognito, and the chrome://extensions toggle
       // disables a command-line extension, so load it through CDP instead.
@@ -119,7 +126,9 @@ class Harness {
   }
 
   async stop() {
-    if (this.cdpBrowser) await this.cdpBrowser.close().catch(() => {});
+    if (this.cdpBrowser) {
+      await this.cdpBrowser.close().catch(() => {});
+    }
     await this.ctx.close();
     rmSync(this.profile, { recursive: true, force: true });
   }
@@ -133,7 +142,9 @@ class Harness {
         // Without the "tabs" permission tab.url is hidden; the debugger target has it.
         const tab = await chrome.tabs.get(tabId);
         const page = (await chrome.debugger.getTargets()).find((t) => t.tabId === tabId);
-        if (tab.status === 'complete' && page && page.url.startsWith(target)) return tabId;
+        if (tab.status === 'complete' && page && page.url.startsWith(target)) {
+          return tabId;
+        }
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
       throw new Error('incognito tab did not load');
@@ -158,7 +169,9 @@ class Harness {
     return this.sw.evaluate(async (url) => {
       if (chrome.debugger) {
         const target = (await chrome.debugger.getTargets()).find((t) => t.type === 'page' && t.url === url);
-        if (target) return target.tabId;
+        if (target) {
+          return target.tabId;
+        }
       }
       const tabs = await chrome.tabs.query({});
       return tabs[tabs.length - 1].id;
@@ -166,9 +179,13 @@ class Harness {
   }
 
   async openPopup(url, { settings, shot } = {}) {
-    if (settings) await this.settings(settings);
+    if (settings) {
+      await this.settings(settings);
+    }
     const page = await this.ctx.newPage();
-    if (/^https?:/.test(url)) await page.goto(url, { waitUntil: 'load' });
+    if (/^https?:/.test(url)) {
+      await page.goto(url, { waitUntil: 'load' });
+    }
     const tabId = await this.tabIdFor(page);
     const popup = await this.ctx.newPage();
     this.watch(popup, `popup(${url})`);
@@ -191,7 +208,10 @@ class PopupView {
   }
 
   async result() {
-    return this.h.sw.evaluate(async (id) => (await chrome.storage.session.get(`result:${id}`))[`result:${id}`], this.tabId);
+    return this.h.sw.evaluate(
+      async (id) => (await chrome.storage.session.get(`result:${id}`))[`result:${id}`],
+      this.tabId,
+    );
   }
 
   async badge() {
@@ -233,7 +253,9 @@ class PopupView {
   }
 
   async snap(suffix = '') {
-    if (!this.shot) return;
+    if (!this.shot) {
+      return;
+    }
     mkdirSync(OUT, { recursive: true });
     await this.popup.evaluate(() => window.scrollTo(0, 0)); // the sticky header would land mid-page otherwise
     await this.popup.screenshot({ path: path.join(OUT, `${this.shot}${suffix}.png`), fullPage: true });
@@ -241,12 +263,16 @@ class PopupView {
 
   async close() {
     await this.popup.close();
-    if (this.page) await this.page.close();
+    if (this.page) {
+      await this.page.close();
+    }
   }
 }
 
 function assert(condition, message, details) {
-  if (!condition) throw new Error(`${message}${details === undefined ? '' : `\n${JSON.stringify(details, null, 2)}`}`);
+  if (!condition) {
+    throw new Error(`${message}${details === undefined ? '' : `\n${JSON.stringify(details, null, 2)}`}`);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -270,14 +296,26 @@ async function main() {
   const memoryPort = await listen(memorySite);
   const closedPort = await freePort();
   const TOKEN = 'e2e-secret-token';
-  const notary = await startNotary({ ALLOW_PRIVATE: '1', ALLOWED_PORTS: `${sitePort},${interceptPort}`, RATE_LIMIT: '0', CACHE_SECONDS: '0', NOTARY_TOKEN: TOKEN });
+  const notary = await startNotary({
+    ALLOW_PRIVATE: '1',
+    ALLOWED_PORTS: `${sitePort},${interceptPort}`,
+    RATE_LIMIT: '0',
+    CACHE_SECONDS: '0',
+    NOTARY_TOKEN: TOKEN,
+  });
 
   // A notary endpoint that always looks at the given local port: the extension
   // asks about www.example.com, the notary checks localhost:<port>. Pointing it
   // at the "real" server while the browser visits the "intercepting" one
   // reproduces two different network paths on one machine. The token makes
   // every request go through a CORS preflight, as with a real protected notary.
-  const endpoint = (id, name, port, token = TOKEN) => ({ id, name, url: `http://127.0.0.1:${notary.port}/v1/cert?host=localhost&port=${port}&for={host}`, token, enabled: true });
+  const endpoint = (id, name, port, token = TOKEN) => ({
+    id,
+    name,
+    url: `http://127.0.0.1:${notary.port}/v1/cert?host=localhost&port=${port}&for={host}`,
+    token,
+    enabled: true,
+  });
   const outside = endpoint('outside', 'Notary outside', sitePort);
   const inside = endpoint('inside', 'Notary inside your network', interceptPort);
   const siteUrl = `https://${HOST}:${sitePort}/`;
@@ -290,222 +328,392 @@ async function main() {
 
   const full = await new Harness(stageVariant('full', mkdtempSync(path.join(os.tmpdir(), 'sslc-full-'))), args).start();
   const scenarios = [
-    ['confirmed by a notary', async () => {
-      const v = await full.openPopup(siteUrl, { settings: { localMode: 'always', endpoints: [outside] }, shot: 'confirmed' });
-      const r = await v.result();
-      const ui = await v.ui();
-      await v.snap();
-      assert(r.verdict.code === 'confirmed' && ui.tone === 'ok', 'expected confirmed/ok', { verdict: r.verdict.code, ui });
-      assert(r.local.state === 'ok' && r.local.via === 'probe' && r.local.chain.length === 2, 'local read through the probe', r.local);
-      assert(ui.witnesses.length === 2 && ui.witnesses[1].chip === msg('relationSameCertificate'), 'identical notary row', ui.witnesses);
-      assert(ui.title === msg('verdictConfirmedTitleOne', '1'), 'title', ui.title);
-      assert((await v.badge()) === '✓', 'green badge on the icon', await v.badge());
-      for (const summary of await v.popup.$$('details > summary')) await summary.click();
-      await v.snap('-details');
-      const details = await v.popup.evaluate(() => [...document.querySelectorAll('details .facts dt')].map((dt) => dt.textContent));
-      assert(details.includes('SHA-256') && details.includes('OCSP') && details.includes('CRL'), 'technical details listed', details);
-      await v.close();
-    }],
-    ['interception detected', async () => {
-      const v = await full.openPopup(interceptedUrl, { settings: { localMode: 'always', endpoints: [outside] }, shot: 'intercepted' });
-      const r = await v.result();
-      const ui = await v.ui();
-      await v.snap();
-      assert(r.verdict.code === 'intercepted' && ui.tone === 'danger', 'expected intercepted/danger', { verdict: r.verdict, ui });
-      assert(r.verdict.localIssuer === 'Contoso Inspection CA (Contoso Ltd)', 'local issuer named', r.verdict.localIssuer);
-      assert(ui.witnesses[1].chip === msg('relationDifferent'), 'different chip', ui.witnesses);
-      assert((await v.badge()) === '!', 'red badge on the icon', await v.badge());
-      await v.close();
-    }],
-    ['wrong notary token', async () => {
-      const v = await full.openPopup(siteUrl, { settings: { localMode: 'always', endpoints: [endpoint('bad', 'Notary with wrong token', sitePort, 'nope')] }, shot: 'bad-token' });
-      const r = await v.result();
-      const ui = await v.ui();
-      assert(r.notaries[0].state === 'error' && r.notaries[0].error.code === 'unauthorized', 'unauthorized', r.notaries[0]);
-      assert(ui.witnesses[1].error === msg('notaryErr_unauthorized'), 'error text', ui.witnesses[1]);
-      await v.close();
-    }],
-    ['notaries disagree', async () => {
-      const v = await full.openPopup(interceptedUrl, { settings: { localMode: 'always', endpoints: [outside, inside] }, shot: 'split' });
-      const r = await v.result();
-      const ui = await v.ui();
-      await v.snap();
-      assert(r.verdict.code === 'split' && ui.tone === 'warn', 'expected split/warn', { verdict: r.verdict, ui });
-      assert(ui.body.includes('Notary inside your network') && ui.body.includes('Notary outside'), 'body names both sides', ui.body);
-      await v.close();
-    }],
-    ['on-demand local reading', async () => {
-      const v = await full.openPopup(siteUrl, { settings: { localMode: 'ask', endpoints: [outside] }, shot: 'ask' });
-      let r = await v.result();
-      let ui = await v.ui();
-      await v.snap('-before');
-      assert(r.verdict.code === 'externalOnly' && r.local.state === 'notRequested', 'external first', { verdict: r.verdict.code, local: r.local });
-      assert(ui.buttons.includes(msg('actionReadLocal')), 'read-local button', ui.buttons);
-      await v.click(msg('actionReadLocal'));
-      r = await v.result();
-      ui = await v.ui();
-      await v.snap('-after');
-      assert(r.verdict.code === 'confirmed' && r.local.state === 'ok', 'confirmed after reading', { verdict: r.verdict.code, ui });
-      await v.close();
-    }],
-    ['strict CSP page needs a reload', async () => {
-      const v = await full.openPopup(`${siteUrl}csp`, { settings: { localMode: 'always', endpoints: [outside] }, shot: 'csp' });
-      let r = await v.result();
-      let ui = await v.ui();
-      await v.snap('-blocked');
-      assert(r.local.state === 'error' && r.local.reason === 'probeBlocked', 'probe blocked', r.local);
-      assert(ui.buttons.includes(msg('actionReloadAndRead')), 'reload button', ui.buttons);
-      await v.click(msg('actionReloadAndRead'));
-      r = await v.result();
-      ui = await v.ui();
-      await v.snap('-reloaded');
-      assert(r.local.state === 'ok' && r.local.via === 'reload' && r.verdict.code === 'confirmed', 'read after reload', { local: r.local.state, via: r.local.via, verdict: r.verdict.code });
-      assert(ui.witnesses[0].meta.includes(msg('witnessViaReload')), 'reload noted', ui.witnesses[0]);
-      await v.close();
-    }],
-    ['nothing configured', async () => {
-      const v = await full.openPopup(siteUrl, { settings: { localMode: 'never', endpoints: [] }, shot: 'no-sources' });
-      const r = await v.result();
-      const ui = await v.ui();
-      await v.snap();
-      assert(r.verdict.code === 'noSources' && ui.tone === 'neutral', 'noSources', { verdict: r.verdict.code, ui });
-      assert(ui.buttons.includes(msg('actionAddSource')), 'add-source button', ui.buttons);
-      await v.close();
-    }],
-    ['notary unreachable', async () => {
-      const down = { id: 'down', name: 'Offline notary', url: `http://127.0.0.1:${closedPort}/v1/cert`, token: '', enabled: true };
-      const v = await full.openPopup(siteUrl, { settings: { localMode: 'always', endpoints: [down] }, shot: 'notary-down' });
-      const r = await v.result();
-      const ui = await v.ui();
-      await v.snap();
-      assert(r.notaries[0].state === 'error' && r.notaries[0].error.code === 'network', 'network error', r.notaries[0]);
-      assert(ui.witnesses[1].error === msg('notaryErr_network'), 'error text', ui.witnesses[1]);
-      assert(r.verdict.code === 'privateCa', 'falls back to local verdict', r.verdict.code);
-      await v.close();
-    }],
-    ['internal host skips notaries', async () => {
-      const v = await full.openPopup(`https://localhost:${sitePort}/`, { settings: { localMode: 'always', endpoints: [outside] }, shot: 'internal' });
-      const r = await v.result();
-      const ui = await v.ui();
-      await v.snap();
-      assert(r.internal && r.notaries.every((n) => n.state === 'skipped'), 'skipped', r.notaries);
-      assert(ui.notes.includes(msg('externalSkippedInternal')), 'note shown', ui.notes);
-      await v.close();
-    }],
-    ['plain HTTP page', async () => {
-      const v = await full.openPopup(`http://${HOST}:${plainPort}/`, { settings: { localMode: 'always', endpoints: [outside] }, shot: 'http' });
-      const r = await v.result();
-      const ui = await v.ui();
-      await v.snap();
-      assert(r.verdict.code === 'insecureHttp' && ui.tone === 'warn', 'insecureHttp', { verdict: r.verdict.code, ui });
-      assert(r.local.state === 'notApplicable' && r.notaries[0].state === 'ok', 'notary still shows the 443 certificate', r.notaries[0].state);
-      await v.close();
-    }],
-    ['non-web page', async () => {
-      const v = await full.openPopup('chrome://settings/', { settings: { localMode: 'always', endpoints: [] }, shot: 'unsupported' });
-      const ui = await v.ui();
-      assert(ui.title === msg('unsupportedTitle'), 'unsupported state', ui);
-      await v.close();
-    }],
-    ['options page: add, validate and test a source', async () => {
-      await full.settings({});
-      const page = await full.ctx.newPage();
-      full.watch(page, 'options');
-      await page.setViewportSize({ width: 900, height: 1200 });
-      await page.goto(`chrome-extension://${full.extId}/options/options.html`);
-      await page.fill('#ep-name', 'Bad');
-      await page.fill('#ep-url', 'http://notary.example.net/v1/cert');
-      await page.click('#endpoint-form button[type=submit]');
-      assert((await page.textContent('#form-error')) === msg('endpointErrorHttps'), 'http rejected');
-      await page.fill('#ep-name', 'Test notary');
-      await page.fill('#ep-url', outside.url);
-      await page.fill('#ep-token', TOKEN);
-      await page.click('#endpoint-form button[type=submit]');
-      await page.waitForSelector('.endpoint');
-      await page.check('input[name=localMode][value=ask]');
-      await page.getByRole('button', { name: msg('actionTest') }).click();
-      await page.waitForSelector('.endpoint-result[data-tone]');
-      const outcome = await page.textContent('.endpoint-result');
-      assert(outcome.startsWith(msg('testOk', '').split(':')[0]), 'test reports success', outcome);
-      const stored = await full.sw.evaluate(() => chrome.storage.local.get(['endpoints', 'localMode']));
-      assert(stored.localMode === 'ask' && stored.endpoints.length === 1 && stored.endpoints[0].name === 'Test notary', 'saved', stored);
-      mkdirSync(OUT, { recursive: true });
-      await page.screenshot({ path: path.join(OUT, 'options.png'), fullPage: true });
-      await page.close();
-    }],
-    ['site memory: first, known, changed, trusted, forgotten', async () => {
-      const url = `https://${HOST}:${memoryPort}/`;
-      const realCa = 'SSL Checker Test Issuing CA (SSL Checker Test PKI)';
-      const otherCa = 'Contoso Inspection CA (Contoso Ltd)';
-      serveOnMemorySite(read('site-leaf.key'), siteChain);
+    [
+      'confirmed by a notary',
+      async () => {
+        const v = await full.openPopup(siteUrl, {
+          settings: { localMode: 'always', endpoints: [outside] },
+          shot: 'confirmed',
+        });
+        const r = await v.result();
+        const ui = await v.ui();
+        await v.snap();
+        assert(r.verdict.code === 'confirmed' && ui.tone === 'ok', 'expected confirmed/ok', {
+          verdict: r.verdict.code,
+          ui,
+        });
+        assert(
+          r.local.state === 'ok' && r.local.via === 'probe' && r.local.chain.length === 2,
+          'local read through the probe',
+          r.local,
+        );
+        assert(
+          ui.witnesses.length === 2 && ui.witnesses[1].chip === msg('relationSameCertificate'),
+          'identical notary row',
+          ui.witnesses,
+        );
+        assert(ui.title === msg('verdictConfirmedTitleOne', '1'), 'title', ui.title);
+        assert((await v.badge()) === '✓', 'green badge on the icon', await v.badge());
+        for (const summary of await v.popup.$$('details > summary')) {
+          await summary.click();
+        }
+        await v.snap('-details');
+        const details = await v.popup.evaluate(() =>
+          [...document.querySelectorAll('details .facts dt')].map((dt) => dt.textContent),
+        );
+        assert(
+          details.includes('SHA-256') && details.includes('OCSP') && details.includes('CRL'),
+          'technical details listed',
+          details,
+        );
+        await v.close();
+      },
+    ],
+    [
+      'interception detected',
+      async () => {
+        const v = await full.openPopup(interceptedUrl, {
+          settings: { localMode: 'always', endpoints: [outside] },
+          shot: 'intercepted',
+        });
+        const r = await v.result();
+        const ui = await v.ui();
+        await v.snap();
+        assert(r.verdict.code === 'intercepted' && ui.tone === 'danger', 'expected intercepted/danger', {
+          verdict: r.verdict,
+          ui,
+        });
+        assert(
+          r.verdict.localIssuer === 'Contoso Inspection CA (Contoso Ltd)',
+          'local issuer named',
+          r.verdict.localIssuer,
+        );
+        assert(ui.witnesses[1].chip === msg('relationDifferent'), 'different chip', ui.witnesses);
+        assert((await v.badge()) === '!', 'red badge on the icon', await v.badge());
+        await v.close();
+      },
+    ],
+    [
+      'wrong notary token',
+      async () => {
+        const v = await full.openPopup(siteUrl, {
+          settings: { localMode: 'always', endpoints: [endpoint('bad', 'Notary with wrong token', sitePort, 'nope')] },
+          shot: 'bad-token',
+        });
+        const r = await v.result();
+        const ui = await v.ui();
+        assert(
+          r.notaries[0].state === 'error' && r.notaries[0].error.code === 'unauthorized',
+          'unauthorized',
+          r.notaries[0],
+        );
+        assert(ui.witnesses[1].error === msg('notaryErr_unauthorized'), 'error text', ui.witnesses[1]);
+        await v.close();
+      },
+    ],
+    [
+      'notaries disagree',
+      async () => {
+        const v = await full.openPopup(interceptedUrl, {
+          settings: { localMode: 'always', endpoints: [outside, inside] },
+          shot: 'split',
+        });
+        const r = await v.result();
+        const ui = await v.ui();
+        await v.snap();
+        assert(r.verdict.code === 'split' && ui.tone === 'warn', 'expected split/warn', { verdict: r.verdict, ui });
+        assert(
+          ui.body.includes('Notary inside your network') && ui.body.includes('Notary outside'),
+          'body names both sides',
+          ui.body,
+        );
+        await v.close();
+      },
+    ],
+    [
+      'on-demand local reading',
+      async () => {
+        const v = await full.openPopup(siteUrl, { settings: { localMode: 'ask', endpoints: [outside] }, shot: 'ask' });
+        let r = await v.result();
+        let ui = await v.ui();
+        await v.snap('-before');
+        assert(r.verdict.code === 'externalOnly' && r.local.state === 'notRequested', 'external first', {
+          verdict: r.verdict.code,
+          local: r.local,
+        });
+        assert(ui.buttons.includes(msg('actionReadLocal')), 'read-local button', ui.buttons);
+        await v.click(msg('actionReadLocal'));
+        r = await v.result();
+        ui = await v.ui();
+        await v.snap('-after');
+        assert(r.verdict.code === 'confirmed' && r.local.state === 'ok', 'confirmed after reading', {
+          verdict: r.verdict.code,
+          ui,
+        });
+        await v.close();
+      },
+    ],
+    [
+      'strict CSP page needs a reload',
+      async () => {
+        const v = await full.openPopup(`${siteUrl}csp`, {
+          settings: { localMode: 'always', endpoints: [outside] },
+          shot: 'csp',
+        });
+        let r = await v.result();
+        let ui = await v.ui();
+        await v.snap('-blocked');
+        assert(r.local.state === 'error' && r.local.reason === 'probeBlocked', 'probe blocked', r.local);
+        assert(ui.buttons.includes(msg('actionReloadAndRead')), 'reload button', ui.buttons);
+        await v.click(msg('actionReloadAndRead'));
+        r = await v.result();
+        ui = await v.ui();
+        await v.snap('-reloaded');
+        assert(
+          r.local.state === 'ok' && r.local.via === 'reload' && r.verdict.code === 'confirmed',
+          'read after reload',
+          { local: r.local.state, via: r.local.via, verdict: r.verdict.code },
+        );
+        assert(ui.witnesses[0].meta.includes(msg('witnessViaReload')), 'reload noted', ui.witnesses[0]);
+        await v.close();
+      },
+    ],
+    [
+      'nothing configured',
+      async () => {
+        const v = await full.openPopup(siteUrl, {
+          settings: { localMode: 'never', endpoints: [] },
+          shot: 'no-sources',
+        });
+        const r = await v.result();
+        const ui = await v.ui();
+        await v.snap();
+        assert(r.verdict.code === 'noSources' && ui.tone === 'neutral', 'noSources', { verdict: r.verdict.code, ui });
+        assert(ui.buttons.includes(msg('actionAddSource')), 'add-source button', ui.buttons);
+        await v.close();
+      },
+    ],
+    [
+      'notary unreachable',
+      async () => {
+        const down = {
+          id: 'down',
+          name: 'Offline notary',
+          url: `http://127.0.0.1:${closedPort}/v1/cert`,
+          token: '',
+          enabled: true,
+        };
+        const v = await full.openPopup(siteUrl, {
+          settings: { localMode: 'always', endpoints: [down] },
+          shot: 'notary-down',
+        });
+        const r = await v.result();
+        const ui = await v.ui();
+        await v.snap();
+        assert(
+          r.notaries[0].state === 'error' && r.notaries[0].error.code === 'network',
+          'network error',
+          r.notaries[0],
+        );
+        assert(ui.witnesses[1].error === msg('notaryErr_network'), 'error text', ui.witnesses[1]);
+        assert(r.verdict.code === 'privateCa', 'falls back to local verdict', r.verdict.code);
+        await v.close();
+      },
+    ],
+    [
+      'internal host skips notaries',
+      async () => {
+        const v = await full.openPopup(`https://localhost:${sitePort}/`, {
+          settings: { localMode: 'always', endpoints: [outside] },
+          shot: 'internal',
+        });
+        const r = await v.result();
+        const ui = await v.ui();
+        await v.snap();
+        assert(r.internal && r.notaries.every((n) => n.state === 'skipped'), 'skipped', r.notaries);
+        assert(ui.notes.includes(msg('externalSkippedInternal')), 'note shown', ui.notes);
+        await v.close();
+      },
+    ],
+    [
+      'plain HTTP page',
+      async () => {
+        const v = await full.openPopup(`http://${HOST}:${plainPort}/`, {
+          settings: { localMode: 'always', endpoints: [outside] },
+          shot: 'http',
+        });
+        const r = await v.result();
+        const ui = await v.ui();
+        await v.snap();
+        assert(r.verdict.code === 'insecureHttp' && ui.tone === 'warn', 'insecureHttp', {
+          verdict: r.verdict.code,
+          ui,
+        });
+        assert(
+          r.local.state === 'notApplicable' && r.notaries[0].state === 'ok',
+          'notary still shows the 443 certificate',
+          r.notaries[0].state,
+        );
+        await v.close();
+      },
+    ],
+    [
+      'non-web page',
+      async () => {
+        const v = await full.openPopup('chrome://settings/', {
+          settings: { localMode: 'always', endpoints: [] },
+          shot: 'unsupported',
+        });
+        const ui = await v.ui();
+        assert(ui.title === msg('unsupportedTitle'), 'unsupported state', ui);
+        await v.close();
+      },
+    ],
+    [
+      'options page: add, validate and test a source',
+      async () => {
+        await full.settings({});
+        const page = await full.ctx.newPage();
+        full.watch(page, 'options');
+        await page.setViewportSize({ width: 900, height: 1200 });
+        await page.goto(`chrome-extension://${full.extId}/options/options.html`);
+        await page.fill('#ep-name', 'Bad');
+        await page.fill('#ep-url', 'http://notary.example.net/v1/cert');
+        await page.click('#endpoint-form button[type=submit]');
+        assert((await page.textContent('#form-error')) === msg('endpointErrorHttps'), 'http rejected');
+        await page.fill('#ep-name', 'Test notary');
+        await page.fill('#ep-url', outside.url);
+        await page.fill('#ep-token', TOKEN);
+        await page.click('#endpoint-form button[type=submit]');
+        await page.waitForSelector('.endpoint');
+        await page.check('input[name=localMode][value=ask]');
+        await page.getByRole('button', { name: msg('actionTest') }).click();
+        await page.waitForSelector('.endpoint-result[data-tone]');
+        const outcome = await page.textContent('.endpoint-result');
+        assert(outcome.startsWith(msg('testOk', '').split(':')[0]), 'test reports success', outcome);
+        const stored = await full.sw.evaluate(() => chrome.storage.local.get(['endpoints', 'localMode']));
+        assert(
+          stored.localMode === 'ask' && stored.endpoints.length === 1 && stored.endpoints[0].name === 'Test notary',
+          'saved',
+          stored,
+        );
+        mkdirSync(OUT, { recursive: true });
+        await page.screenshot({ path: path.join(OUT, 'options.png'), fullPage: true });
+        await page.close();
+      },
+    ],
+    [
+      'site memory: first, known, changed, trusted, forgotten',
+      async () => {
+        const url = `https://${HOST}:${memoryPort}/`;
+        const realCa = 'SSL Checker Test Issuing CA (SSL Checker Test PKI)';
+        const otherCa = 'Contoso Inspection CA (Contoso Ltd)';
+        serveOnMemorySite(read('site-leaf.key'), siteChain);
 
-      let v = await full.openPopup(url, { settings: { localMode: 'always', endpoints: [] }, shot: 'memory-first' });
-      let r = await v.result();
-      let ui = await v.ui();
-      await v.snap();
-      assert(r.memory.status === 'first' && ui.history[0] === msg('historyFirst', realCa), 'first check remembered', { memory: r.memory, ui });
-      await v.close();
+        let v = await full.openPopup(url, { settings: { localMode: 'always', endpoints: [] }, shot: 'memory-first' });
+        let r = await v.result();
+        let ui = await v.ui();
+        await v.snap();
+        assert(r.memory.status === 'first' && ui.history[0] === msg('historyFirst', realCa), 'first check remembered', {
+          memory: r.memory,
+          ui,
+        });
+        await v.close();
 
-      v = await full.openPopup(url, { shot: 'memory-known' });
-      r = await v.result();
-      ui = await v.ui();
-      assert(r.memory.status === 'known' && r.memory.entry.count === 2 && ui.history[0].includes(realCa), 'second check known', { memory: r.memory, ui });
-      await v.close();
+        v = await full.openPopup(url, { shot: 'memory-known' });
+        r = await v.result();
+        ui = await v.ui();
+        assert(
+          r.memory.status === 'known' && r.memory.entry.count === 2 && ui.history[0].includes(realCa),
+          'second check known',
+          { memory: r.memory, ui },
+        );
+        await v.close();
 
-      serveOnMemorySite(read('intercept-leaf.key'), interceptChain);
-      v = await full.openPopup(url, { shot: 'memory-changed' });
-      r = await v.result();
-      ui = await v.ui();
-      await v.snap();
-      // CT is "unknown" for both test chains, so this is a private-to-private change.
-      assert(r.memory.status === 'changed' && r.memory.kind === 'privateToPrivate' && !r.memory.learned, 'change detected', r.memory);
-      assert(r.verdict.warnings[0].code === 'caChanged' && ui.warnings.includes(msg('warnCaChanged', realCa, otherCa)), 'change warned', ui.warnings);
-      assert(ui.history.includes(msg('historyChangedNow', otherCa)), 'history shows the new CA', ui.history);
-      assert(ui.buttons.includes(msg('actionTrustCa')) && ui.buttons.includes(msg('actionForgetSite')), 'trust and forget offered', ui.buttons);
+        serveOnMemorySite(read('intercept-leaf.key'), interceptChain);
+        v = await full.openPopup(url, { shot: 'memory-changed' });
+        r = await v.result();
+        ui = await v.ui();
+        await v.snap();
+        // CT is "unknown" for both test chains, so this is a private-to-private change.
+        assert(
+          r.memory.status === 'changed' && r.memory.kind === 'privateToPrivate' && !r.memory.learned,
+          'change detected',
+          r.memory,
+        );
+        assert(
+          r.verdict.warnings[0].code === 'caChanged' && ui.warnings.includes(msg('warnCaChanged', realCa, otherCa)),
+          'change warned',
+          ui.warnings,
+        );
+        assert(ui.history.includes(msg('historyChangedNow', otherCa)), 'history shows the new CA', ui.history);
+        assert(
+          ui.buttons.includes(msg('actionTrustCa')) && ui.buttons.includes(msg('actionForgetSite')),
+          'trust and forget offered',
+          ui.buttons,
+        );
 
-      await v.historyAction(msg('actionTrustCa'), msg('historyTrusted', otherCa));
-      r = await v.result();
-      ui = await v.ui();
-      await v.snap('-trusted');
-      assert(r.memory.status === 'known' && r.memory.trusted && !r.verdict.warnings.some((w) => w.code === 'caChanged'), 'trusted', { memory: r.memory, warnings: r.verdict.warnings });
+        await v.historyAction(msg('actionTrustCa'), msg('historyTrusted', otherCa));
+        r = await v.result();
+        ui = await v.ui();
+        await v.snap('-trusted');
+        assert(
+          r.memory.status === 'known' && r.memory.trusted && !r.verdict.warnings.some((w) => w.code === 'caChanged'),
+          'trusted',
+          { memory: r.memory, warnings: r.verdict.warnings },
+        );
 
-      await v.historyAction(msg('actionForgetSite'), msg('historyForgotten'));
-      r = await v.result();
-      const keys = await full.sw.evaluate(async () => Object.keys(await chrome.storage.local.get(null)).filter((k) => k.startsWith('site:')));
-      assert(r.memory.status === 'forgotten' && keys.length === 0, 'forgotten', { memory: r.memory, keys });
-      await v.close();
+        await v.historyAction(msg('actionForgetSite'), msg('historyForgotten'));
+        r = await v.result();
+        const keys = await full.sw.evaluate(async () =>
+          Object.keys(await chrome.storage.local.get(null)).filter((k) => k.startsWith('site:')),
+        );
+        assert(r.memory.status === 'forgotten' && keys.length === 0, 'forgotten', { memory: r.memory, keys });
+        await v.close();
 
-      v = await full.openPopup(url, {});
-      r = await v.result();
-      assert(r.memory.status === 'first' && r.memory.current.label === otherCa, 'history starts again', r.memory);
-      await v.close();
+        v = await full.openPopup(url, {});
+        r = await v.result();
+        assert(r.memory.status === 'first' && r.memory.current.label === otherCa, 'history starts again', r.memory);
+        await v.close();
 
-      const pluralKey = (base, n) => {
-        const category = new Intl.PluralRules(LANG).select(n);
-        return `${base}${category === 'one' ? 'One' : category === 'few' ? 'Few' : 'Other'}`;
-      };
-      const page = await full.ctx.newPage();
-      full.watch(page, 'options (memory)');
-      await page.goto(`chrome-extension://${full.extId}/options/options.html`);
-      await page.waitForFunction(() => document.getElementById('memory-count').textContent !== '');
-      assert((await page.textContent('#memory-count')) === msg(pluralKey('memoryCount', 1), '1'), 'one site counted', await page.textContent('#memory-count'));
-      await page.click('#forget-all');
-      await page.waitForFunction((text) => document.getElementById('memory-count').textContent === text, msg(pluralKey('memoryCount', 0), '0'));
-      await page.uncheck('#memory-enabled');
-      await page.waitForFunction(async () => (await chrome.storage.local.get('memoryEnabled')).memoryEnabled === false);
-      await page.close();
+        const pluralKey = (base, n) => {
+          const category = new Intl.PluralRules(LANG).select(n);
+          return `${base}${category === 'one' ? 'One' : category === 'few' ? 'Few' : 'Other'}`;
+        };
+        const page = await full.ctx.newPage();
+        full.watch(page, 'options (memory)');
+        await page.goto(`chrome-extension://${full.extId}/options/options.html`);
+        await page.waitForFunction(() => document.getElementById('memory-count').textContent !== '');
+        assert(
+          (await page.textContent('#memory-count')) === msg(pluralKey('memoryCount', 1), '1'),
+          'one site counted',
+          await page.textContent('#memory-count'),
+        );
+        await page.click('#forget-all');
+        await page.waitForFunction(
+          (text) => document.getElementById('memory-count').textContent === text,
+          msg(pluralKey('memoryCount', 0), '0'),
+        );
+        await page.uncheck('#memory-enabled');
+        await page.waitForFunction(
+          async () => (await chrome.storage.local.get('memoryEnabled')).memoryEnabled === false,
+        );
+        await page.close();
 
-      v = await full.openPopup(url, {});
-      r = await v.result();
-      ui = await v.ui();
-      assert(r.memory.status === 'disabled' && ui.history.length === 0, 'memory off', { memory: r.memory, ui });
-      await v.close();
-    }],
+        v = await full.openPopup(url, {});
+        r = await v.result();
+        ui = await v.ui();
+        assert(r.memory.status === 'disabled' && ui.history.length === 0, 'memory off', { memory: r.memory, ui });
+        await v.close();
+      },
+    ],
   ];
 
   const results = [];
   for (const [name, fn] of scenarios) {
-    if (ONLY && !name.includes(ONLY)) continue;
+    if (ONLY && !name.includes(ONLY)) {
+      continue;
+    }
     try {
       await fn();
       results.push([name, null]);
@@ -517,22 +725,34 @@ async function main() {
 
   const incognitoScenario = 'incognito: site memory is off';
   if (!ONLY || incognitoScenario.includes(ONLY)) {
-    const inc = await new Harness(stageVariant('full', mkdtempSync(path.join(os.tmpdir(), 'sslc-inc-'))), args, { incognito: true }).start();
+    const inc = await new Harness(stageVariant('full', mkdtempSync(path.join(os.tmpdir(), 'sslc-inc-'))), args, {
+      incognito: true,
+    }).start();
     try {
       await inc.settings({ localMode: 'always', endpoints: [] });
       const tabId = await inc.openIncognitoTab(siteUrl);
       const popup = await inc.ctx.newPage();
       inc.watch(popup, 'popup (incognito tab)');
       await popup.setViewportSize({ width: 400, height: 600 });
-      await popup.goto(`chrome-extension://${inc.extId}/popup/popup.html?tabId=${tabId}&url=${encodeURIComponent(siteUrl)}`);
+      await popup.goto(
+        `chrome-extension://${inc.extId}/popup/popup.html?tabId=${tabId}&url=${encodeURIComponent(siteUrl)}`,
+      );
       const v = new PopupView(inc, popup, null, tabId, 'incognito');
       await v.settle();
       const r = await v.result();
       const ui = await v.ui();
       await v.snap();
-      assert(r.incognito === true && r.local.state === 'ok', 'the incognito tab is still read from the browser', { incognito: r.incognito, local: r.local.state });
-      assert(r.memory.status === 'incognito' && ui.history[0] === msg('historyIncognito'), 'site memory off', { memory: r.memory, history: ui.history });
-      const keys = await inc.sw.evaluate(async () => Object.keys(await chrome.storage.local.get(null)).filter((k) => k.startsWith('site:')));
+      assert(r.incognito === true && r.local.state === 'ok', 'the incognito tab is still read from the browser', {
+        incognito: r.incognito,
+        local: r.local.state,
+      });
+      assert(r.memory.status === 'incognito' && ui.history[0] === msg('historyIncognito'), 'site memory off', {
+        memory: r.memory,
+        history: ui.history,
+      });
+      const keys = await inc.sw.evaluate(async () =>
+        Object.keys(await chrome.storage.local.get(null)).filter((k) => k.startsWith('site:')),
+      );
       assert(keys.length === 0, 'nothing recorded from the incognito tab', keys);
       await v.close();
       // Closing the incognito tab also drops its result from session storage.
@@ -556,14 +776,23 @@ async function main() {
   }
 
   if (!ONLY || 'lite build'.includes(ONLY)) {
-    const lite = await new Harness(stageVariant('lite', mkdtempSync(path.join(os.tmpdir(), 'sslc-lite-'))), [...args, '--disable-features=']).start();
+    const lite = await new Harness(stageVariant('lite', mkdtempSync(path.join(os.tmpdir(), 'sslc-lite-'))), [
+      ...args,
+      '--disable-features=',
+    ]).start();
     try {
-      const v = await lite.openPopup(siteUrl, { settings: { localMode: 'always', endpoints: [outside] }, shot: 'lite' });
+      const v = await lite.openPopup(siteUrl, {
+        settings: { localMode: 'always', endpoints: [outside] },
+        shot: 'lite',
+      });
       const r = await v.result();
       const ui = await v.ui();
       await v.snap();
       assert(!r.localAvailable && r.local.state === 'unavailable', 'no local reading in lite', r.local);
-      assert(r.verdict.code === 'externalOnly' && ui.witnesses.length === 1, 'external only', { verdict: r.verdict.code, ui });
+      assert(r.verdict.code === 'externalOnly' && ui.witnesses.length === 1, 'external only', {
+        verdict: r.verdict.code,
+        ui,
+      });
       await v.close();
       const page = await lite.ctx.newPage();
       await page.goto(`chrome-extension://${lite.extId}/options/options.html`);
@@ -586,14 +815,20 @@ async function main() {
 
   let failed = 0;
   for (const [name, error] of results) {
-    console.log(`${error ? 'FAIL' : 'ok  '} ${name}${error ? `\n     ${error.message.replace(/\n/g, '\n     ')}` : ''}`);
-    if (error) failed++;
+    console.log(
+      `${error ? 'FAIL' : 'ok  '} ${name}${error ? `\n     ${error.message.replace(/\n/g, '\n     ')}` : ''}`,
+    );
+    if (error) {
+      failed++;
+    }
   }
   if (full.errors.length) {
     console.log(`\nConsole errors:\n  ${full.errors.join('\n  ')}`);
     failed++;
   }
-  console.log(`\n${results.length - failed}/${results.length} passed (${LANG}), screenshots in ${path.relative(ROOT, OUT)}`);
+  console.log(
+    `\n${results.length - failed}/${results.length} passed (${LANG}), screenshots in ${path.relative(ROOT, OUT)}`,
+  );
   process.exit(failed ? 1 : 0);
 }
 

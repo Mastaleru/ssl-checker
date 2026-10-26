@@ -26,14 +26,24 @@ function endpointOrigin(url) {
 }
 
 function httpErrorCode(status, remoteCode) {
-  if (remoteCode && /^[a-zA-Z]{2,40}$/.test(remoteCode)) return remoteCode;
-  if (status === 401 || status === 403) return 'unauthorized';
-  if (status === 429) return 'rateLimited';
+  if (remoteCode && /^[a-zA-Z]{2,40}$/.test(remoteCode)) {
+    return remoteCode;
+  }
+  if (status === 401 || status === 403) {
+    return 'unauthorized';
+  }
+  if (status === 429) {
+    return 'rateLimited';
+  }
   return 'http';
 }
 
 export async function queryNotary(endpoint, host, port, timeoutMs) {
-  const base = { id: endpoint.id, name: text(endpoint.name, 60) || endpointOrigin(endpoint.url), origin: endpointOrigin(endpoint.url) };
+  const base = {
+    id: endpoint.id,
+    name: text(endpoint.name, 60) || endpointOrigin(endpoint.url),
+    origin: endpointOrigin(endpoint.url),
+  };
   const started = Date.now();
   const finish = (extra) => ({ ...base, durationMs: Date.now() - started, ...extra });
 
@@ -48,7 +58,9 @@ export async function queryNotary(endpoint, host, port, timeoutMs) {
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const headers = { Accept: 'application/json' };
-    if (endpoint.token) headers.Authorization = `Bearer ${endpoint.token}`;
+    if (endpoint.token) {
+      headers.Authorization = `Bearer ${endpoint.token}`;
+    }
     const res = await fetch(url, {
       headers,
       signal: controller.signal,
@@ -58,7 +70,9 @@ export async function queryNotary(endpoint, host, port, timeoutMs) {
       redirect: 'error',
     });
     const body = await res.text();
-    if (body.length > MAX_BODY_BYTES) return finish({ state: 'error', error: { code: 'badResponse' } });
+    if (body.length > MAX_BODY_BYTES) {
+      return finish({ state: 'error', error: { code: 'badResponse' } });
+    }
     let data = null;
     try {
       data = JSON.parse(body);
@@ -93,9 +107,13 @@ export async function queryNotary(endpoint, host, port, timeoutMs) {
     });
   } catch (e) {
     const code =
-      e && e.name === 'AbortError' ? 'timeout' :
-      e && e.name === 'CertificateParseError' ? 'badCertificate' :
-      e instanceof TypeError ? 'network' : 'badResponse';
+      e && e.name === 'AbortError'
+        ? 'timeout'
+        : e && e.name === 'CertificateParseError'
+          ? 'badCertificate'
+          : e instanceof TypeError
+            ? 'network'
+            : 'badResponse';
     return finish({ state: 'error', error: { code } });
   } finally {
     clearTimeout(timer);

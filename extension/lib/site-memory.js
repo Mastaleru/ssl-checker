@@ -17,8 +17,30 @@ const MAX_ISSUER_KEYS_PER_CA = 8;
 const DAY = 86400000;
 
 const LEGAL_SUFFIXES = new Set([
-  'ab', 'ag', 'as', 'bv', 'co', 'company', 'corp', 'corporation', 'gmbh', 'inc', 'incorporated',
-  'kk', 'limited', 'llc', 'ltd', 'nv', 'oy', 'plc', 'pte', 'pty', 'sa', 'sas', 'spa', 'srl',
+  'ab',
+  'ag',
+  'as',
+  'bv',
+  'co',
+  'company',
+  'corp',
+  'corporation',
+  'gmbh',
+  'inc',
+  'incorporated',
+  'kk',
+  'limited',
+  'llc',
+  'ltd',
+  'nv',
+  'oy',
+  'plc',
+  'pte',
+  'pty',
+  'sa',
+  'sas',
+  'spa',
+  'srl',
 ]);
 
 /** "Google Trust Services LLC" and "Google Trust Services" → "google trust services". */
@@ -65,7 +87,9 @@ function mostRecent(entries) {
  * Only changes towards a public certificate are learned automatically.
  */
 export function assess(record, observation) {
-  if (!record || !record.cas || record.cas.length === 0) return { status: 'first', autoLearn: true };
+  if (!record || !record.cas || record.cas.length === 0) {
+    return { status: 'first', autoLearn: true };
+  }
 
   const entry = record.cas.find((ca) => ca.key === observation.key);
   if (entry && (entry.issuerKeys.includes(observation.issuerKey) || observation.public)) {
@@ -85,8 +109,12 @@ export function assess(record, observation) {
   const publicEntries = record.cas.filter((ca) => ca.public);
   const wasPublic = publicEntries.length > 0;
   const kind = observation.public
-    ? wasPublic ? 'publicToPublic' : 'privateToPublic'
-    : wasPublic ? 'publicToPrivate' : 'privateToPrivate';
+    ? wasPublic
+      ? 'publicToPublic'
+      : 'privateToPublic'
+    : wasPublic
+      ? 'publicToPrivate'
+      : 'privateToPrivate';
   return {
     status: 'changed',
     kind,
@@ -103,7 +131,15 @@ export function learn(record, observation, site) {
     : { v: 1, host: site.host, port: site.port, cas: [] };
   let entry = next.cas.find((ca) => ca.key === observation.key);
   if (!entry) {
-    entry = { key: observation.key, label: observation.label, public: false, issuerKeys: [], firstSeen: observation.at, lastSeen: observation.at, count: 0 };
+    entry = {
+      key: observation.key,
+      label: observation.label,
+      public: false,
+      issuerKeys: [],
+      firstSeen: observation.at,
+      lastSeen: observation.at,
+      count: 0,
+    };
     next.cas.push(entry);
   }
   entry.label = observation.label;
@@ -112,7 +148,9 @@ export function learn(record, observation, site) {
   entry.count += 1;
   if (!entry.issuerKeys.includes(observation.issuerKey)) {
     entry.issuerKeys.push(observation.issuerKey);
-    if (entry.issuerKeys.length > MAX_ISSUER_KEYS_PER_CA) entry.issuerKeys.shift();
+    if (entry.issuerKeys.length > MAX_ISSUER_KEYS_PER_CA) {
+      entry.issuerKeys.shift();
+    }
   }
   if (next.cas.length > MAX_CAS_PER_SITE) {
     next.cas.sort((a, b) => (a.lastSeen < b.lastSeen ? 1 : -1));
@@ -140,7 +178,9 @@ export function describe(assessment, record, observation) {
 
 /** Latest time any CA of the record was seen. */
 export function lastSeenOf(record) {
-  return record && record.cas ? record.cas.reduce((latest, ca) => (ca.lastSeen > latest ? ca.lastSeen : latest), '') : '';
+  return record && record.cas
+    ? record.cas.reduce((latest, ca) => (ca.lastSeen > latest ? ca.lastSeen : latest), '')
+    : '';
 }
 
 /** Keys of the records to delete: unseen for maxAgeDays, then the oldest beyond maxSites. */

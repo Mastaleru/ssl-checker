@@ -26,10 +26,18 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function classifyAttachError(message) {
   const m = String(message || '');
-  if (/No tab with (given )?id/i.test(m)) return 'tabGone';
-  if (/policy/i.test(m)) return 'blockedByPolicy';
-  if (/already attached/i.test(m)) return 'alreadyAttached';
-  if (/chrome:\/\/|chrome-extension:\/\/|devtools:\/\/|Cannot attach|Cannot access/i.test(m)) return 'restrictedPage';
+  if (/No tab with (given )?id/i.test(m)) {
+    return 'tabGone';
+  }
+  if (/policy/i.test(m)) {
+    return 'blockedByPolicy';
+  }
+  if (/already attached/i.test(m)) {
+    return 'alreadyAttached';
+  }
+  if (/chrome:\/\/|chrome-extension:\/\/|devtools:\/\/|Cannot attach|Cannot access/i.test(m)) {
+    return 'restrictedPage';
+  }
   return 'attachFailed';
 }
 
@@ -46,14 +54,23 @@ function createResponseCollector(tabId) {
   const seen = [];
   let notify = null;
   const accept = (response) => {
-    if (!response || !response.securityDetails) return;
+    if (!response || !response.securityDetails) {
+      return;
+    }
     seen.push(response);
-    if (notify) notify();
+    if (notify) {
+      notify();
+    }
   };
   const listener = (source, method, params) => {
-    if (source.tabId !== tabId || source.sessionId) return;
-    if (method === 'Network.responseReceived') accept(params.response);
-    else if (method === 'Network.requestWillBeSent' && params.redirectResponse) accept(params.redirectResponse);
+    if (source.tabId !== tabId || source.sessionId) {
+      return;
+    }
+    if (method === 'Network.responseReceived') {
+      accept(params.response);
+    } else if (method === 'Network.requestWillBeSent' && params.redirectResponse) {
+      accept(params.redirectResponse);
+    }
   };
   chrome.debugger.onEvent.addListener(listener);
   return {
@@ -62,7 +79,9 @@ function createResponseCollector(tabId) {
       const find = () => seen.find((r) => originOf(r.url) === origin) || null;
       return new Promise((resolve) => {
         const hit = find();
-        if (hit) return resolve(hit);
+        if (hit) {
+          return resolve(hit);
+        }
         const timer = setTimeout(() => {
           notify = null;
           resolve(find());
@@ -125,7 +144,9 @@ export async function readLocalCertificate(tabId, expectedOrigin, { reload = fal
 
   let detachReason = null;
   const onDetach = (source, reason) => {
-    if (source.tabId === tabId) detachReason = reason;
+    if (source.tabId === tabId) {
+      detachReason = reason;
+    }
   };
   chrome.debugger.onDetach.addListener(onDetach);
   const collector = createResponseCollector(tabId);
@@ -135,8 +156,12 @@ export async function readLocalCertificate(tabId, expectedOrigin, { reload = fal
     const { frameTree } = await send('Page.getFrameTree');
     const frame = frameTree.frame;
     const origin = originOf(frame.url);
-    if (!origin || !frame.url.startsWith('https:')) throw new LocalReadError('notHttps');
-    if (expectedOrigin && origin !== expectedOrigin) throw new LocalReadError('navigated');
+    if (!origin || !frame.url.startsWith('https:')) {
+      throw new LocalReadError('notHttps');
+    }
+    if (expectedOrigin && origin !== expectedOrigin) {
+      throw new LocalReadError('navigated');
+    }
 
     await send('Network.enable', {});
     await send('Network.setBypassServiceWorker', { bypass: true }).catch(() => {});
@@ -156,27 +181,42 @@ export async function readLocalCertificate(tabId, expectedOrigin, { reload = fal
         awaitPromise: true,
         returnByValue: true,
         silent: true,
-      }).then((r) => (r && r.result ? r.result.value : null), () => null);
+      }).then(
+        (r) => (r && r.result ? r.result.value : null),
+        () => null,
+      );
       const outcome = await Promise.race([evaluation, delay(PROBE_TIMEOUT_MS).then(() => 'timeout')]);
       response = await collector.waitFor(origin, outcome === 'ok' ? RESPONSE_GRACE_MS : 300);
     }
-    if (!response) throw new LocalReadError(detachReason ? 'detached' : reload ? 'reloadFailed' : 'probeBlocked');
+    if (!response) {
+      throw new LocalReadError(detachReason ? 'detached' : reload ? 'reloadFailed' : 'probeBlocked');
+    }
 
     const { tableNames } = await send('Network.getCertificate', { origin });
-    if (!tableNames || tableNames.length === 0) throw new LocalReadError('noCertificate');
+    if (!tableNames || tableNames.length === 0) {
+      throw new LocalReadError('noCertificate');
+    }
 
     return {
       origin,
       via: reload ? 'reload' : 'probe',
       chainBase64: tableNames,
       security: pickSecurityDetails(response.securityDetails),
-      remoteAddress: response.remoteIPAddress ? { ip: response.remoteIPAddress, port: response.remotePort || null } : null,
+      remoteAddress: response.remoteIPAddress
+        ? { ip: response.remoteIPAddress, port: response.remotePort || null }
+        : null,
       httpProtocol: response.protocol || null,
     };
   } catch (e) {
-    if (detachReason === 'canceled_by_user') throw new LocalReadError('canceledByUser');
-    if (e instanceof LocalReadError) throw e;
-    if (detachReason) throw new LocalReadError('detached', e && e.message);
+    if (detachReason === 'canceled_by_user') {
+      throw new LocalReadError('canceledByUser');
+    }
+    if (e instanceof LocalReadError) {
+      throw e;
+    }
+    if (detachReason) {
+      throw new LocalReadError('detached', e && e.message);
+    }
     throw new LocalReadError('protocolError', e && e.message);
   } finally {
     collector.dispose();

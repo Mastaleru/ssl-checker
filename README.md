@@ -20,7 +20,7 @@ A Chrome extension (Manifest V3) that shows the TLS certificate of the site in t
 
 ## How it works
 
-**Local reading.** Chrome has no extension API for the certificate of a loaded page, so the extension attaches `chrome.debugger` to the tab for about a second: `Network.enable`, a cookie-less `HEAD /favicon.ico` request sent from an isolated world (the page cannot intercept it), then `Network.getCertificate`. The page's service worker is bypassed, so the response comes from the network. Pages with a strict Content Security Policy block that request; for them the popup offers "Reload page and read". The mode is chosen in Options: *every time*, *on demand* or *never*. Chrome does not allow `debugger` as an optional permission, which is why there is also a lite package without it.
+**Local reading.** Chrome has no extension API for the certificate of a loaded page, so the extension attaches `chrome.debugger` to the tab for about a second: `Network.enable`, a cookie-less `HEAD /favicon.ico` request sent from an isolated world (the page cannot intercept it), then `Network.getCertificate`. The page's service worker is bypassed, so the response comes from the network. Pages with a strict Content Security Policy block that request; for them the popup offers "Reload page and read". The mode is chosen in Options: _every time_, _on demand_ or _never_. Chrome does not allow `debugger` as an optional permission, which is why there is also a lite package without it.
 
 **Notaries.** Each endpoint receives `?host=&port=` (or a URL template with `{host}` and `{port}`) and returns the certificate chain it sees from where it runs. The protocol and the reference server are described in [`notary/README.md`](notary/README.md).
 
@@ -28,30 +28,30 @@ A Chrome extension (Manifest V3) that shows the TLS certificate of the site in t
 
 **The verdict** compares the SHA-256 fingerprint and the public key (SPKI) of the local certificate with the notaries' ones, then the issuer. Certificate Transparency tells whether the local certificate is public: Chrome reports "compliant" only for publicly logged certificates, and "unknown" for locally installed roots, which is exactly where interceptors live.
 
-| Situation | Verdict |
-|---|---|
-| Same certificate (or same key) as the notaries | Confirmed |
-| Different certificate, same issuer | Same issuer (normal behind CDNs) |
-| Different from every notary, not confirmed as public | **Connection likely intercepted** (names the issuer and, when known, the product) |
-| Different from every notary, but public | Sources see different certificates |
-| Same as some notaries, different from others, not confirmed as public | Sources disagree (explains both possibilities) |
-| Same as some notaries, different from others, public | Confirmed, with a note about the sources that differ |
-| No notaries: public / not confirmed as public | Publicly logged certificate / Not confirmed as a public certificate |
-| Notaries only (local reading off or failed) | Seen by external sources |
-| Plain HTTP page | Unencrypted page (plus the certificate on port 443, if any) |
+| Situation                                                                                  | Verdict                                                                                          |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| Same certificate (or same key) as the notaries                                             | Confirmed                                                                                        |
+| Different certificate, same issuer                                                         | Same issuer (normal behind CDNs)                                                                 |
+| Different from every notary, not confirmed as public                                       | **Connection likely intercepted** (names the issuer and, when known, the product)                |
+| Different from every notary, but public                                                    | Sources see different certificates                                                               |
+| Same as some notaries, different from others, not confirmed as public                      | Sources disagree (explains both possibilities)                                                   |
+| Same as some notaries, different from others, public                                       | Confirmed, with a note about the sources that differ                                             |
+| No notaries: public / not confirmed as public                                              | Publicly logged certificate / Not confirmed as a public certificate                              |
+| Notaries only (local reading off or failed)                                                | Seen by external sources                                                                         |
+| Plain HTTP page                                                                            | Unencrypted page (plus the certificate on port 443, if any)                                      |
 | Site memory: the site had a public certificate before, now one that is not publicly logged | **Certificate authority changed** (also when a known authority name appears with an unknown key) |
-| Site memory: another authority, neither of them public | Warning in the list, plus "Trust it for this site" |
-| Site memory: another public authority | Note in the list; the new authority is remembered |
+| Site memory: another authority, neither of them public                                     | Warning in the list, plus "Trust it for this site"                                               |
+| Site memory: another public authority                                                      | Note in the list; the new authority is remembered                                                |
 
 Additional warnings: expired or expiring soon, name not covered, SHA-1 or MD5 in the chain, RSA keys under 2048 bits, TLS 1.0/1.1, a notary that does not trust what it sees.
 
 ## Permissions
 
-| Permission | Used for |
-|---|---|
-| `activeTab` | The address of the tab being checked, only after you click the icon |
-| `storage` | Settings, the last result of each tab and the site memory, all on the device |
-| `debugger` | Reading the certificate from the browser (not included in the lite package) |
+| Permission  | Used for                                                                     |
+| ----------- | ---------------------------------------------------------------------------- |
+| `activeTab` | The address of the tab being checked, only after you click the icon          |
+| `storage`   | Settings, the last result of each tab and the site memory, all on the device |
+| `debugger`  | Reading the certificate from the browser (not included in the lite package)  |
 
 There are no host permissions, so notaries must send CORS headers.
 

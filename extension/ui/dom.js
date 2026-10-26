@@ -6,11 +6,18 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 export function h(tag, props, ...children) {
   const el = document.createElement(tag);
   for (const [key, value] of Object.entries(props || {})) {
-    if (value === null || value === undefined || value === false) continue;
-    if (key === 'class') el.className = value;
-    else if (key === 'text') el.textContent = value;
-    else if (key.startsWith('on') && typeof value === 'function') el.addEventListener(key.slice(2), value);
-    else el.setAttribute(key, value === true ? '' : String(value));
+    if (value === null || value === undefined || value === false) {
+      continue;
+    }
+    if (key === 'class') {
+      el.className = value;
+    } else if (key === 'text') {
+      el.textContent = value;
+    } else if (key.startsWith('on') && typeof value === 'function') {
+      el.addEventListener(key.slice(2), value);
+    } else {
+      el.setAttribute(key, value === true ? '' : String(value));
+    }
   }
   append(el, children);
   return el;
@@ -18,7 +25,9 @@ export function h(tag, props, ...children) {
 
 function append(el, children) {
   for (const child of children.flat(Infinity)) {
-    if (child === null || child === undefined || child === false) continue;
+    if (child === null || child === undefined || child === false) {
+      continue;
+    }
     el.append(child instanceof Node ? child : document.createTextNode(String(child)));
   }
 }
@@ -30,7 +39,9 @@ export function clear(el) {
 
 function svg(tag, attrs) {
   const el = document.createElementNS(SVG_NS, tag);
-  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+  for (const [k, v] of Object.entries(attrs)) {
+    el.setAttribute(k, String(v));
+  }
   return el;
 }
 
@@ -79,7 +90,9 @@ export function icon(name) {
     'aria-hidden': 'true',
     focusable: 'false',
   });
-  for (const [tag, attrs] of ICONS[name] || []) el.append(svg(tag, attrs));
+  for (const [tag, attrs] of ICONS[name] || []) {
+    el.append(svg(tag, attrs));
+  }
   return el;
 }
 
@@ -113,7 +126,13 @@ export function barcode(sha256Hex, { animate = false, label = '' } = {}) {
 
 /** A barcode-shaped placeholder shown while a check runs. */
 export function barcodeSkeleton() {
-  const el = svg('svg', { class: 'barcode skeleton', viewBox: '0 0 158 20', width: 158, height: 20, 'aria-hidden': 'true' });
+  const el = svg('svg', {
+    class: 'barcode skeleton',
+    viewBox: '0 0 158 20',
+    width: 158,
+    height: 20,
+    'aria-hidden': 'true',
+  });
   for (let i = 0; i < 32; i++) {
     const height = 6 + ((i * 7) % 11);
     el.append(svg('rect', { x: i * 5, y: 20 - height, width: 3, height, rx: 0.8 }));

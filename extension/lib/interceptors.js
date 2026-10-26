@@ -53,19 +53,27 @@ const PRODUCTS = [
 ];
 
 function labelsOf(name) {
-  if (!name) return [];
+  if (!name) {
+    return [];
+  }
   return [name.commonName, name.organization, name.organizationalUnit].filter(Boolean);
 }
 
 /** Looks for a known interception product in the issuers of a described chain. */
 export function identifyInterceptor(chain) {
-  if (!Array.isArray(chain) || chain.length === 0) return null;
+  if (!Array.isArray(chain) || chain.length === 0) {
+    return null;
+  }
   const candidates = [];
-  for (const cert of chain) candidates.push(...labelsOf(cert.issuer));
+  for (const cert of chain) {
+    candidates.push(...labelsOf(cert.issuer));
+  }
   candidates.push(...labelsOf(chain[chain.length - 1].subject));
   for (const text of candidates) {
     const hit = PRODUCTS.find((p) => p.pattern.test(text));
-    if (hit) return { name: hit.name, kind: hit.kind, matched: text };
+    if (hit) {
+      return { name: hit.name, kind: hit.kind, matched: text };
+    }
   }
   return null;
 }

@@ -35,13 +35,19 @@ export function stageVariant(variant, outDir) {
 
 const CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
   let c = n;
-  for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+  for (let k = 0; k < 8; k++) {
+    c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+  }
   return c >>> 0;
 });
 function crc32(buf) {
-  if (typeof zlib.crc32 === 'function') return zlib.crc32(buf) >>> 0;
+  if (typeof zlib.crc32 === 'function') {
+    return zlib.crc32(buf) >>> 0;
+  }
   let c = 0xffffffff;
-  for (const byte of buf) c = CRC_TABLE[(c ^ byte) & 0xff] ^ (c >>> 8);
+  for (const byte of buf) {
+    c = CRC_TABLE[(c ^ byte) & 0xff] ^ (c >>> 8);
+  }
   return (c ^ 0xffffffff) >>> 0;
 }
 
@@ -114,7 +120,9 @@ function build(variant) {
   const name = variant === 'lite' ? `ssl-checker-lite-${version}` : `ssl-checker-${version}`;
   const staged = stageVariant(variant, join(DIST, name));
   const zip = zipDirectory(staged, join(DIST, `${name}.zip`));
-  console.log(`${variant.padEnd(4)} → ${relative(ROOT, zip)} (${statSync(zip).size} bytes), unpacked in ${relative(ROOT, staged)}`);
+  console.log(
+    `${variant.padEnd(4)} → ${relative(ROOT, zip)} (${statSync(zip).size} bytes), unpacked in ${relative(ROOT, staged)}`,
+  );
 }
 
 /**
@@ -124,7 +132,9 @@ function build(variant) {
  * junction or another letter case would silently build nothing.
  */
 function isEntryPoint() {
-  if (!process.argv[1]) return false;
+  if (!process.argv[1]) {
+    return false;
+  }
   try {
     return realpathSync.native(process.argv[1]) === realpathSync.native(fileURLToPath(import.meta.url));
   } catch {
@@ -139,5 +149,7 @@ if (isEntryPoint()) {
     process.exit(2);
   }
   mkdirSync(DIST, { recursive: true });
-  for (const variant of requested ? [requested] : ['full', 'lite']) build(variant);
+  for (const variant of requested ? [requested] : ['full', 'lite']) {
+    build(variant);
+  }
 }

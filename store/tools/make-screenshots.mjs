@@ -19,21 +19,49 @@ const OUT = path.join(ROOT, 'store/screenshots');
 const HOST = 'www.example.com';
 
 const pemChain = (file) =>
-  [...readFileSync(path.join(ROOT, 'store/tools/certs', file), 'utf8').matchAll(/-----BEGIN CERTIFICATE-----([\s\S]+?)-----END/g)].map((m) => m[1].replace(/\s+/g, ''));
+  [
+    ...readFileSync(path.join(ROOT, 'store/tools/certs', file), 'utf8').matchAll(
+      /-----BEGIN CERTIFICATE-----([\s\S]+?)-----END/g,
+    ),
+  ].map((m) => m[1].replace(/\s+/g, ''));
 
 const COPY = {
   en: {
-    confirmed: ['See the certificate your browser really received', 'Chain, TLS version, key exchange and Certificate Transparency, read straight from Chrome and confirmed by independent notaries.'],
-    intercepted: ['Catch HTTPS interception', 'Notaries show what the rest of the internet sees. A different, unlogged certificate means something on your path is re-signing your traffic.'],
-    details: ['Every detail, one click away', 'Names, validity, chain, fingerprints, key pin, OCSP and CRL, SCTs and extensions. Copy the PEM or download the chain.'],
-    options: ['You decide when the debugger runs', 'Read the certificate every time, on demand or never, and choose whether SSL Checker remembers the sites you check.'],
+    confirmed: [
+      'See the certificate your browser really received',
+      'Chain, TLS version, key exchange and Certificate Transparency, read straight from Chrome and confirmed by independent notaries.',
+    ],
+    intercepted: [
+      'Catch HTTPS interception',
+      'Notaries show what the rest of the internet sees. A different, unlogged certificate means something on your path is re-signing your traffic.',
+    ],
+    details: [
+      'Every detail, one click away',
+      'Names, validity, chain, fingerprints, key pin, OCSP and CRL, SCTs and extensions. Copy the PEM or download the chain.',
+    ],
+    options: [
+      'You decide when the debugger runs',
+      'Read the certificate every time, on demand or never, and choose whether SSL Checker remembers the sites you check.',
+    ],
     tagline: 'See the real certificate. Catch interception.',
   },
   ro: {
-    confirmed: ['Vezi certificatul primit cu adevărat de browser', 'Lanțul, versiunea TLS, schimbul de chei și Certificate Transparency, citite direct din Chrome și confirmate de notari independenți.'],
-    intercepted: ['Prinde interceptarea HTTPS', 'Notarii arată ce vede restul internetului. Un certificat diferit și neînregistrat public înseamnă că cineva de pe drum îți re-semnează traficul.'],
-    details: ['Toate detaliile, la un clic', 'Nume, valabilitate, lanț, amprente, pin de cheie, OCSP și CRL, SCT-uri și extensii. Copiezi PEM-ul sau descarci lanțul.'],
-    options: ['Tu decizi când rulează <span class="nowrap">debugger-ul</span>', 'Citește certificatul de fiecare dată, la cerere sau niciodată și alege dacă SSL Checker ține minte site-urile verificate.'],
+    confirmed: [
+      'Vezi certificatul primit cu adevărat de browser',
+      'Lanțul, versiunea TLS, schimbul de chei și Certificate Transparency, citite direct din Chrome și confirmate de notari independenți.',
+    ],
+    intercepted: [
+      'Prinde interceptarea HTTPS',
+      'Notarii arată ce vede restul internetului. Un certificat diferit și neînregistrat public înseamnă că cineva de pe drum îți re-semnează traficul.',
+    ],
+    details: [
+      'Toate detaliile, la un clic',
+      'Nume, valabilitate, lanț, amprente, pin de cheie, OCSP și CRL, SCT-uri și extensii. Copiezi PEM-ul sau descarci lanțul.',
+    ],
+    options: [
+      'Tu decizi când rulează <span class="nowrap">debugger-ul</span>',
+      'Citește certificatul de fiecare dată, la cerere sau niciodată și alege dacă SSL Checker ține minte site-urile verificate.',
+    ],
     tagline: 'Vezi certificatul real. Prinde interceptarea.',
   },
 };
@@ -43,43 +71,96 @@ async function buildResults() {
   const intercepted = await describeChain(pemChain('intercepted-chain.pem'));
   const target = { secure: true, host: HOST, port: 443, origin: `https://${HOST}` };
   const notary = (id, name, vantage, ms) => ({
-    id, name, origin: `https://notary-${id}.example.net`, durationMs: ms, state: 'ok', vantage, address: '93.184.215.14',
-    observedAt: new Date().toISOString(), trusted: true, trustError: null,
-    tls: { protocol: 'TLSv1.3', cipher: 'TLS_AES_128_GCM_SHA256', group: 'X25519MLKEM768' }, chain: genuine,
+    id,
+    name,
+    origin: `https://notary-${id}.example.net`,
+    durationMs: ms,
+    state: 'ok',
+    vantage,
+    address: '93.184.215.14',
+    observedAt: new Date().toISOString(),
+    trusted: true,
+    trustError: null,
+    tls: { protocol: 'TLSv1.3', cipher: 'TLS_AES_128_GCM_SHA256', group: 'X25519MLKEM768' },
+    chain: genuine,
   });
   const notaries = [notary('fra', 'Frankfurt', 'Frankfurt, DE', 48), notary('iad', 'Virginia', 'Ashburn, US', 112)];
-  const sct = (log, minute) => ({ status: 'Verified', origin: 'Embedded in certificate', logDescription: `Example CT log '${log}'`, logId: '', timestamp: genuine[0].notBefore.replace(/:\d\d\.\d+Z$/, `:0${minute}.000Z`) });
+  const sct = (log, minute) => ({
+    status: 'Verified',
+    origin: 'Embedded in certificate',
+    logDescription: `Example CT log '${log}'`,
+    logId: '',
+    timestamp: genuine[0].notBefore.replace(/:\d\d\.\d+Z$/, `:0${minute}.000Z`),
+  });
   const genuineLocal = {
-    state: 'ok', via: 'probe', chain: genuine, remoteAddress: { ip: '93.184.215.14', port: 443 }, httpProtocol: 'h2',
+    state: 'ok',
+    via: 'probe',
+    chain: genuine,
+    remoteAddress: { ip: '93.184.215.14', port: 443 },
+    httpProtocol: 'h2',
     security: {
-      protocol: 'TLS 1.3', keyExchange: '', keyExchangeGroup: 'X25519MLKEM768', cipher: 'AES_128_GCM', mac: null,
-      serverSignatureAlgorithm: 0x0403, encryptedClientHello: true, certificateTransparencyCompliance: 'compliant',
+      protocol: 'TLS 1.3',
+      keyExchange: '',
+      keyExchangeGroup: 'X25519MLKEM768',
+      cipher: 'AES_128_GCM',
+      mac: null,
+      serverSignatureAlgorithm: 0x0403,
+      encryptedClientHello: true,
+      certificateTransparencyCompliance: 'compliant',
       signedCertificateTimestamps: [sct('Aster 2026h2', 1), sct('Birch 2026h2', 2), sct('Cedar 2026h2', 3)],
     },
   };
   const interceptedLocal = {
-    state: 'ok', via: 'probe', chain: intercepted, remoteAddress: { ip: '93.184.215.14', port: 443 }, httpProtocol: 'h2',
+    state: 'ok',
+    via: 'probe',
+    chain: intercepted,
+    remoteAddress: { ip: '93.184.215.14', port: 443 },
+    httpProtocol: 'h2',
     security: {
-      protocol: 'TLS 1.3', keyExchange: '', keyExchangeGroup: 'X25519', cipher: 'AES_256_GCM', mac: null,
-      serverSignatureAlgorithm: 0x0804, encryptedClientHello: false, certificateTransparencyCompliance: 'unknown', signedCertificateTimestamps: [],
+      protocol: 'TLS 1.3',
+      keyExchange: '',
+      keyExchangeGroup: 'X25519',
+      cipher: 'AES_256_GCM',
+      mac: null,
+      serverSignatureAlgorithm: 0x0804,
+      encryptedClientHello: false,
+      certificateTransparencyCompliance: 'unknown',
+      signedCertificateTimestamps: [],
     },
   };
   const result = (local) => ({
-    v: 1, origin: target.origin, host: HOST, port: 443, secure: true, internal: false, checkedAt: new Date().toISOString(),
-    localMode: 'always', localAvailable: true, endpointsConfigured: notaries.length, local, notaries,
+    v: 1,
+    origin: target.origin,
+    host: HOST,
+    port: 443,
+    secure: true,
+    internal: false,
+    checkedAt: new Date().toISOString(),
+    localMode: 'always',
+    localAvailable: true,
+    endpointsConfigured: notaries.length,
+    local,
+    notaries,
     verdict: computeVerdict({ target, local, notaries }),
   });
   return { confirmed: result(genuineLocal), intercepted: result(interceptedLocal) };
 }
 
 async function popupShot(ctx, sw, extId, result, tabId, { expand = false } = {}) {
-  await sw.evaluate(async ([key, value]) => chrome.storage.session.set({ [key]: value }), [`result:${tabId}`, { ...result, tabId, checkedAt: new Date().toISOString() }]);
+  await sw.evaluate(
+    async ([key, value]) => chrome.storage.session.set({ [key]: value }),
+    [`result:${tabId}`, { ...result, tabId, checkedAt: new Date().toISOString() }],
+  );
   const page = await ctx.newPage();
   await page.setViewportSize({ width: 400, height: 600 });
-  await page.goto(`chrome-extension://${extId}/popup/popup.html?tabId=${tabId}&url=${encodeURIComponent(`https://${HOST}/`)}`);
+  await page.goto(
+    `chrome-extension://${extId}/popup/popup.html?tabId=${tabId}&url=${encodeURIComponent(`https://${HOST}/`)}`,
+  );
   await page.waitForSelector('#content:not(.loading) .verdict');
   if (expand) {
-    for (const summary of await page.$$('details > summary')) await summary.click();
+    for (const summary of await page.$$('details > summary')) {
+      await summary.click();
+    }
     await page.evaluate(() => document.querySelector('details:last-of-type').scrollIntoView({ block: 'start' }));
     await page.evaluate(() => window.scrollBy(0, -380));
   }
@@ -174,10 +255,18 @@ async function main() {
       executablePath: process.env.CHROME_PATH || undefined,
       headless: true,
       deviceScaleFactor: 2,
-      args: [`--disable-extensions-except=${ext}`, `--load-extension=${ext}`, '--headless=new', `--lang=${lang}`, '--no-proxy-server'],
+      args: [
+        `--disable-extensions-except=${ext}`,
+        `--load-extension=${ext}`,
+        '--headless=new',
+        `--lang=${lang}`,
+        '--no-proxy-server',
+      ],
     });
     let [sw] = ctx.serviceWorkers();
-    if (!sw) sw = await ctx.waitForEvent('serviceworker');
+    if (!sw) {
+      sw = await ctx.waitForEvent('serviceworker');
+    }
     const extId = new URL(sw.url()).host;
     const shots = {
       confirmed: await popupShot(ctx, sw, extId, results.confirmed, 101),
@@ -196,7 +285,14 @@ async function main() {
       const isOptions = key === 'options';
       await render(
         composer,
-        composeHtml({ title, body, shot: dataUri(shots[key], 'image/png'), shotWidth: isOptions ? 520 : 440, shotHeight: isOptions ? 731 : 660, icon }),
+        composeHtml({
+          title,
+          body,
+          shot: dataUri(shots[key], 'image/png'),
+          shotWidth: isOptions ? 520 : 440,
+          shotHeight: isOptions ? 731 : 660,
+          icon,
+        }),
         path.join(dir, `${i + 1}-${key}.png`),
         1280,
         800,

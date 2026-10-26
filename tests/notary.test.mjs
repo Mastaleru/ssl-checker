@@ -56,7 +56,9 @@ before(async () => {
 });
 
 after(() => {
-  for (const child of children) child.kill();
+  for (const child of children) {
+    child.kill();
+  }
   target.close();
 });
 
@@ -87,8 +89,21 @@ test('health endpoint and CORS preflight', async () => {
 
 test('refuses private and reserved targets (SSRF protection)', async () => {
   const base = await startNotary({ ALLOWED_PORTS: `443,${targetPort}` });
-  const refused = ['127.0.0.1', 'localhost', '10.0.0.1', '169.254.169.254', '192.168.1.1', '100.64.1.1', '[::1]', '0.0.0.0',
-    '::ffff:127.0.0.1', '::ffff:7f00:1', 'fd00::1', 'fe80::1', '64:ff9b::7f00:1'];
+  const refused = [
+    '127.0.0.1',
+    'localhost',
+    '10.0.0.1',
+    '169.254.169.254',
+    '192.168.1.1',
+    '100.64.1.1',
+    '[::1]',
+    '0.0.0.0',
+    '::ffff:127.0.0.1',
+    '::ffff:7f00:1',
+    'fd00::1',
+    'fe80::1',
+    '64:ff9b::7f00:1',
+  ];
   for (const host of refused) {
     const { status, body } = await get(base, `/v1/cert?host=${encodeURIComponent(host)}&port=443`);
     assert.equal(status, 403, host);
@@ -118,7 +133,11 @@ test('refuses ports that are not allowed and malformed hosts', async () => {
 });
 
 test('requires the bearer token when one is configured', async () => {
-  const base = await startNotary({ NOTARY_TOKEN: 's3cret-token', ALLOW_PRIVATE: '1', ALLOWED_PORTS: String(targetPort) });
+  const base = await startNotary({
+    NOTARY_TOKEN: 's3cret-token',
+    ALLOW_PRIVATE: '1',
+    ALLOWED_PORTS: String(targetPort),
+  });
   const path = `/v1/cert?host=localhost&port=${targetPort}`;
   assert.equal((await get(base, path)).status, 401);
   assert.equal((await get(base, path, { Authorization: 'Bearer wrong' })).status, 401);
@@ -128,7 +147,9 @@ test('requires the bearer token when one is configured', async () => {
 test('rate limits per client', async () => {
   const base = await startNotary({ RATE_LIMIT: '2', ALLOWED_PORTS: '443' });
   const statuses = [];
-  for (let i = 0; i < 3; i++) statuses.push((await get(base, '/v1/cert?host=10.0.0.1')).status);
+  for (let i = 0; i < 3; i++) {
+    statuses.push((await get(base, '/v1/cert?host=10.0.0.1')).status);
+  }
   assert.deepEqual(statuses, [403, 403, 429]);
 });
 

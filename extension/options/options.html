@@ -63,11 +63,27 @@
           <h3 data-i18n="optAddSourceTitle"></h3>
           <label class="field">
             <span data-i18n="fieldName"></span>
-            <input id="ep-name" name="name" type="text" maxlength="60" autocomplete="off" data-i18n-attr="placeholder:fieldNamePlaceholder" />
+            <input
+              id="ep-name"
+              name="name"
+              type="text"
+              maxlength="60"
+              autocomplete="off"
+              data-i18n-attr="placeholder:fieldNamePlaceholder"
+            />
           </label>
           <label class="field">
             <span data-i18n="fieldUrl"></span>
-            <input id="ep-url" name="url" type="url" required autocomplete="off" spellcheck="false" class="mono" placeholder="https://notary.example.net/v1/cert" />
+            <input
+              id="ep-url"
+              name="url"
+              type="url"
+              required
+              autocomplete="off"
+              spellcheck="false"
+              class="mono"
+              placeholder="https://notary.example.net/v1/cert"
+            />
             <small data-i18n="fieldUrlHelp"></small>
           </label>
           <label class="field">
@@ -94,7 +110,8 @@
         <details class="protocol">
           <summary data-i18n="optProtocolTitle"></summary>
           <p data-i18n="optProtocolIntro"></p>
-          <pre class="mono">GET https://notary.example.net/v1/cert?host=example.com&amp;port=443
+          <pre class="mono">
+GET https://notary.example.net/v1/cert?host=example.com&amp;port=443
 Authorization: Bearer &lt;token&gt;
 
 200 OK

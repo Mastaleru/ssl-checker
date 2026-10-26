@@ -2,8 +2,12 @@
   "localeCode": { "message": "en", "description": "BCP 47 tag used to format dates and plurals in this language." },
   "extName": { "message": "SSL Checker" },
   "extNameLite": { "message": "SSL Checker Lite" },
-  "extDescription": { "message": "See the real TLS certificate of the current site and detect interception by comparing it with independent notaries." },
-  "extDescriptionLite": { "message": "See the TLS certificate of the current site as independent notary servers receive it." },
+  "extDescription": {
+    "message": "See the real TLS certificate of the current site and detect interception by comparing it with independent notaries."
+  },
+  "extDescriptionLite": {
+    "message": "See the TLS certificate of the current site as independent notary servers receive it."
+  },
   "actionTitle": { "message": "Check this site's certificate" },
 
   "schemeHttps": { "message": "HTTPS connection" },
@@ -14,7 +18,9 @@
   "unsupportedBody": { "message": "Open a website (http or https) and click the icon again to see its certificate." },
   "loadingTitle": { "message": "Checking the certificate…" },
   "loadingReload": { "message": "Reloading the page to read the certificate…" },
-  "loadingDebuggerBar": { "message": "While the certificate is read, Chrome shows a bar for a few seconds saying SSL Checker is debugging the browser." },
+  "loadingDebuggerBar": {
+    "message": "While the certificate is read, Chrome shows a bar for a few seconds saying SSL Checker is debugging the browser."
+  },
   "checkFailedTitle": { "message": "The check could not run" },
   "checkFailedBody": { "message": "Error: $1" },
   "checkedAt": { "message": "Checked $1" },
@@ -28,9 +34,15 @@
   "fingerprintLabel": { "message": "SHA-256 fingerprint $1" },
   "externalSkippedInternal": { "message": "Internal site: external sources cannot reach it, so they were not asked." },
   "noSourcesNote": { "message": "Add an external source to compare what your browser receives with what others see." },
-  "noSourcesNoteLite": { "message": "This version reads certificates only through external sources. Add one in Options." },
-  "askLocalText": { "message": "Reading from your browser is set to on demand. Chrome will show its debugging bar for a few seconds." },
-  "probeBlockedText": { "message": "This page blocks the small request used to read the certificate (Content Security Policy). Reloading the page reads it reliably." },
+  "noSourcesNoteLite": {
+    "message": "This version reads certificates only through external sources. Add one in Options."
+  },
+  "askLocalText": {
+    "message": "Reading from your browser is set to on demand. Chrome will show its debugging bar for a few seconds."
+  },
+  "probeBlockedText": {
+    "message": "This page blocks the small request used to read the certificate (Content Security Policy). Reloading the page reads it reliably."
+  },
 
   "actionAddSource": { "message": "Add source" },
   "actionReadLocal": { "message": "Read from browser" },
@@ -51,40 +63,74 @@
   "verdictConfirmedTitleOne": { "message": "Confirmed by $1 external source" },
   "verdictConfirmedTitleFew": { "message": "Confirmed by $1 external sources" },
   "verdictConfirmedTitleOther": { "message": "Confirmed by $1 external sources" },
-  "verdictConfirmedBody": { "message": "Your browser receives the same certificate the external sources see. Nobody is replacing it on the way." },
+  "verdictConfirmedBody": {
+    "message": "Your browser receives the same certificate the external sources see. Nobody is replacing it on the way."
+  },
   "verdictSameCaTitle": { "message": "Same issuer, different certificate" },
-  "verdictSameCaBody": { "message": "The external sources receive another certificate from the same authority ($1). That is normal for CDNs and during certificate rotation." },
+  "verdictSameCaBody": {
+    "message": "The external sources receive another certificate from the same authority ($1). That is normal for CDNs and during certificate rotation."
+  },
   "verdictPublicTitle": { "message": "Publicly logged certificate" },
-  "verdictPublicBody": { "message": "Chrome confirmed the certificate is in the public Certificate Transparency logs, so no local proxy or antivirus made it. Add external sources to cross-check it." },
-  "verdictPublicBodyNoAnswer": { "message": "Chrome confirmed the certificate is in the public Certificate Transparency logs, so no local proxy or antivirus made it. The external sources did not answer." },
+  "verdictPublicBody": {
+    "message": "Chrome confirmed the certificate is in the public Certificate Transparency logs, so no local proxy or antivirus made it. Add external sources to cross-check it."
+  },
+  "verdictPublicBodyNoAnswer": {
+    "message": "Chrome confirmed the certificate is in the public Certificate Transparency logs, so no local proxy or antivirus made it. The external sources did not answer."
+  },
   "verdictPrivateCaTitle": { "message": "Not confirmed as a public certificate" },
-  "verdictPrivateCaBody": { "message": "Chrome did not confirm that this certificate, issued by $1, is in the public Certificate Transparency logs. That happens when it comes from a locally installed authority (company network, antivirus, internal server) or when the browser's list of CT logs is out of date. Add external sources to find out whether the connection is intercepted." },
+  "verdictPrivateCaBody": {
+    "message": "Chrome did not confirm that this certificate, issued by $1, is in the public Certificate Transparency logs. That happens when it comes from a locally installed authority (company network, antivirus, internal server) or when the browser's list of CT logs is out of date. Add external sources to find out whether the connection is intercepted."
+  },
   "verdictInterceptedTitle": { "message": "Connection likely intercepted" },
   "verdictInterceptedByTitle": { "message": "Intercepted by $1" },
-  "verdictInterceptedBody": { "message": "Your browser receives a certificate issued by $1, but external sources see one issued by $2, and Chrome did not confirm yours is publicly logged. Most likely something between you and the site (company proxy, antivirus or something else) decrypts and re-signs the traffic." },
+  "verdictInterceptedBody": {
+    "message": "Your browser receives a certificate issued by $1, but external sources see one issued by $2, and Chrome did not confirm yours is publicly logged. Most likely something between you and the site (company proxy, antivirus or something else) decrypts and re-signs the traffic."
+  },
   "verdictSplitTitle": { "message": "Sources disagree" },
-  "verdictSplitBody": { "message": "Same certificate as yours: $1. A different one, issued by $2: $3. Either your connection is intercepted and the matching sources share your network, or the network of the other sources is intercepted." },
-  "verdictInterceptorBody": { "message": "The certificate is issued by $1 and is not in the public Certificate Transparency logs, which is how HTTPS inspection products work." },
+  "verdictSplitBody": {
+    "message": "Same certificate as yours: $1. A different one, issued by $2: $3. Either your connection is intercepted and the matching sources share your network, or the network of the other sources is intercepted."
+  },
+  "verdictInterceptorBody": {
+    "message": "The certificate is issued by $1 and is not in the public Certificate Transparency logs, which is how HTTPS inspection products work."
+  },
   "interceptorIdentified": { "message": "$1 is $2." },
   "verdictConflictTitle": { "message": "Sources see different certificates" },
-  "verdictConflictBody": { "message": "Your browser and the external sources see different public certificates (yours issued by $1, theirs by $2). Sites behind several CDNs do this, but it is worth a look." },
+  "verdictConflictBody": {
+    "message": "Your browser and the external sources see different public certificates (yours issued by $1, theirs by $2). Sites behind several CDNs do this, but it is worth a look."
+  },
   "verdictExternalTitleOne": { "message": "Seen by $1 external source" },
   "verdictExternalTitleFew": { "message": "Seen by $1 external sources" },
   "verdictExternalTitleOther": { "message": "Seen by $1 external sources" },
-  "verdictExternalBody": { "message": "Reading from your browser is off, so an interception on your network cannot be detected. This is what the sources see." },
-  "verdictExternalBodyAsk": { "message": "Read the certificate from your browser to compare it with what the sources see." },
-  "verdictExternalBodyLocalFailed": { "message": "The certificate could not be read from your browser, so an interception on your network cannot be ruled out. This is what the sources see." },
-  "verdictExternalBodyLite": { "message": "This version cannot read the certificate from your browser, so an interception on your network cannot be detected. This is what the sources see." },
+  "verdictExternalBody": {
+    "message": "Reading from your browser is off, so an interception on your network cannot be detected. This is what the sources see."
+  },
+  "verdictExternalBodyAsk": {
+    "message": "Read the certificate from your browser to compare it with what the sources see."
+  },
+  "verdictExternalBodyLocalFailed": {
+    "message": "The certificate could not be read from your browser, so an interception on your network cannot be ruled out. This is what the sources see."
+  },
+  "verdictExternalBodyLite": {
+    "message": "This version cannot read the certificate from your browser, so an interception on your network cannot be detected. This is what the sources see."
+  },
   "verdictExternalDisagreeTitle": { "message": "External sources disagree" },
   "verdictExternalDisagreeBody": { "message": "The external sources see different certificates from one another." },
   "verdictHttpTitle": { "message": "Unencrypted page" },
-  "verdictHttpBody": { "message": "This page loaded over plain HTTP, so anyone on the network can read or change it. No certificate protects it." },
-  "verdictHttpBodyWithCert": { "message": "This page loaded over plain HTTP, so anyone on the network can read or change it. Below is the certificate the server offers on HTTPS (port 443)." },
+  "verdictHttpBody": {
+    "message": "This page loaded over plain HTTP, so anyone on the network can read or change it. No certificate protects it."
+  },
+  "verdictHttpBodyWithCert": {
+    "message": "This page loaded over plain HTTP, so anyone on the network can read or change it. Below is the certificate the server offers on HTTPS (port 443)."
+  },
   "verdictNoSourcesTitle": { "message": "No certificate to show" },
   "verdictNoSourcesBody": { "message": "Turn on reading from the browser or add an external source in Options." },
   "verdictNoSourcesLite": { "message": "Add an external source in Options to see this site's certificate." },
-  "verdictNoSourcesLocalFailed": { "message": "The certificate could not be read from your browser and no external source answered." },
-  "verdictInternalBody": { "message": "External sources cannot reach internal sites, and the certificate was not read from your browser." },
+  "verdictNoSourcesLocalFailed": {
+    "message": "The certificate could not be read from your browser and no external source answered."
+  },
+  "verdictInternalBody": {
+    "message": "External sources cannot reach internal sites, and the certificate was not read from your browser."
+  },
   "verdictAllSourcesFailed": { "message": "None of the external sources answered. Check them in Options." },
   "verdictAskTitle": { "message": "Ready to read the certificate" },
   "verdictAskBody": { "message": "Reading from the browser is set to on demand." },
@@ -105,7 +151,9 @@
   "warnObsoleteProtocol": { "message": "Obsolete protocol: $1." },
   "warnNotaryUntrusted": { "message": "$1 does not trust the certificate it sees: $2." },
   "warnNotPubliclyLogged": { "message": "Chrome did not confirm that this certificate is publicly logged." },
-  "warnSomeSourcesDiffer": { "message": "Different certificate seen by $1 (issued by $2). Yours is publicly logged, so the difference is probably on their side." },
+  "warnSomeSourcesDiffer": {
+    "message": "Different certificate seen by $1 (issued by $2). Yours is publicly logged, so the difference is probably on their side."
+  },
 
   "sectionCertificate": { "message": "Certificate" },
   "sectionCertificateExternal": { "message": "Certificate seen by $1" },
@@ -165,7 +213,9 @@
   "detailExtensions": { "message": "Extensions" },
   "critical": { "message": "critical" },
 
-  "localErr_restrictedPage": { "message": "Chrome does not allow reading this page (internal page, error page or another extension's page)." },
+  "localErr_restrictedPage": {
+    "message": "Chrome does not allow reading this page (internal page, error page or another extension's page)."
+  },
   "localErr_blockedByPolicy": { "message": "Your organization's policy blocks reading certificates from the browser." },
   "localErr_probeBlocked": { "message": "The page blocked the request used to read the certificate." },
   "localErr_reloadFailed": { "message": "The page did not finish loading in time." },
@@ -196,12 +246,16 @@
   "notaryErr_other": { "message": "Error $1 $2" },
 
   "sectionHistory": { "message": "History" },
-  "historyFirst": { "message": "First check of this site. From now on SSL Checker remembers that its certificate comes from $1." },
+  "historyFirst": {
+    "message": "First check of this site. From now on SSL Checker remembers that its certificate comes from $1."
+  },
   "historyKnown": { "message": "Same certificate authority as in your earlier checks: $1, $2 since $3." },
   "historyLearned": { "message": "From now on SSL Checker also remembers $1 for this site." },
   "historyChangedBefore": { "message": "Until now: $1, $2, the last one on $3." },
   "historyChangedNow": { "message": "Now: $1." },
-  "historySameName": { "message": "The authority has the same name as before, but it signs with a key never seen for this site." },
+  "historySameName": {
+    "message": "The authority has the same name as before, but it signs with a key never seen for this site."
+  },
   "historyTrusted": { "message": "$1 is now trusted for this site." },
   "historyForgotten": { "message": "This site was forgotten. The next check starts its history again." },
   "historyIncognito": { "message": "Site memory is off in incognito windows: nothing is recorded or compared." },
@@ -211,17 +265,29 @@
   "actionTrustCa": { "message": "Trust it for this site" },
   "actionForgetSite": { "message": "Forget this site" },
   "verdictCaChangedTitle": { "message": "Certificate authority changed" },
-  "verdictCaChangedBody": { "message": "In your earlier checks this site always had a public certificate from $1. Now your browser receives one from $2 that is not publicly logged. Most likely something between you and the site intercepts the connection." },
-  "verdictCaChangedSameNameBody": { "message": "The certificate claims to come from $1, as before, but it is signed with a key never seen for this site and it is not publicly logged. Most likely something between you and the site intercepts the connection." },
+  "verdictCaChangedBody": {
+    "message": "In your earlier checks this site always had a public certificate from $1. Now your browser receives one from $2 that is not publicly logged. Most likely something between you and the site intercepts the connection."
+  },
+  "verdictCaChangedSameNameBody": {
+    "message": "The certificate claims to come from $1, as before, but it is signed with a key never seen for this site and it is not publicly logged. Most likely something between you and the site intercepts the connection."
+  },
   "warnCaChanged": { "message": "This site's certificate authority changed: $1 before, $2 now." },
-  "warnCaChangedSameName": { "message": "The certificate claims to come from $1, as before, but it is signed with a key never seen for this site." },
+  "warnCaChangedSameName": {
+    "message": "The certificate claims to come from $1, as before, but it is signed with a key never seen for this site."
+  },
   "warnCaChangedPublic": { "message": "This site switched from $1 to $2. The new certificate is publicly logged." },
-  "warnCaChangedNowPublic": { "message": "Earlier checks of this site went through $1, an authority installed on this computer or network (for example a company proxy). Now the certificate is public." },
+  "warnCaChangedNowPublic": {
+    "message": "Earlier checks of this site went through $1, an authority installed on this computer or network (for example a company proxy). Now the certificate is public."
+  },
 
   "optMemoryTitle": { "message": "Site memory" },
-  "optMemoryIntro": { "message": "When the certificate is read from your browser, SSL Checker remembers which authority issued it for each site you check, and warns you when a site you know suddenly arrives with a different one. Everything stays on this device, and nothing is recorded in incognito windows." },
+  "optMemoryIntro": {
+    "message": "When the certificate is read from your browser, SSL Checker remembers which authority issued it for each site you check, and warns you when a site you know suddenly arrives with a different one. Everything stays on this device, and nothing is recorded in incognito windows."
+  },
   "fieldMemoryEnabled": { "message": "Remember the certificate authority of the sites I check" },
-  "optMemoryHelp": { "message": "Turning it off stops recording. To delete what is already stored, use Forget all sites." },
+  "optMemoryHelp": {
+    "message": "Turning it off stops recording. To delete what is already stored, use Forget all sites."
+  },
   "memoryCountOne": { "message": "$1 site remembered" },
   "memoryCountFew": { "message": "$1 sites remembered" },
   "memoryCountOther": { "message": "$1 sites remembered" },
@@ -231,8 +297,12 @@
   "optionsTitle": { "message": "SSL Checker options" },
   "optionsIntro": { "message": "Choose how the certificate is read and which external sources it is compared with." },
   "optLocalTitle": { "message": "Reading from your browser" },
-  "optLocalIntro": { "message": "This shows the exact certificate your browser received, so an interception on your network can be detected. Chrome has no dedicated API for it, so the extension attaches its debugger to the tab for about a second; meanwhile Chrome shows a bar saying SSL Checker is debugging the browser." },
-  "optLocalUnavailable": { "message": "This version of SSL Checker does not include the debugger permission, so certificates are read only through external sources." },
+  "optLocalIntro": {
+    "message": "This shows the exact certificate your browser received, so an interception on your network can be detected. Chrome has no dedicated API for it, so the extension attaches its debugger to the tab for about a second; meanwhile Chrome shows a bar saying SSL Checker is debugging the browser."
+  },
+  "optLocalUnavailable": {
+    "message": "This version of SSL Checker does not include the debugger permission, so certificates are read only through external sources."
+  },
   "modeAlways": { "message": "Every time" },
   "modeAlwaysHelp": { "message": "Read the certificate whenever you open SSL Checker." },
   "modeAsk": { "message": "On demand" },
@@ -240,13 +310,17 @@
   "modeNever": { "message": "Never" },
   "modeNeverHelp": { "message": "Use only external sources. The debugging bar never appears." },
   "optSourcesTitle": { "message": "External sources" },
-  "optSourcesIntro": { "message": "Each source is a notary server that connects to the site from elsewhere on the internet and reports the certificate it receives. Only the site's host name and port are sent to it." },
+  "optSourcesIntro": {
+    "message": "Each source is a notary server that connects to the site from elsewhere on the internet and reports the certificate it receives. Only the site's host name and port are sent to it."
+  },
   "optSourcesEmpty": { "message": "No sources yet." },
   "optAddSourceTitle": { "message": "Add a source" },
   "fieldName": { "message": "Name" },
   "fieldNamePlaceholder": { "message": "Frankfurt server" },
   "fieldUrl": { "message": "Address" },
-  "fieldUrlHelp": { "message": "HTTPS address of the notary. Put {host} and {port} in it if the server expects them in the path; otherwise they are added as ?host=…&port=…" },
+  "fieldUrlHelp": {
+    "message": "HTTPS address of the notary. Put {host} and {port} in it if the server expects them in the path; otherwise they are added as ?host=…&port=…"
+  },
   "fieldToken": { "message": "Access token (optional)" },
   "fieldTokenHelp": { "message": "Sent as Authorization: Bearer. Stored only on this device." },
   "endpointEnabled": { "message": "Use $1" },
@@ -255,7 +329,9 @@
   "testOk": { "message": "Works: it sees example.com's certificate issued by $1, from $2, in $3 ms." },
   "testFailed": { "message": "Failed: $1" },
   "endpointErrorInvalidUrl": { "message": "Enter a valid address." },
-  "endpointErrorCredentialsInUrl": { "message": "Do not put a user name or password in the address; use the token field." },
+  "endpointErrorCredentialsInUrl": {
+    "message": "Do not put a user name or password in the address; use the token field."
+  },
   "endpointErrorFragment": { "message": "Remove the # part from the address." },
   "endpointErrorPlaceholderInHost": { "message": "{host} can appear only in the path or the query of the address." },
   "endpointErrorHttps": { "message": "The address must use HTTPS (plain HTTP is allowed only for localhost)." },
@@ -264,8 +340,12 @@
   "optAdvancedTitle": { "message": "Advanced" },
   "fieldTimeout": { "message": "Wait for each source (seconds)" },
   "optProtocolTitle": { "message": "Notary protocol" },
-  "optProtocolIntro": { "message": "Any server that answers this request can be a source. The reference implementation is a single Node.js file you can run on your own server." },
-  "optProtocolErrors": { "message": "On errors, answer with a 4xx or 5xx status and {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}}. The extension holds no host permissions, so the server must send CORS headers." },
+  "optProtocolIntro": {
+    "message": "Any server that answers this request can be a source. The reference implementation is a single Node.js file you can run on your own server."
+  },
+  "optProtocolErrors": {
+    "message": "On errors, answer with a 4xx or 5xx status and {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}}. The extension holds no host permissions, so the server must send CORS headers."
+  },
   "saved": { "message": "Saved" },
   "versionLabel": { "message": "Version $1" }
 }
