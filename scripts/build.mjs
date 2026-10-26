@@ -4,7 +4,7 @@
 //   dist/ssl-checker-lite-<version>.zip  lite: external sources only, no debugger permission
 // Usage: node scripts/build.mjs [full|lite]   (both when omitted)
 
-import { cpSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, readdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import zlib from 'node:zlib';
@@ -117,11 +117,27 @@ function build(variant) {
   console.log(`${variant.padEnd(4)} → ${relative(ROOT, zip)} (${statSync(zip).size} bytes), unpacked in ${relative(ROOT, staged)}`);
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  mkdirSync(DIST, { recursive: true });
-  const requested = process.argv[2];
-  for (const variant of requested ? [requested] : ['full', 'lite']) {
-    if (!['full', 'lite'].includes(variant)) throw new Error(`Unknown variant "${variant}"`);
-    build(variant);
+/**
+ * True when this file is the script Node was started with (not imported by a
+ * test). Node resolves links for the module URL but not for process.argv[1], so
+ * both are compared as real paths: otherwise a run through a symlink, a Windows
+ * junction or another letter case would silently build nothing.
+ */
+function isEntryPoint() {
+  if (!process.argv[1]) return false;
+  try {
+    return realpathSync.native(process.argv[1]) === realpathSync.native(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
   }
+}
+
+if (isEntryPoint()) {
+  const requested = process.argv[2];
+  if (requested && !['full', 'lite'].includes(requested)) {
+    console.error(`Unknown variant "${requested}". Usage: node scripts/build.mjs [full|lite]`);
+    process.exit(2);
+  }
+  mkdirSync(DIST, { recursive: true });
+  for (const variant of requested ? [requested] : ['full', 'lite']) build(variant);
 }
