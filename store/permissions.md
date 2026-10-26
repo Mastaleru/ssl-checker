@@ -46,5 +46,5 @@ Host `store/privacy-policy.html` (on GitHub Pages, for example) and put its addr
 
 > 1. Open https://www.google.com and click the SSL Checker icon. Chrome shows the "SSL Checker started debugging this browser" bar for about one second while the certificate is read; the popup then shows "Publicly logged certificate" and the certificate details.
 > 2. Options → External sources → add the notary below, then click the icon again: the popup shows "Confirmed by 1 external source".
->    Notary: <your notary URL>   Token: <your test token>
+>    Notary: <your notary URL>, token: <your test token>
 > 3. Options → Reading from your browser → Never: the popup no longer attaches the debugger and shows only the external result.

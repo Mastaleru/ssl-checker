@@ -1,0 +1,5 @@
+# Prettier also skips everything listed in .gitignore.
+# Written by npm.
+package-lock.json
+# Written by tests/tools/dump_expected.py.
+tests/fixtures/expected.json

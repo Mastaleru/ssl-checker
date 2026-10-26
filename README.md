@@ -84,6 +84,16 @@ npm run test:e2e            # 15 scenarios in Chromium; E2E_LANG=ro for the Roma
 
 The end-to-end tests need Chromium or Chrome for Testing, because Google Chrome ignores `--load-extension` since version 137. Interception is simulated on a single machine: the browser visits a server with a "Contoso Inspection CA" certificate, while the notary is pointed at the server with the "real" certificate. For the site memory, one server swaps its certificate between two checks, and a check in an incognito window confirms that nothing is recorded there (that scenario loads the extension through the DevTools protocol, the only way to allow it in incognito from a test).
 
+## Code style
+
+Prettier formats the code and the other files it supports (`.prettierrc.json`: lines up to 120 characters, single quotes). Prettier never adds braces, so ESLint enforces that rule: the body of every `if`, `else`, `for`, `while` and `do` is a block in braces (`curly` in `eslint.config.mjs`).
+
+```bash
+npm install
+npm run lint                # checks the braces and the formatting, changes nothing
+npm run format              # adds the missing braces, then formats with Prettier
+```
+
 ## Build and publish
 
 ```bash
