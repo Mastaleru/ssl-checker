@@ -433,6 +433,9 @@ async function memoryAction(type, button) {
 
 function historySection(r) {
   const m = r.memory;
+  if (m && m.status === 'incognito') {
+    return h('section', { class: 'section history' }, h('h3', {}, t('sectionHistory')), h('p', {}, t('historyIncognito')));
+  }
   if (!m || !['first', 'known', 'changed', 'forgotten'].includes(m.status)) return null;
   const lines = [];
   const actions = [];

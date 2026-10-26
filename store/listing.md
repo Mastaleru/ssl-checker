@@ -32,7 +32,7 @@ Add notary servers you trust. Each one connects to the same site from elsewhere 
 • Sources that disagree with each other are reported as such, with an explanation of what each case can mean.
 
 REMEMBERS THE SITES YOU CHECK
-SSL Checker remembers which certificate authority each site you check uses, and warns you when a site you know suddenly arrives with a different one, for example on a new Wi-Fi network. This memory stays on your device and can be turned off or wiped in Options.
+SSL Checker remembers which certificate authority each site you check uses, and warns you when a site you know suddenly arrives with a different one, for example on a new Wi-Fi network. This memory stays on your device, is never used in incognito windows, and can be turned off or wiped in Options.
 
 YOU DECIDE WHEN THE DEBUGGER RUNS
 Chrome has no dedicated API for the certificate of a loaded page, so SSL Checker attaches Chrome's debugger to the tab for about a second when it reads one. While it does, Chrome shows a bar saying the extension is debugging the browser. In Options you choose: every time, on demand (one click in the popup), or never (external sources only).
@@ -69,7 +69,7 @@ Adaugă servere notar în care ai încredere. Fiecare se conectează la același
 • Sursele care nu sunt de acord între ele sunt raportate ca atare, cu explicația fiecărui caz posibil.
 
 ȚINE MINTE SITE-URILE VERIFICATE
-SSL Checker ține minte ce autoritate de certificare folosește fiecare site pe care îl verifici și te avertizează când un site cunoscut apare brusc cu alta, de exemplu într-o rețea Wi-Fi nouă. Memoria rămâne pe dispozitivul tău și poate fi oprită sau ștearsă din Opțiuni.
+SSL Checker ține minte ce autoritate de certificare folosește fiecare site pe care îl verifici și te avertizează când un site cunoscut apare brusc cu alta, de exemplu într-o rețea Wi-Fi nouă. Memoria rămâne pe dispozitivul tău, nu e folosită niciodată în ferestrele incognito și poate fi oprită sau ștearsă din Opțiuni.
 
 TU DECIZI CÂND RULEAZĂ DEBUGGER-UL
 Chrome nu are un API dedicat pentru certificatul unei pagini încărcate, așa că SSL Checker atașează debugger-ul Chrome la tab cam o secundă când îl citește. Între timp, Chrome afișează o bară care spune că extensia depanează browserul. În Opțiuni alegi: de fiecare dată, la cerere (un clic în popup) sau niciodată (doar surse externe).

@@ -46,13 +46,25 @@ async function readLocal(tabId, origin, reload) {
   }
 }
 
+async function isIncognitoTab(tabId) {
+  try {
+    return Boolean((await chrome.tabs.get(tabId)).incognito);
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Compares a successful local reading with what is remembered for the site and
  * records it when appropriate. Returns the memory part of the result, or null
  * when nothing was read from the browser.
+ *
+ * Incognito tabs never touch the memory: chrome.storage.local is shared with
+ * incognito windows, so recording there would outlive the private session.
  */
-async function updateSiteMemory(target, local, settings) {
+async function updateSiteMemory(target, local, settings, incognito) {
   if (local.state !== 'ok') return null;
+  if (incognito) return { status: 'incognito' };
   if (!settings.memoryEnabled) return { status: 'disabled' };
   try {
     const observation = observationFrom(local, new Date().toISOString());
@@ -107,8 +119,8 @@ async function runCheck({ tabId, url, local, reload = false, reuseExternal = fal
       ? Promise.resolve(previous.notaries)
       : Promise.all(endpoints.map((e) => queryNotary(e, target.host, target.port, settings.timeoutMs)));
 
-  const [localResult, notaries] = await Promise.all([localTask, notaryTask]);
-  const memory = await updateSiteMemory(target, localResult, settings);
+  const [localResult, notaries, incognito] = await Promise.all([localTask, notaryTask, isIncognitoTab(tabId)]);
+  const memory = await updateSiteMemory(target, localResult, settings, incognito);
   const verdict = computeVerdict({
     target,
     local: localResult.state === 'ok' ? localResult : null,
@@ -123,6 +135,7 @@ async function runCheck({ tabId, url, local, reload = false, reuseExternal = fal
     port: target.port,
     secure: target.secure,
     internal,
+    incognito,
     checkedAt: new Date().toISOString(),
     localMode: settings.localMode,
     localAvailable,
@@ -162,6 +175,7 @@ async function resultForAction(tabId, url) {
   const target = parseTarget(url);
   const result = target ? await cachedResult(tabId, target.origin) : null;
   if (!result) throw new Error('Check the site again first.');
+  if (result.incognito || (await isIncognitoTab(tabId))) throw new Error('Site memory is off in incognito windows.');
   return { target, result };
 }
 

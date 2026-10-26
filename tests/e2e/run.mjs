@@ -79,28 +79,65 @@ async function startNotary(env) {
 // ---------------------------------------------------------------------------
 
 class Harness {
-  constructor(extDir, args) {
+  /** @param {{incognito?: boolean}} options  incognito: load the extension allowed in incognito windows */
+  constructor(extDir, args, { incognito = false } = {}) {
     this.extDir = extDir;
     this.args = args;
+    this.incognito = incognito;
     this.errors = [];
   }
 
   async start() {
     this.profile = mkdtempSync(path.join(os.tmpdir(), 'sslc-profile-'));
-    this.ctx = await chromium.launchPersistentContext(this.profile, {
-      executablePath: process.env.CHROME_PATH || undefined,
-      headless: true,
-      args: [`--disable-extensions-except=${this.extDir}`, `--load-extension=${this.extDir}`, '--headless=new', `--lang=${LANG}`, '--no-proxy-server', ...this.args],
-    });
-    [this.sw] = this.ctx.serviceWorkers();
-    if (!this.sw) this.sw = await this.ctx.waitForEvent('serviceworker');
+    const common = ['--headless=new', `--lang=${LANG}`, '--no-proxy-server', ...this.args];
+    if (!this.incognito) {
+      this.ctx = await chromium.launchPersistentContext(this.profile, {
+        executablePath: process.env.CHROME_PATH || undefined,
+        headless: true,
+        args: [`--disable-extensions-except=${this.extDir}`, `--load-extension=${this.extDir}`, ...common],
+      });
+      [this.sw] = this.ctx.serviceWorkers();
+      if (!this.sw) this.sw = await this.ctx.waitForEvent('serviceworker');
+    } else {
+      // --load-extension cannot allow incognito, and the chrome://extensions toggle
+      // disables a command-line extension, so load it through CDP instead.
+      const port = await freePort();
+      this.ctx = await chromium.launchPersistentContext(this.profile, {
+        executablePath: process.env.CHROME_PATH || undefined,
+        headless: true,
+        ignoreDefaultArgs: ['--disable-extensions'],
+        args: ['--enable-unsafe-extension-debugging', `--remote-debugging-port=${port}`, ...common],
+      });
+      this.cdpBrowser = await chromium.connectOverCDP(`http://127.0.0.1:${port}`);
+      const cdp = await this.cdpBrowser.newBrowserCDPSession();
+      const started = this.ctx.waitForEvent('serviceworker', { timeout: 15000 });
+      const { id } = await cdp.send('Extensions.loadUnpacked', { path: this.extDir, enableInIncognito: true });
+      this.sw = this.ctx.serviceWorkers().find((w) => w.url().includes(id)) || (await started);
+    }
     this.extId = new URL(this.sw.url()).host;
     return this;
   }
 
   async stop() {
+    if (this.cdpBrowser) await this.cdpBrowser.close().catch(() => {});
     await this.ctx.close();
     rmSync(this.profile, { recursive: true, force: true });
+  }
+
+  /** Opens `url` in a new incognito window and returns its tab id once loaded. */
+  async openIncognitoTab(url) {
+    return this.sw.evaluate(async (target) => {
+      const win = await chrome.windows.create({ incognito: true, url: target });
+      const tabId = win.tabs[0].id;
+      for (let i = 0; i < 100; i++) {
+        // Without the "tabs" permission tab.url is hidden; the debugger target has it.
+        const tab = await chrome.tabs.get(tabId);
+        const page = (await chrome.debugger.getTargets()).find((t) => t.tabId === tabId);
+        if (tab.status === 'complete' && page && page.url.startsWith(target)) return tabId;
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+      throw new Error('incognito tab did not load');
+    }, url);
   }
 
   watch(page, label) {
@@ -204,7 +241,7 @@ class PopupView {
 
   async close() {
     await this.popup.close();
-    await this.page.close();
+    if (this.page) await this.page.close();
   }
 }
 
@@ -477,6 +514,46 @@ async function main() {
     }
   }
   await full.stop();
+
+  const incognitoScenario = 'incognito: site memory is off';
+  if (!ONLY || incognitoScenario.includes(ONLY)) {
+    const inc = await new Harness(stageVariant('full', mkdtempSync(path.join(os.tmpdir(), 'sslc-inc-'))), args, { incognito: true }).start();
+    try {
+      await inc.settings({ localMode: 'always', endpoints: [] });
+      const tabId = await inc.openIncognitoTab(siteUrl);
+      const popup = await inc.ctx.newPage();
+      inc.watch(popup, 'popup (incognito tab)');
+      await popup.setViewportSize({ width: 400, height: 600 });
+      await popup.goto(`chrome-extension://${inc.extId}/popup/popup.html?tabId=${tabId}&url=${encodeURIComponent(siteUrl)}`);
+      const v = new PopupView(inc, popup, null, tabId, 'incognito');
+      await v.settle();
+      const r = await v.result();
+      const ui = await v.ui();
+      await v.snap();
+      assert(r.incognito === true && r.local.state === 'ok', 'the incognito tab is still read from the browser', { incognito: r.incognito, local: r.local.state });
+      assert(r.memory.status === 'incognito' && ui.history[0] === msg('historyIncognito'), 'site memory off', { memory: r.memory, history: ui.history });
+      const keys = await inc.sw.evaluate(async () => Object.keys(await chrome.storage.local.get(null)).filter((k) => k.startsWith('site:')));
+      assert(keys.length === 0, 'nothing recorded from the incognito tab', keys);
+      await v.close();
+      // Closing the incognito tab also drops its result from session storage.
+      const leftover = await inc.sw.evaluate(async (id) => {
+        await chrome.tabs.remove(id);
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        return (await chrome.storage.session.get(`result:${id}`))[`result:${id}`] || null;
+      }, tabId);
+      assert(leftover === null, 'no result left after the incognito tab closed', leftover && leftover.host);
+
+      const normal = await inc.openPopup(siteUrl, {});
+      const r2 = await normal.result();
+      assert(r2.incognito === false && r2.memory.status === 'first', 'a normal tab still uses the memory', r2.memory);
+      await normal.close();
+      results.push([incognitoScenario, null]);
+    } catch (error) {
+      results.push([incognitoScenario, error]);
+    }
+    full.errors.push(...inc.errors);
+    await inc.stop();
+  }
 
   if (!ONLY || 'lite build'.includes(ONLY)) {
     const lite = await new Harness(stageVariant('lite', mkdtempSync(path.join(os.tmpdir(), 'sslc-lite-'))), [...args, '--disable-features=']).start();

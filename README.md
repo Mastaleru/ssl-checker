@@ -6,7 +6,7 @@ A Chrome extension (Manifest V3) that shows the TLS certificate of the site in t
 
 - **The real certificate.** Reads the certificate chain your browser received for the current tab, with the connection details: TLS version, key exchange (including post-quantum hybrids), cipher, Encrypted Client Hello and Certificate Transparency status.
 - **Interception detection.** Compares that certificate with what independent notary servers see from elsewhere on the internet. A different certificate that is not publicly logged means the traffic is decrypted and re-signed on your path; known inspection products (corporate proxies, cloud gateways, antivirus, debugging proxies) are named.
-- **Site memory.** Remembers which certificate authority each site you check uses, and warns you when a site you know suddenly arrives with a different one, even without notaries.
+- **Site memory.** Remembers which certificate authority each site you check uses, and warns you when a site you know suddenly arrives with a different one, even without notaries. Nothing is recorded in incognito windows.
 - **One clear verdict.** A single verdict at the top, plus warnings for expired or expiring certificates, names not covered, SHA-1 or MD5 signatures, short RSA keys and TLS 1.0/1.1.
 - **Every detail.** Validity, validation level (DV, OV, EV), the full chain, SHA-256 and SHA-1 fingerprints, the public key pin, serial number, OCSP and CRL addresses, SCTs and all extensions. Copy the PEM or download the whole chain.
 - **You decide when the debugger runs.** Reading the certificate from the browser needs Chrome's debugger, so it can run every time, on demand or never. A lite package without the debugger permission is built as well.
@@ -24,7 +24,7 @@ A Chrome extension (Manifest V3) that shows the TLS certificate of the site in t
 
 **Notaries.** Each endpoint receives `?host=&port=` (or a URL template with `{host}` and `{port}`) and returns the certificate chain it sees from where it runs. The protocol and the reference server are described in [`notary/README.md`](notary/README.md).
 
-**Site memory.** For every site checked with local reading, the extension remembers which certificate authority issued the certificate, in `chrome.storage.local` on the device. It remembers the authority, not the certificate, because certificates are renewed every few months: the authority is identified by the organization in the issuer name, and the keys of its issuing certificates are kept too, so a look-alike authority that borrows a known name is still told apart. A change towards another public (CT-logged) authority is only noted and learned. A change towards a certificate that is not publicly logged is not learned: the popup shows the change and offers "Trust it for this site" and "Forget this site". It can be turned off and wiped in Options; records unseen for 400 days are dropped, and at most 5,000 sites are kept.
+**Site memory.** For every site checked with local reading, the extension remembers which certificate authority issued the certificate, in `chrome.storage.local` on the device. It remembers the authority, not the certificate, because certificates are renewed every few months: the authority is identified by the organization in the issuer name, and the keys of its issuing certificates are kept too, so a look-alike authority that borrows a known name is still told apart. A change towards another public (CT-logged) authority is only noted and learned. A change towards a certificate that is not publicly logged is not learned: the popup shows the change and offers "Trust it for this site" and "Forget this site". It can be turned off and wiped in Options; records unseen for 400 days are dropped, and at most 5,000 sites are kept. Tabs in incognito windows never read or update the memory: Chrome shares extension storage between normal and incognito windows, so anything recorded there would outlive the private session.
 
 **The verdict** compares the SHA-256 fingerprint and the public key (SPKI) of the local certificate with the notaries' ones, then the issuer. Certificate Transparency tells whether the local certificate is public: Chrome reports "compliant" only for publicly logged certificates, and "unknown" for locally installed roots, which is exactly where interceptors live.
 
@@ -77,12 +77,12 @@ tests/                  unit, integration (notary) and end-to-end (Chromium) tes
 ```bash
 npm test                    # X.509 parser (checked against pyca/cryptography), verdict, site memory, translations, notary
 npm install && npx playwright install chromium
-npm run test:e2e            # 14 scenarios in Chromium; E2E_LANG=ro for the Romanian UI
+npm run test:e2e            # 15 scenarios in Chromium; E2E_LANG=ro for the Romanian UI
 ```
 
 `npm test` needs no `npm install`: it only uses Node.js 20 or newer.
 
-The end-to-end tests need Chromium or Chrome for Testing, because Google Chrome ignores `--load-extension` since version 137. Interception is simulated on a single machine: the browser visits a server with a "Contoso Inspection CA" certificate, while the notary is pointed at the server with the "real" certificate. For the site memory, one server swaps its certificate between two checks.
+The end-to-end tests need Chromium or Chrome for Testing, because Google Chrome ignores `--load-extension` since version 137. Interception is simulated on a single machine: the browser visits a server with a "Contoso Inspection CA" certificate, while the notary is pointed at the server with the "real" certificate. For the site memory, one server swaps its certificate between two checks, and a check in an incognito window confirms that nothing is recorded there (that scenario loads the extension through the DevTools protocol, the only way to allow it in incognito from a test).
 
 ## Build and publish
 

@@ -204,6 +204,7 @@
   "historySameName": { "message": "Autoritatea are același nume ca înainte, dar semnează cu o cheie nemaivăzută la acest site." },
   "historyTrusted": { "message": "$1 e acum de încredere pentru acest site." },
   "historyForgotten": { "message": "Site-ul a fost uitat. Următoarea verificare îi începe din nou istoricul." },
+  "historyIncognito": { "message": "Memoria site-urilor e oprită în ferestrele incognito: nu se înregistrează și nu se compară nimic." },
   "checksOne": { "message": "$1 verificare" },
   "checksFew": { "message": "$1 verificări" },
   "checksOther": { "message": "$1 de verificări" },
@@ -218,7 +219,7 @@
   "warnCaChangedNowPublic": { "message": "Verificările anterioare ale acestui site treceau prin $1, o autoritate instalată pe acest calculator sau în rețea (de exemplu un proxy de firmă). Acum certificatul e public." },
 
   "optMemoryTitle": { "message": "Memoria site-urilor" },
-  "optMemoryIntro": { "message": "Când certificatul e citit din browser, SSL Checker ține minte ce autoritate l-a emis pentru fiecare site verificat și te avertizează când un site cunoscut apare brusc cu alta. Totul rămâne pe acest dispozitiv." },
+  "optMemoryIntro": { "message": "Când certificatul e citit din browser, SSL Checker ține minte ce autoritate l-a emis pentru fiecare site verificat și te avertizează când un site cunoscut apare brusc cu alta. Totul rămâne pe acest dispozitiv, iar în ferestrele incognito nu se înregistrează nimic." },
   "fieldMemoryEnabled": { "message": "Ține minte autoritatea de certificare a site-urilor pe care le verific" },
   "optMemoryHelp": { "message": "Dacă o oprești, nu se mai înregistrează nimic. Ca să ștergi ce e deja salvat, folosește Uită toate site-urile." },
   "memoryCountOne": { "message": "$1 site memorat" },

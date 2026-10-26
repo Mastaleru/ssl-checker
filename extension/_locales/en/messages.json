@@ -204,6 +204,7 @@
   "historySameName": { "message": "The authority has the same name as before, but it signs with a key never seen for this site." },
   "historyTrusted": { "message": "$1 is now trusted for this site." },
   "historyForgotten": { "message": "This site was forgotten. The next check starts its history again." },
+  "historyIncognito": { "message": "Site memory is off in incognito windows: nothing is recorded or compared." },
   "checksOne": { "message": "$1 check" },
   "checksFew": { "message": "$1 checks" },
   "checksOther": { "message": "$1 checks" },
@@ -218,7 +219,7 @@
   "warnCaChangedNowPublic": { "message": "Earlier checks of this site went through $1, an authority installed on this computer or network (for example a company proxy). Now the certificate is public." },
 
   "optMemoryTitle": { "message": "Site memory" },
-  "optMemoryIntro": { "message": "When the certificate is read from your browser, SSL Checker remembers which authority issued it for each site you check, and warns you when a site you know suddenly arrives with a different one. Everything stays on this device." },
+  "optMemoryIntro": { "message": "When the certificate is read from your browser, SSL Checker remembers which authority issued it for each site you check, and warns you when a site you know suddenly arrives with a different one. Everything stays on this device, and nothing is recorded in incognito windows." },
   "fieldMemoryEnabled": { "message": "Remember the certificate authority of the sites I check" },
   "optMemoryHelp": { "message": "Turning it off stops recording. To delete what is already stored, use Forget all sites." },
   "memoryCountOne": { "message": "$1 site remembered" },
