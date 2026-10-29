@@ -26,7 +26,7 @@ WHAT YOU SEE
 • The full chain, SHA-256 and SHA-1 fingerprints, the public key pin, serial number, OCSP and CRL addresses, SCTs and every extension. Copy the PEM or download the whole chain.
 
 CATCH INTERCEPTION
-Add notary servers you trust. Each one connects to the same site from elsewhere on the internet and reports the certificate it receives. SSL Checker compares the fingerprints:
+SSL Checker asks the PlusPrivacy notary, and any notary server you add, which certificate the same site presents to them. Each one connects to the site from elsewhere on the internet. SSL Checker compares the fingerprints:
 • Same certificate everywhere → confirmed.
 • Your certificate is different and not publicly logged → your HTTPS traffic is being decrypted and re-signed (company proxy, antivirus, or worse), and SSL Checker shows which authority issued the replacement. Known inspection products are named.
 • Sources that disagree with each other are reported as such, with an explanation of what each case can mean.
@@ -38,10 +38,10 @@ YOU DECIDE WHEN THE DEBUGGER RUNS
 Chrome has no dedicated API for the certificate of a loaded page, so SSL Checker attaches Chrome's debugger to the tab for about a second when it reads one. While it does, Chrome shows a bar saying the extension is debugging the browser. In Options you choose: every time, on demand (one click in the popup), or never (external sources only).
 
 NOTARY SERVERS
-Any server that implements the small notary protocol described in Options can be a source. A reference implementation (one Node.js file, no dependencies, protected against SSRF, with optional token and rate limiting) is available from the developer.
+The PlusPrivacy notary is built in, and you can turn it off in Options. Any server that implements the small notary protocol described in Options can be added as a source. The notary software (Node.js in a Docker container, protected against SSRF and floods) is available from the developer.
 
 PRIVACY
-No analytics, no tracking, no account, nothing sent to the developer. Only the site's host name and port are sent, and only to the notary servers you configure. The site memory never leaves your device.
+No analytics, no tracking, no account. Before the first check, SSL Checker tells you what it reads and sends, and asks for your agreement. Only the checked site's host name and port leave your device: they go to the PlusPrivacy notary, which keeps no record of the sites, unless you turn it off, and to the notaries you add. The site memory never leaves your device.
 
 ---
 
@@ -63,7 +63,7 @@ CE VEZI
 • Lanțul complet, amprentele SHA-256 și SHA-1, pinul cheii publice, numărul de serie, adresele OCSP și CRL, SCT-urile și toate extensiile. Copiezi PEM-ul sau descarci tot lanțul.
 
 PRINDE INTERCEPTAREA
-Adaugă servere notar în care ai încredere. Fiecare se conectează la același site din alt punct al internetului și raportează certificatul primit. SSL Checker compară amprentele:
+SSL Checker întreabă notarul PlusPrivacy și orice server notar adaugi tu ce certificat le prezintă același site. Fiecare se conectează la site din alt punct al internetului. SSL Checker compară amprentele:
 • Același certificat peste tot → confirmat.
 • Certificatul tău e diferit și neînregistrat public → traficul tău HTTPS e decriptat și re-semnat (proxy de firmă, antivirus sau mai rău), iar SSL Checker arată ce autoritate a emis înlocuitorul. Produsele de inspecție cunoscute sunt numite.
 • Sursele care nu sunt de acord între ele sunt raportate ca atare, cu explicația fiecărui caz posibil.
@@ -75,13 +75,13 @@ TU DECIZI CÂND RULEAZĂ DEBUGGER-UL
 Chrome nu are un API dedicat pentru certificatul unei pagini încărcate, așa că SSL Checker atașează debugger-ul Chrome la tab cam o secundă când îl citește. Între timp, Chrome afișează o bară care spune că extensia depanează browserul. În Opțiuni alegi: de fiecare dată, la cerere (un clic în popup) sau niciodată (doar surse externe).
 
 SERVERE NOTAR
-Orice server care implementează micul protocol de notar descris în Opțiuni poate fi o sursă. O implementare de referință (un singur fișier Node.js, fără dependențe, protejat împotriva SSRF, cu token opțional și limitare de cereri) e disponibilă de la dezvoltator.
+Notarul PlusPrivacy e inclus și îl poți opri din Opțiuni. Orice server care implementează micul protocol de notar descris în Opțiuni poate fi adăugat ca sursă. Programul notarului (Node.js într-un container Docker, protejat împotriva SSRF și a avalanșelor de cereri) e disponibil de la dezvoltator.
 
 CONFIDENȚIALITATE
-Fără analytics, fără urmărire, fără cont, nimic trimis dezvoltatorului. Se trimit doar numele site-ului și portul, și doar serverelor notar pe care le configurezi tu. Memoria site-urilor nu părăsește dispozitivul tău.
+Fără analytics, fără urmărire, fără cont. Înainte de prima verificare, SSL Checker îți spune ce citește și ce trimite și îți cere acordul. Doar numele site-ului verificat și portul pleacă de pe dispozitivul tău: la notarul PlusPrivacy, care nu păstrează nicio evidență a site-urilor, dacă nu îl oprești, și la notarii pe care îi adaugi. Memoria site-urilor nu părăsește dispozitivul tău.
 
 ---
 
 ## Lite variant (optional, separate item)
 
-If you also publish `ssl-checker-lite-<version>.zip`, its name comes from `extNameLite` ("SSL Checker Lite") and its summary from `extDescriptionLite`. Use the same description without the "You decide when the debugger runs" section, and state that this variant reads certificates only through notary servers, so it needs at least one configured.
+If you also publish `ssl-checker-lite-<version>.zip`, its name comes from `extNameLite` ("SSL Checker Lite") and its summary from `extDescriptionLite`. Use the same description without the "You decide when the debugger runs" section, and state that this variant reads certificates only through notary servers: the PlusPrivacy notary by default, and any you add.

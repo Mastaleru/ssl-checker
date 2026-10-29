@@ -5,13 +5,13 @@ A Chrome extension (Manifest V3) that shows the TLS certificate of the site in t
 ## Features
 
 - **The real certificate.** Reads the certificate chain your browser received for the current tab, with the connection details: TLS version, key exchange (including post-quantum hybrids), cipher, Encrypted Client Hello and Certificate Transparency status.
-- **Interception detection.** Compares that certificate with what independent notary servers see from elsewhere on the internet. A different certificate that is not publicly logged means the traffic is decrypted and re-signed on your path; known inspection products (corporate proxies, cloud gateways, antivirus, debugging proxies) are named.
+- **Interception detection.** Compares that certificate with what notary servers see from elsewhere on the internet: the PlusPrivacy notary by default, and any notary you add. A different certificate that is not publicly logged means the traffic is decrypted and re-signed on your path; known inspection products (corporate proxies, cloud gateways, antivirus, debugging proxies) are named.
 - **Site memory.** Remembers which certificate authority each site you check uses, and warns you when a site you know suddenly arrives with a different one, even without notaries. Nothing is recorded in incognito windows.
 - **One clear verdict.** A single verdict at the top, plus warnings for expired or expiring certificates, names not covered, SHA-1 or MD5 signatures, short RSA keys and TLS 1.0/1.1.
 - **Every detail.** Validity, validation level (DV, OV, EV), the full chain, SHA-256 and SHA-1 fingerprints, the public key pin, serial number, OCSP and CRL addresses, SCTs and all extensions. Copy the PEM or download the whole chain.
 - **You decide when the debugger runs.** Reading the certificate from the browser needs Chrome's debugger, so it can run every time, on demand or never. A lite package without the debugger permission is built as well.
-- **Your own notaries.** Any server that speaks the notary protocol can be a source. The one in [`notary/`](notary/README.md) is a small Express service packaged for Docker.
-- **Private by design.** No analytics, no account, no host permissions. Only the host name and port go to the notaries you configure, and the site memory stays on the device.
+- **Your own notaries.** Any server that speaks the notary protocol can be a source. The one in [`notary/`](notary/README.md), which also runs the PlusPrivacy notary, is a small Express service packaged for Docker.
+- **Private by design.** No analytics, no account, no host permissions. Nothing is read or sent before you agree in the popup. Only the host name and port go to the notaries (PlusPrivacy's unless you turn it off, and any you add), and the site memory stays on the device.
 - **English and Romanian** user interface.
 
 ## Try it
@@ -20,9 +20,11 @@ A Chrome extension (Manifest V3) that shows the TLS certificate of the site in t
 
 ## How it works
 
+**Agreement first.** Before the first check, the popup says what a check reads and sends, and asks you to agree. The PlusPrivacy notary and the site memory are shown as choices that start on and can be turned off right there. Nothing is read or sent before you agree: the Chrome Web Store has required this disclosure and consent inside the extension since August 2026. The agreement is stored with a version (`CONSENT_VERSION` in `lib/settings.js`); raising it asks everyone again, as the store requires when data practices change.
+
 **Local reading.** Chrome has no extension API for the certificate of a loaded page, so the extension attaches `chrome.debugger` to the tab for about a second: `Network.enable`, a cookie-less `HEAD /favicon.ico` request sent from an isolated world (the page cannot intercept it), then `Network.getCertificate`. The page's service worker is bypassed, so the response comes from the network. Pages with a strict Content Security Policy block that request; for them the popup offers "Reload page and read". The mode is chosen in Options: _every time_, _on demand_ or _never_. Chrome does not allow `debugger` as an optional permission, which is why there is also a lite package without it.
 
-**Notaries.** Each endpoint receives `?host=&port=` (or a URL template with `{host}` and `{port}`) and returns the certificate chain it sees from where it runs. The notary in `notary/` and its README describe the protocol, the protection against abuse and the deployment on a VPS.
+**Notaries.** Each endpoint receives `?host=&port=` (or a URL template with `{host}` and `{port}`) and returns the certificate chain it sees from where it runs. The PlusPrivacy notary at `notary.plusprivacy.com` is built in (`lib/default-notary.js`), is asked first, and can be turned off in Options. It runs the service in `notary/`, whose README describes the protocol, the protection against abuse and the deployment on a VPS.
 
 **Site memory.** For every site checked with local reading, the extension remembers which certificate authority issued the certificate, in `chrome.storage.local` on the device. It remembers the authority, not the certificate, because certificates are renewed every few months: the authority is identified by the organization in the issuer name, and the keys of its issuing certificates are kept too, so a look-alike authority that borrows a known name is still told apart. A change towards another public (CT-logged) authority is only noted and learned. A change towards a certificate that is not publicly logged is not learned: the popup shows the change and offers "Trust it for this site" and "Forget this site". It can be turned off and wiped in Options; records unseen for 400 days are dropped, and at most 5,000 sites are kept. Tabs in incognito windows never read or update the memory: Chrome shares extension storage between normal and incognito windows, so anything recorded there would outlive the private session.
 
@@ -75,16 +77,16 @@ tests/                  unit and end-to-end (Chromium) tests of the extension
 ## Tests
 
 ```bash
-npm test                    # X.509 parser (checked against pyca/cryptography), verdict, site memory, translations
+npm test                    # X.509 parser (checked against pyca/cryptography), verdict, site memory, translations, settings
 npm ci --prefix notary
 npm run test:notary         # the notary: configuration, SSRF ranges, bans, capacity, the HTTP API
 npm install && npx playwright install chromium
-npm run test:e2e            # 15 scenarios in Chromium; E2E_LANG=ro for the Romanian UI
+npm run test:e2e            # 16 scenarios in Chromium; E2E_LANG=ro for the Romanian UI
 ```
 
 `npm test` needs no `npm install`: it only uses Node.js 20 or newer. The notary needs Node.js 22 or newer.
 
-The end-to-end tests need Chromium or Chrome for Testing, because Google Chrome ignores `--load-extension` since version 137. They start the real notary from `notary/`. Interception is simulated on a single machine: the browser visits a server with a "Contoso Inspection CA" certificate, while the notary is pointed at the server with the "real" certificate. For the site memory, one server swaps its certificate between two checks, and a check in an incognito window confirms that nothing is recorded there (that scenario loads the extension through the DevTools protocol, the only way to allow it in incognito from a test).
+The end-to-end tests need Chromium or Chrome for Testing, because Google Chrome ignores `--load-extension` since version 137. They start two real notary processes: a private one with a token, and a public one that stands in for PlusPrivacy's (the staged extension is pointed at it). Interception is simulated on a single machine: the browser visits a server with a "Contoso Inspection CA" certificate, while the notary is pointed at the server with the "real" certificate. For the site memory, one server swaps its certificate between two checks, and a check in an incognito window confirms that nothing is recorded there (that scenario loads the extension through the DevTools protocol, the only way to allow it in incognito from a test).
 
 ## Code style
 
@@ -106,7 +108,7 @@ node scripts/build.mjs      # dist/ssl-checker-<version>.zip and dist/ssl-checke
 
 On Windows you can double-click `build\package.cmd` instead (it needs Node.js 20 or newer). From a terminal, `build\package.cmd full` or `build\package.cmd lite` builds a single package. The version comes from `extension/manifest.json`.
 
-Chrome Web Store steps, listing texts and screenshots: [`store/PUBLISHING.md`](store/PUBLISHING.md).
+Chrome Web Store steps, listing texts and screenshots: [`store/PUBLISHING.md`](store/PUBLISHING.md). Deploy the PlusPrivacy notary first ([`notary/README.md`](notary/README.md)): the extension asks it by default.
 
 ## Known limitations
 

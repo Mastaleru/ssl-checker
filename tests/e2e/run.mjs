@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // End-to-end tests: loads the real extension into Chromium and drives the popup
-// and the options page against local TLS servers and a real notary process.
+// and the options page against local TLS servers and real notary processes.
 //
 // Needs Playwright, the notary's packages, and a Chromium that can load unpacked
 // extensions (Chromium or Chrome for Testing; branded Google Chrome ignores
@@ -12,7 +12,7 @@
 
 import { spawn } from 'node:child_process';
 import { createHash, X509Certificate } from 'node:crypto';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import http from 'node:http';
 import https from 'node:https';
 import { createRequire } from 'node:module';
@@ -21,6 +21,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { stageVariant } from '../../scripts/build.mjs';
+import { CONSENT_VERSION } from '../../extension/lib/settings.js';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
@@ -83,6 +84,18 @@ async function startNotary(env) {
     child.once('exit', (code) => reject(new Error(`notary exited with ${code}`)));
   });
   return { port, child };
+}
+
+// Points the staged extension's PlusPrivacy notary at a local one.
+function pointDefaultNotary(extDir, url) {
+  const file = path.join(extDir, 'lib/default-notary.js');
+  const source = readFileSync(file, 'utf8');
+  const changed = source.replace("'https://notary.plusprivacy.com/v1/cert'", `'${url}'`);
+  if (changed === source) {
+    throw new Error('lib/default-notary.js no longer holds the PlusPrivacy URL');
+  }
+  writeFileSync(file, changed);
+  return extDir;
 }
 
 // ---------------------------------------------------------------------------
@@ -160,12 +173,22 @@ class Harness {
     page.on('pageerror', (e) => this.errors.push(`${label}: ${e}`));
   }
 
+  /**
+   * Starts a scenario from clean storage. Unless the scenario says otherwise, the
+   * user has already agreed in the popup and turned the PlusPrivacy notary off;
+   * a value of null leaves that setting at its default.
+   */
   async settings(values) {
+    const all = {
+      consent: { version: CONSENT_VERSION, at: '2026-01-01T00:00:00.000Z' },
+      defaultNotary: false,
+      ...values,
+    };
     await this.sw.evaluate(async (v) => {
       await chrome.storage.local.clear();
       await chrome.storage.session.clear();
-      await chrome.storage.local.set(v);
-    }, values);
+      await chrome.storage.local.set(Object.fromEntries(Object.entries(v).filter(([, value]) => value !== null)));
+    }, all);
   }
 
   async tabIdFor(page) {
@@ -207,7 +230,7 @@ class PopupView {
   }
 
   async settle() {
-    await this.popup.waitForSelector('#content:not(.loading) .verdict, .empty-state', { timeout: 40000 });
+    await this.popup.waitForSelector('#content:not(.loading) .verdict, .empty-state, .consent', { timeout: 40000 });
     await this.popup.waitForTimeout(800); // let the barcode animation finish before screenshots
   }
 
@@ -300,14 +323,16 @@ async function main() {
   const memoryPort = await listen(memorySite);
   const closedPort = await freePort();
   const TOKEN = 'e2e-secret-token-for-a-private-notary';
-  const notary = await startNotary({
+  const notaryEnv = {
     ALLOW_PRIVATE: '1',
     ALLOWED_PORTS: `${sitePort},${interceptPort}`,
     RATE_LIMIT: '0',
     BAN_STRIKES: '1000',
     CACHE_SECONDS: '0',
-    NOTARY_TOKEN: TOKEN,
-  });
+  };
+  const notary = await startNotary({ ...notaryEnv, NOTARY_TOKEN: TOKEN });
+  // The stand-in for the PlusPrivacy notary: public, without a token.
+  const publicNotary = await startNotary(notaryEnv);
 
   // A notary endpoint that always looks at the given local port: the extension
   // asks about www.example.com, the notary checks localhost:<port>. Pointing it
@@ -331,7 +356,12 @@ async function main() {
     `--ignore-certificate-errors-spki-list=${spkiPin(siteChain)},${spkiPin(interceptChain)}`,
   ];
 
-  const full = await new Harness(stageVariant('full', mkdtempSync(path.join(os.tmpdir(), 'sslc-full-'))), args).start();
+  const fullDir = stageVariant('full', mkdtempSync(path.join(os.tmpdir(), 'sslc-full-')));
+  pointDefaultNotary(
+    fullDir,
+    `http://127.0.0.1:${publicNotary.port}/v1/cert?host=localhost&port=${sitePort}&for={host}`,
+  );
+  const full = await new Harness(fullDir, args).start();
   const scenarios = [
     [
       'confirmed by a notary',
@@ -371,6 +401,48 @@ async function main() {
           'technical details listed',
           details,
         );
+        await v.close();
+      },
+    ],
+    [
+      'first run: agreement, then the PlusPrivacy notary',
+      async () => {
+        let v = await full.openPopup(siteUrl, { settings: { consent: null, defaultNotary: null }, shot: 'consent' });
+        const shown = await v.popup.evaluate(() => ({
+          title: document.querySelector('.consent h2')?.textContent,
+          choices: [...document.querySelectorAll('.consent input[type=checkbox]')].map((c) => c.checked),
+        }));
+        await v.snap();
+        assert(
+          shown.title === msg('consentTitle') && shown.choices.join() === 'true,true',
+          'agreement shown, both choices on',
+          shown,
+        );
+        assert(!(await v.result()), 'nothing checked before agreeing');
+        await v.click(msg('consentAgree'));
+        const r = await v.result();
+        assert(
+          r.verdict.code === 'confirmed' && r.notaries[0].id === 'plusprivacy' && r.notaries[0].state === 'ok',
+          'checked with the PlusPrivacy notary',
+          { verdict: r.verdict.code, notaries: r.notaries },
+        );
+        const stored = await full.sw.evaluate(() =>
+          chrome.storage.local.get(['consent', 'defaultNotary', 'memoryEnabled']),
+        );
+        assert(
+          stored.consent?.version === CONSENT_VERSION && stored.defaultNotary === true && stored.memoryEnabled === true,
+          'agreement saved',
+          stored,
+        );
+        await v.close();
+
+        v = await full.openPopup(siteUrl, { settings: { consent: null, defaultNotary: null } });
+        await v.popup.uncheck('#consent-notary');
+        await v.click(msg('consentAgree'));
+        const without = await v.result();
+        assert(without.endpointsConfigured === 0 && without.notaries.length === 0, 'no notary asked', without.notaries);
+        const saved = await full.sw.evaluate(() => chrome.storage.local.get('defaultNotary'));
+        assert(saved.defaultNotary === false, 'choice saved', saved);
         await v.close();
       },
     ],
@@ -590,15 +662,27 @@ async function main() {
         await page.fill('#ep-url', outside.url);
         await page.fill('#ep-token', TOKEN);
         await page.click('#endpoint-form button[type=submit]');
-        await page.waitForSelector('.endpoint');
+        await page.waitForFunction(() => document.querySelectorAll('.endpoint').length === 2);
         await page.check('input[name=localMode][value=ask]');
-        await page.getByRole('button', { name: msg('actionTest') }).click();
-        await page.waitForSelector('.endpoint-result[data-tone]');
-        const outcome = await page.textContent('.endpoint-result');
+        const added = page.locator('.endpoint').last();
+        await added.getByRole('button', { name: msg('actionTest') }).click();
+        await added.locator('.endpoint-result[data-tone]').waitFor();
+        const outcome = await added.locator('.endpoint-result').textContent();
         assert(outcome.startsWith(msg('testOk', '').split(':')[0]), 'test reports success', outcome);
-        const stored = await full.sw.evaluate(() => chrome.storage.local.get(['endpoints', 'localMode']));
+        const plusPrivacy = page.locator('.endpoint').first();
+        assert((await plusPrivacy.textContent()).includes(msg('defaultSource')), 'PlusPrivacy listed first');
+        assert(!(await page.isChecked('#default-notary')), 'PlusPrivacy off, as stored');
+        await page.check('#default-notary');
+        await plusPrivacy.getByRole('button', { name: msg('actionTest') }).click();
+        await plusPrivacy.locator('.endpoint-result[data-tone=ok]').waitFor();
+        const stored = await full.sw.evaluate(() =>
+          chrome.storage.local.get(['endpoints', 'localMode', 'defaultNotary']),
+        );
         assert(
-          stored.localMode === 'ask' && stored.endpoints.length === 1 && stored.endpoints[0].name === 'Test notary',
+          stored.localMode === 'ask' &&
+            stored.defaultNotary === true &&
+            stored.endpoints.length === 1 &&
+            stored.endpoints[0].name === 'Test notary',
           'saved',
           stored,
         );
@@ -820,6 +904,7 @@ async function main() {
   }
 
   notary.child.kill();
+  publicNotary.child.kill();
   site.close();
   intercept.close();
   plain.close();

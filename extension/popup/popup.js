@@ -1,5 +1,7 @@
+import { DEFAULT_NOTARY_HOST } from '../lib/default-notary.js';
 import { formatDate, formatDateTime, formatRelative, plural, t } from '../lib/i18n.js';
 import { parseTarget } from '../lib/hostnames.js';
+import { getSettings, giveConsent, localReadingAvailable } from '../lib/settings.js';
 import { issuerLabel, RELATION } from '../lib/verdict.js';
 import { barcode, barcodeSkeleton, clear, h, icon, localizeDocument } from '../ui/dom.js';
 import * as fmt from '../ui/format.js';
@@ -146,6 +148,45 @@ function renderFailure(error) {
   );
 }
 
+/**
+ * The disclosure and agreement shown before the first check (Chrome Web Store rules:
+ * prominent disclosure and affirmative consent, inside the extension, before any data
+ * is handled). The choices start on; the user sees them and can turn them off first.
+ */
+async function renderConsent() {
+  const settings = await getSettings();
+  const lite = !localReadingAvailable();
+  const main = clear($('content'));
+  main.classList.remove('loading');
+  $('footer').hidden = true;
+
+  const notary = h('input', { type: 'checkbox', id: 'consent-notary' });
+  notary.checked = settings.defaultNotary;
+  const memory = h('input', { type: 'checkbox', id: 'consent-memory' });
+  memory.checked = settings.memoryEnabled;
+  const agree = h('button', { class: 'button primary', type: 'button' }, t('consentAgree'));
+  agree.addEventListener('click', async () => {
+    agree.disabled = true;
+    await giveConsent({ defaultNotary: notary.checked, memoryEnabled: lite ? settings.memoryEnabled : memory.checked });
+    check({});
+  });
+
+  const choice = (input, name, body) =>
+    h('label', { class: 'consent-choice' }, input, h('span', {}, h('strong', {}, name), ' ', body));
+  main.append(
+    h(
+      'section',
+      { class: 'consent' },
+      h('h2', {}, t('consentTitle')),
+      h('p', {}, t(lite ? 'consentIntroLite' : 'consentIntro')),
+      choice(notary, t('consentNotaryName'), t('consentNotaryBody', [DEFAULT_NOTARY_HOST])),
+      lite ? null : choice(memory, t('consentMemoryName'), t('consentMemoryBody')),
+      h('p', { class: 'consent-later' }, t('consentLater')),
+      h('div', { class: 'consent-actions' }, agree),
+    ),
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Result
 // ---------------------------------------------------------------------------
@@ -164,6 +205,10 @@ function render(result, animate) {
   main.classList.remove('loading');
   if (result.unsupported) {
     renderUnsupported();
+    return;
+  }
+  if (result.needsConsent) {
+    renderConsent().catch(renderFailure);
     return;
   }
   main.append(verdictBlock(result));

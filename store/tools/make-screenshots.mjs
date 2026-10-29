@@ -70,10 +70,10 @@ async function buildResults() {
   const genuine = await describeChain(pemChain('genuine-chain.pem'));
   const intercepted = await describeChain(pemChain('intercepted-chain.pem'));
   const target = { secure: true, host: HOST, port: 443, origin: `https://${HOST}` };
-  const notary = (id, name, vantage, ms) => ({
+  const notary = (id, name, origin, vantage, ms) => ({
     id,
     name,
-    origin: `https://notary-${id}.example.net`,
+    origin,
     durationMs: ms,
     state: 'ok',
     vantage,
@@ -84,7 +84,11 @@ async function buildResults() {
     tls: { protocol: 'TLSv1.3', cipher: 'TLS_AES_128_GCM_SHA256', group: 'X25519MLKEM768' },
     chain: genuine,
   });
-  const notaries = [notary('fra', 'Frankfurt', 'Frankfurt, DE', 48), notary('iad', 'Virginia', 'Ashburn, US', 112)];
+  // The built-in PlusPrivacy notary, plus one the user added.
+  const notaries = [
+    notary('plusprivacy', 'PlusPrivacy', 'https://notary.plusprivacy.com', 'PlusPrivacy', 48),
+    notary('iad', 'Virginia', 'https://notary-iad.example.net', 'Ashburn, US', 112),
+  ];
   const sct = (log, minute) => ({
     status: 'Verified',
     origin: 'Embedded in certificate',
@@ -179,11 +183,12 @@ async function optionsShot(ctx, sw, extId) {
       sites[`site:${host}#443`] = { v: 1, host, port: 443, cas: [] };
     }
     return chrome.storage.local.set({
+      consent: { version: 1, at: new Date().toISOString() },
       localMode: 'always',
       memoryEnabled: true,
+      defaultNotary: true,
       endpoints: [
-        { id: 'fra', name: 'Frankfurt', url: 'https://notary-fra.example.net/v1/cert', token: 'x', enabled: true },
-        { id: 'iad', name: 'Virginia', url: 'https://notary-iad.example.net/v1/cert', token: '', enabled: true },
+        { id: 'iad', name: 'Virginia', url: 'https://notary-iad.example.net/v1/cert', token: 'x', enabled: true },
       ],
       ...sites,
     });

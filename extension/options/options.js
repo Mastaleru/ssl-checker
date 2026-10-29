@@ -1,3 +1,4 @@
+import { DEFAULT_NOTARY } from '../lib/default-notary.js';
 import { plural, t } from '../lib/i18n.js';
 import {
   getSettings,
@@ -120,9 +121,37 @@ function endpointItem(endpoint) {
   );
 }
 
+// The PlusPrivacy notary: always listed first; it can be turned off and tested, not removed.
+function defaultNotaryItem() {
+  const output = h('p', { class: 'endpoint-result', hidden: true, role: 'status' });
+  const toggle = h('input', {
+    id: 'default-notary',
+    type: 'checkbox',
+    'aria-label': t('endpointEnabled', [DEFAULT_NOTARY.name]),
+  });
+  toggle.checked = settings.defaultNotary;
+  toggle.addEventListener('change', () => persist({ defaultNotary: toggle.checked }));
+  const testButton = h('button', { class: 'button', type: 'button' }, t('actionTest'));
+  testButton.addEventListener('click', () => runTest(DEFAULT_NOTARY, output, testButton));
+  return h(
+    'li',
+    { class: 'endpoint' },
+    toggle,
+    h(
+      'div',
+      {},
+      h('span', { class: 'endpoint-name' }, DEFAULT_NOTARY.name),
+      h('span', { class: 'endpoint-url mono' }, DEFAULT_NOTARY.url),
+      h('span', { class: 'endpoint-token' }, t('defaultSource')),
+    ),
+    h('div', { class: 'endpoint-actions' }, testButton),
+    output,
+  );
+}
+
 function renderEndpoints() {
   const list = clear($('endpoint-list'));
-  $('endpoint-empty').hidden = settings.endpoints.length > 0;
+  list.append(defaultNotaryItem());
   for (const endpoint of settings.endpoints) {
     list.append(endpointItem(endpoint));
   }
@@ -137,7 +166,7 @@ async function onAddEndpoint(event) {
   if (!valid.ok) {
     return showFormError(t(valid.error));
   }
-  if (settings.endpoints.some((e) => e.url === valid.url)) {
+  if (valid.url === DEFAULT_NOTARY.url || settings.endpoints.some((e) => e.url === valid.url)) {
     return showFormError(t('endpointErrorDuplicate'));
   }
   if (token && !/^[\x21-\x7e]{1,512}$/.test(token)) {

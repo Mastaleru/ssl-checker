@@ -6,6 +6,7 @@
 
 ## Steps
 
+0. **Deploy the PlusPrivacy notary first** ([`notary/README.md`](../notary/README.md)): the extension asks it by default. `https://notary.plusprivacy.com/v1/health` must answer before you publish. In the notary's `.env`, `ALLOWED_ORIGINS` must contain the item's ID: `chrome-extension://nbanpljakngdndmmekhogfliinegiapb` for the old item; if step 3 ends up creating a new item, put its ID there and run `docker compose up -d`.
 1. **Build the packages:** `node scripts/build.mjs`, or double-click `build\package.cmd` on Windows. You get `dist/ssl-checker-<version>.zip` (full) and `dist/ssl-checker-lite-<version>.zip`, where `<version>` is the one in `extension/manifest.json`.
 2. **Test the zip locally:** unzip it, open `chrome://extensions` → _Developer mode_ → _Load unpacked_ and select the unzipped folder. Open an HTTPS site and click the icon.
 3. **Dashboard → the old "SSL Checker" item → Package → Upload new package** → `ssl-checker-<version>.zip`.
@@ -13,12 +14,12 @@
 4. **Store listing:** copy the texts from `store/listing.md` and add the **Romanian** localization. For each language, upload the screenshots from `store/screenshots/<language>/1-…4-*.png` and the `promo-440x280.png` tile. Category: _Developer Tools_.
 5. **Privacy practices:** fill them in from `store/permissions.md` (single purpose, justifications for `debugger`, `activeTab` and `storage`, "no remote code", data usage).
 6. **Privacy policy:** add your contact address to `store/privacy-policy.html`, host the page (on GitHub Pages, for example) and put its URL in the dashboard.
-7. **Test instructions:** use the text from `store/permissions.md`, with the address and token of a test notary, so that the reviewer can see the external comparison too.
+7. **Test instructions:** use the text from `store/permissions.md`. The reviewer needs no notary address or token: the PlusPrivacy notary answers by default.
 8. **Submit for review.** The `debugger` permission gets a more thorough review; the detailed justification from step 5 helps.
 
 ## The lite variant (optional)
 
-`ssl-checker-lite-<version>.zip` does not have the `debugger` permission, so it does not show the strong warning at install time either. It is published as a **separate item** ("SSL Checker Lite") with the same materials, minus the `debugger` justification. Without at least one configured notary it has nothing to show, so it is worth publishing only once you have a public notary you can recommend in the description.
+`ssl-checker-lite-<version>.zip` does not have the `debugger` permission, so it does not show the strong warning at install time either. It is published as a **separate item** ("SSL Checker Lite") with the same materials, minus the `debugger` justification. It relies entirely on notaries, so it shows certificates as soon as the PlusPrivacy notary runs.
 
 ## On every update
 

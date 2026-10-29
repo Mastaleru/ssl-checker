@@ -23,6 +23,25 @@
   },
   "checkFailedTitle": { "message": "The check could not run" },
   "checkFailedBody": { "message": "Error: $1" },
+  "consentTitle": { "message": "Before the first check" },
+  "consentIntro": {
+    "message": "SSL Checker looks at the site in the current tab only when you click its icon. It reads the certificate your browser received and, if you agree:"
+  },
+  "consentIntroLite": {
+    "message": "SSL Checker looks at the site in the current tab only when you click its icon. If you agree:"
+  },
+  "consentNotaryName": { "message": "It asks the PlusPrivacy notary." },
+  "consentNotaryBody": {
+    "message": "The site's name and port go to $1, which connects to the site from its own network and returns the certificate it sees. The notary keeps no record of the sites."
+  },
+  "consentMemoryName": { "message": "It remembers each site's certificate authority." },
+  "consentMemoryBody": {
+    "message": "On this device only, to warn you when a known site suddenly arrives with another one."
+  },
+  "consentLater": {
+    "message": "You can change both in Options at any time. Nothing is read or sent before you agree."
+  },
+  "consentAgree": { "message": "Agree and check" },
   "checkedAt": { "message": "Checked $1" },
 
   "sectionWitnesses": { "message": "Seen by" },
@@ -33,9 +52,11 @@
   "durationMs": { "message": "$1 ms" },
   "fingerprintLabel": { "message": "SHA-256 fingerprint $1" },
   "externalSkippedInternal": { "message": "Internal site: external sources cannot reach it, so they were not asked." },
-  "noSourcesNote": { "message": "Add an external source to compare what your browser receives with what others see." },
+  "noSourcesNote": {
+    "message": "Turn on the PlusPrivacy notary or add another source in Options to compare what your browser receives with what others see."
+  },
   "noSourcesNoteLite": {
-    "message": "This version reads certificates only through external sources. Add one in Options."
+    "message": "This version reads certificates only through external sources. Turn on the PlusPrivacy notary or add a source in Options."
   },
   "askLocalText": {
     "message": "Reading from your browser is set to on demand. Chrome will show its debugging bar for a few seconds."
@@ -72,7 +93,7 @@
   },
   "verdictPublicTitle": { "message": "Publicly logged certificate" },
   "verdictPublicBody": {
-    "message": "Chrome confirmed the certificate is in the public Certificate Transparency logs, so no local proxy or antivirus made it. Add external sources to cross-check it."
+    "message": "Chrome confirmed the certificate is in the public Certificate Transparency logs, so no local proxy or antivirus made it. Turn on an external source in Options to cross-check it."
   },
   "verdictPublicBodyNoAnswer": {
     "message": "Chrome confirmed the certificate is in the public Certificate Transparency logs, so no local proxy or antivirus made it. The external sources did not answer."
@@ -123,8 +144,12 @@
     "message": "This page loaded over plain HTTP, so anyone on the network can read or change it. Below is the certificate the server offers on HTTPS (port 443)."
   },
   "verdictNoSourcesTitle": { "message": "No certificate to show" },
-  "verdictNoSourcesBody": { "message": "Turn on reading from the browser or add an external source in Options." },
-  "verdictNoSourcesLite": { "message": "Add an external source in Options to see this site's certificate." },
+  "verdictNoSourcesBody": {
+    "message": "Turn on reading from the browser, the PlusPrivacy notary or another source in Options."
+  },
+  "verdictNoSourcesLite": {
+    "message": "Turn on the PlusPrivacy notary or add a source in Options to see this site's certificate."
+  },
   "verdictNoSourcesLocalFailed": {
     "message": "The certificate could not be read from your browser and no external source answered."
   },
@@ -243,6 +268,7 @@
   "notaryErr_tlsFailed": { "message": "The TLS handshake failed at the source." },
   "notaryErr_busy": { "message": "The source is busy; try again shortly." },
   "notaryErr_badRequest": { "message": "The source did not understand the request." },
+  "notaryErr_forbiddenOrigin": { "message": "The source does not accept requests from this copy of the extension." },
   "notaryErr_other": { "message": "Error $1 $2" },
 
   "sectionHistory": { "message": "History" },
@@ -313,7 +339,6 @@
   "optSourcesIntro": {
     "message": "Each source is a notary server that connects to the site from elsewhere on the internet and reports the certificate it receives. Only the site's host name and port are sent to it."
   },
-  "optSourcesEmpty": { "message": "No sources yet." },
   "optAddSourceTitle": { "message": "Add a source" },
   "fieldName": { "message": "Name" },
   "fieldNamePlaceholder": { "message": "Frankfurt server" },
@@ -325,6 +350,7 @@
   "fieldTokenHelp": { "message": "Sent as Authorization: Bearer. Stored only on this device." },
   "endpointEnabled": { "message": "Use $1" },
   "tokenSet": { "message": "Token saved" },
+  "defaultSource": { "message": "Default source, run by PlusPrivacy. It keeps no record of the sites you check." },
   "testRunning": { "message": "Asking the source about example.com…" },
   "testOk": { "message": "Works: it sees example.com's certificate issued by $1, from $2, in $3 ms." },
   "testFailed": { "message": "Failed: $1" },

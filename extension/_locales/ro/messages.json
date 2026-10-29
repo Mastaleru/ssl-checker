@@ -25,6 +25,25 @@
   },
   "checkFailedTitle": { "message": "Verificarea nu a putut rula" },
   "checkFailedBody": { "message": "Eroare: $1" },
+  "consentTitle": { "message": "Înainte de prima verificare" },
+  "consentIntro": {
+    "message": "SSL Checker se uită la site-ul din tabul curent doar când îi apeși iconița. Citește certificatul primit de browser și, dacă ești de acord:"
+  },
+  "consentIntroLite": {
+    "message": "SSL Checker se uită la site-ul din tabul curent doar când îi apeși iconița. Dacă ești de acord:"
+  },
+  "consentNotaryName": { "message": "Întreabă notarul PlusPrivacy." },
+  "consentNotaryBody": {
+    "message": "Numele și portul site-ului ajung la $1, care se conectează la site din rețeaua lui și întoarce certificatul pe care îl vede. Notarul nu păstrează nicio evidență a site-urilor."
+  },
+  "consentMemoryName": { "message": "Ține minte autoritatea de certificare a fiecărui site." },
+  "consentMemoryBody": {
+    "message": "Doar pe acest dispozitiv, ca să te avertizeze când un site cunoscut apare brusc cu alta."
+  },
+  "consentLater": {
+    "message": "Le poți schimba oricând din Opțiuni. Nimic nu se citește și nu se trimite înainte să fii de acord."
+  },
+  "consentAgree": { "message": "Sunt de acord, verifică" },
   "checkedAt": { "message": "Verificat $1" },
 
   "sectionWitnesses": { "message": "Văzut de" },
@@ -35,9 +54,11 @@
   "durationMs": { "message": "$1 ms" },
   "fingerprintLabel": { "message": "Amprentă SHA-256 $1" },
   "externalSkippedInternal": { "message": "Site intern: sursele externe nu ajung la el, așa că nu le-am întrebat." },
-  "noSourcesNote": { "message": "Adaugă o sursă externă ca să compari ce primește browserul tău cu ce văd alții." },
+  "noSourcesNote": {
+    "message": "Pornește notarul PlusPrivacy sau adaugă altă sursă în Opțiuni ca să compari ce primește browserul tău cu ce văd alții."
+  },
   "noSourcesNoteLite": {
-    "message": "Această variantă citește certificatele doar prin surse externe. Adaugă una în Opțiuni."
+    "message": "Această variantă citește certificatele doar prin surse externe. Pornește notarul PlusPrivacy sau adaugă o sursă în Opțiuni."
   },
   "askLocalText": {
     "message": "Citirea din browser e setată la cerere. Chrome va afișa câteva secunde bara de depanare."
@@ -74,7 +95,7 @@
   },
   "verdictPublicTitle": { "message": "Certificat înregistrat public" },
   "verdictPublicBody": {
-    "message": "Chrome a confirmat că certificatul apare în jurnalele publice Certificate Transparency, deci nu l-a fabricat un proxy sau un antivirus local. Adaugă surse externe pentru o verificare încrucișată."
+    "message": "Chrome a confirmat că certificatul apare în jurnalele publice Certificate Transparency, deci nu l-a fabricat un proxy sau un antivirus local. Pornește o sursă externă în Opțiuni pentru o verificare încrucișată."
   },
   "verdictPublicBodyNoAnswer": {
     "message": "Chrome a confirmat că certificatul apare în jurnalele publice Certificate Transparency, deci nu l-a fabricat un proxy sau un antivirus local. Sursele externe nu au răspuns."
@@ -123,8 +144,12 @@
     "message": "Pagina s-a încărcat prin HTTP simplu, deci oricine din rețea o poate citi sau modifica. Mai jos e certificatul pe care serverul îl oferă prin HTTPS (portul 443)."
   },
   "verdictNoSourcesTitle": { "message": "Niciun certificat de afișat" },
-  "verdictNoSourcesBody": { "message": "Pornește citirea din browser sau adaugă o sursă externă în Opțiuni." },
-  "verdictNoSourcesLite": { "message": "Adaugă o sursă externă în Opțiuni ca să vezi certificatul acestui site." },
+  "verdictNoSourcesBody": {
+    "message": "Pornește din Opțiuni citirea din browser, notarul PlusPrivacy sau altă sursă."
+  },
+  "verdictNoSourcesLite": {
+    "message": "Pornește notarul PlusPrivacy sau adaugă o sursă în Opțiuni ca să vezi certificatul acestui site."
+  },
   "verdictNoSourcesLocalFailed": {
     "message": "Certificatul nu a putut fi citit din browser și nicio sursă externă nu a răspuns."
   },
@@ -243,6 +268,7 @@
   "notaryErr_tlsFailed": { "message": "Handshake-ul TLS a eșuat la sursă." },
   "notaryErr_busy": { "message": "Sursa e ocupată; încearcă din nou puțin mai târziu." },
   "notaryErr_badRequest": { "message": "Sursa nu a înțeles cererea." },
+  "notaryErr_forbiddenOrigin": { "message": "Sursa nu acceptă cereri de la această copie a extensiei." },
   "notaryErr_other": { "message": "Eroare $1 $2" },
 
   "sectionHistory": { "message": "Istoric" },
@@ -317,7 +343,6 @@
   "optSourcesIntro": {
     "message": "Fiecare sursă e un server notar care se conectează la site din alt punct al internetului și raportează certificatul primit. I se trimit doar numele site-ului și portul."
   },
-  "optSourcesEmpty": { "message": "Nicio sursă încă." },
   "optAddSourceTitle": { "message": "Adaugă o sursă" },
   "fieldName": { "message": "Nume" },
   "fieldNamePlaceholder": { "message": "Serverul din Frankfurt" },
@@ -329,6 +354,9 @@
   "fieldTokenHelp": { "message": "Trimis ca Authorization: Bearer. Păstrat doar pe acest dispozitiv." },
   "endpointEnabled": { "message": "Folosește $1" },
   "tokenSet": { "message": "Token salvat" },
+  "defaultSource": {
+    "message": "Sursă implicită, operată de PlusPrivacy. Nu păstrează nicio evidență a site-urilor verificate."
+  },
   "testRunning": { "message": "Întreb sursa despre example.com…" },
   "testOk": { "message": "Funcționează: vede certificatul example.com emis de $1, din $2, în $3 ms." },
   "testFailed": { "message": "Eșuat: $1" },

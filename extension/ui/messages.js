@@ -36,6 +36,7 @@ const NOTARY_ERRORS = new Set([
   'tlsFailed',
   'busy',
   'badRequest',
+  'forbiddenOrigin',
 ]);
 
 export function notaryErrorText(notary) {

@@ -2,7 +2,7 @@ import { readLocalCertificate } from './local-source.js';
 import { queryNotary } from './notary-source.js';
 import { describeChain } from '../lib/x509.js';
 import { computeVerdict } from '../lib/verdict.js';
-import { getSettings, localReadingAvailable } from '../lib/settings.js';
+import { activeEndpoints, getSettings, hasConsent, localReadingAvailable } from '../lib/settings.js';
 import { isInternalHost, parseTarget } from '../lib/hostnames.js';
 import { assess, describe, learn, observationFrom } from '../lib/site-memory.js';
 import { forgetSite, loadSiteRecord, saveSiteRecord } from '../lib/site-memory-store.js';
@@ -119,10 +119,14 @@ async function runCheck({ tabId, url, local, reload = false, reuseExternal = fal
   }
 
   const settings = await getSettings();
+  if (!hasConsent(settings)) {
+    // Nothing is read or sent before the user agrees in the popup.
+    return { v: RESULT_VERSION, tabId, needsConsent: true };
+  }
   const localAvailable = localReadingAvailable();
   const wantLocal =
     target.secure && localAvailable && local !== false && (local === true || reload || settings.localMode === 'always');
-  const endpoints = settings.endpoints.filter((e) => e.enabled !== false);
+  const endpoints = activeEndpoints(settings);
   const internal = isInternalHost(target.host);
 
   const previous = reuseExternal ? await cachedResult(tabId, target.origin, 120000) : null;

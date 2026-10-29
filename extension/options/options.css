@@ -168,11 +168,6 @@ body {
   font-size: 13px;
   color: var(--tone, var(--ink-2));
 }
-.empty {
-  margin: 0 0 18px;
-  color: var(--ink-3);
-}
-
 .endpoint-form {
   margin-top: 18px;
   padding: 16px 18px 18px;
