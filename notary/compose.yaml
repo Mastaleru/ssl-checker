@@ -1,0 +1,62 @@
+# The notary on a VPS. Caddy answers on ports 80 and 443 and gets the Let's Encrypt
+# certificate for NOTARY_DOMAIN by itself; the notary publishes no port of its own.
+#
+#   docker compose up -d --build     start, or update after git pull
+#   docker compose logs -f           follow the logs
+#   docker compose ps                state and health
+name: ssl-checker-notary
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: '3'
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    environment:
+      NOTARY_DOMAIN: ${NOTARY_DOMAIN:?Set NOTARY_DOMAIN in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      notary:
+        condition: service_healthy
+    logging: *logging
+
+  notary:
+    build: .
+    image: ssl-checker-notary:local
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Fixed by this setup: the notary listens inside the network, behind one proxy.
+      HOST: 0.0.0.0
+      PORT: '8080'
+      TRUST_PROXY: '1'
+    expose:
+      - '8080'
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    init: true
+    mem_limit: 256m
+    cpus: 1
+    pids_limit: 128
+    logging: *logging
+
+volumes:
+  # Caddy's certificates and account: keep them, or Let's Encrypt is asked again.
+  caddy-data:
+  caddy-config:

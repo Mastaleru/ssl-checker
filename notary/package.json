@@ -1,0 +1,19 @@
+{
+  "name": "ssl-checker-notary",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Notary for SSL Checker: reports the TLS certificate chain a site presents, as seen from this server.",
+  "type": "module",
+  "main": "src/main.js",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/main.js",
+    "test": "node --test \"test/**/*.test.js\""
+  },
+  "dependencies": {
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.1"
+  }
+}

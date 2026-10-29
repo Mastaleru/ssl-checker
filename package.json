@@ -8,12 +8,13 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "node --test tests/x509.test.mjs tests/verdict.test.mjs tests/site-memory.test.mjs tests/i18n.test.mjs tests/notary.test.mjs",
+    "test": "node --test tests/x509.test.mjs tests/verdict.test.mjs tests/site-memory.test.mjs tests/i18n.test.mjs",
     "test:e2e": "node tests/e2e/run.mjs",
+    "test:notary": "npm --prefix notary test",
     "lint": "eslint . && prettier --check .",
     "format": "eslint --fix . && prettier --write .",
     "build": "node scripts/build.mjs",
-    "notary": "node notary/server.mjs",
+    "notary": "npm --prefix notary start",
     "screenshots": "node store/tools/make-screenshots.mjs"
   },
   "devDependencies": {

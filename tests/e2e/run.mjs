@@ -2,16 +2,17 @@
 // End-to-end tests: loads the real extension into Chromium and drives the popup
 // and the options page against local TLS servers and a real notary process.
 //
-// Needs Playwright and a Chromium that can load unpacked extensions (Chromium or
-// Chrome for Testing; branded Google Chrome ignores --load-extension since 137).
-//   npm i -D playwright && npx playwright install chromium
+// Needs Playwright, the notary's packages, and a Chromium that can load unpacked
+// extensions (Chromium or Chrome for Testing; branded Google Chrome ignores
+// --load-extension since 137).
+//   npm ci && npx playwright install chromium && npm ci --prefix notary
 //   node tests/e2e/run.mjs                 (E2E_LANG=ro for the Romanian UI)
 // Optional: CHROME_PATH=<chrome binary>, PLAYWRIGHT_MODULE=<path to playwright>,
 //           E2E_OUT=<folder for screenshots>, E2E_ONLY=<scenario name substring>
 
 import { spawn } from 'node:child_process';
 import { createHash, X509Certificate } from 'node:crypto';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import http from 'node:http';
 import https from 'node:https';
 import { createRequire } from 'node:module';
@@ -69,8 +70,11 @@ async function listen(server) {
 }
 
 async function startNotary(env) {
+  if (!existsSync(path.join(ROOT, 'notary/node_modules/express'))) {
+    throw new Error('The notary needs its packages first: npm ci --prefix notary');
+  }
   const port = await freePort();
-  const child = spawn(process.execPath, [path.join(ROOT, 'notary/server.mjs')], {
+  const child = spawn(process.execPath, [path.join(ROOT, 'notary/src/main.js')], {
     env: { PATH: process.env.PATH, PORT: String(port), HOST: '127.0.0.1', NOTARY_NAME: 'Test vantage', ...env },
     stdio: ['ignore', 'pipe', 'inherit'],
   });
@@ -295,11 +299,12 @@ async function main() {
   const plainPort = await listen(plain);
   const memoryPort = await listen(memorySite);
   const closedPort = await freePort();
-  const TOKEN = 'e2e-secret-token';
+  const TOKEN = 'e2e-secret-token-for-a-private-notary';
   const notary = await startNotary({
     ALLOW_PRIVATE: '1',
     ALLOWED_PORTS: `${sitePort},${interceptPort}`,
     RATE_LIMIT: '0',
+    BAN_STRIKES: '1000',
     CACHE_SECONDS: '0',
     NOTARY_TOKEN: TOKEN,
   });
