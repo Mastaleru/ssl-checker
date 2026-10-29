@@ -1,8 +1,10 @@
 import { DEFAULT_NOTARY } from '../lib/default-notary.js';
 import { plural, t } from '../lib/i18n.js';
+import { parseKeyList } from '../lib/notary-signature.js';
 import {
   getSettings,
   localReadingAvailable,
+  namesHostInQuery,
   newEndpointId,
   saveSettings,
   validateEndpointUrl,
@@ -76,7 +78,15 @@ async function runTest(endpoint, output, button) {
     const result = reply.value;
     if (result.state === 'ok') {
       output.dataset.tone = 'ok';
-      output.textContent = t('testOk', [issuerLabel(result.chain[0]), result.vantage || '—', result.durationMs]);
+      const signing = result.signed
+        ? t('testSigned')
+        : result.reportedKey
+          ? t('testSelfSigned', [result.reportedKey])
+          : t('testUnsigned');
+      output.textContent = [
+        t('testOk', [issuerLabel(result.chain[0]), result.vantage || '—', result.durationMs]),
+        signing,
+      ].join(' ');
     } else {
       output.dataset.tone = 'danger';
       output.textContent = t('testFailed', [notaryErrorText(result)]);
@@ -105,6 +115,10 @@ function endpointItem(endpoint) {
     await persist({ endpoints: settings.endpoints.filter((e) => e.id !== endpoint.id) });
     renderEndpoints();
   });
+  const notes = [
+    endpoint.token ? t('tokenSet') : null,
+    endpoint.keys && endpoint.keys.length ? t('keySet') : null,
+  ].filter(Boolean);
   return h(
     'li',
     { class: 'endpoint' },
@@ -114,7 +128,7 @@ function endpointItem(endpoint) {
       {},
       h('span', { class: 'endpoint-name' }, endpoint.name),
       h('span', { class: 'endpoint-url mono' }, endpoint.url),
-      endpoint.token ? h('span', { class: 'endpoint-token' }, t('tokenSet')) : null,
+      notes.length ? h('span', { class: 'endpoint-token' }, notes.join(' · ')) : null,
     ),
     h('div', { class: 'endpoint-actions' }, testButton, removeButton),
     output,
@@ -172,8 +186,22 @@ async function onAddEndpoint(event) {
   if (token && !/^[\x21-\x7e]{1,512}$/.test(token)) {
     return showFormError(t('endpointErrorToken'));
   }
+  const keys = parseKeyList($('ep-key').value);
+  if (!keys.ok) {
+    return showFormError(t('endpointErrorKey'));
+  }
+  if (keys.keys.length && !namesHostInQuery(valid.url)) {
+    return showFormError(t('endpointErrorKeyUrl'));
+  }
   showFormError('');
-  const endpoint = { id: newEndpointId(), name: name || endpointHost(valid.url), url: valid.url, token, enabled: true };
+  const endpoint = {
+    id: newEndpointId(),
+    name: name || endpointHost(valid.url),
+    url: valid.url,
+    token,
+    keys: keys.keys,
+    enabled: true,
+  };
   await persist({ endpoints: [...settings.endpoints, endpoint] });
   $('endpoint-form').reset();
   renderEndpoints();

@@ -37,8 +37,13 @@ const server = app.listen(config.port, config.host, () => {
     requireOrigin: config.requireOrigin,
     auth: Boolean(config.token),
     trustProxy: config.trustProxy,
+    // The public key to build into the extension (lib/default-notary.js) or to give to Options.
+    key: config.signer ? config.signer.publicKey : null,
     ...(config.allowPrivate ? { warning: 'ALLOW_PRIVATE=1: private targets allowed (testing only)' } : {}),
   });
+  if (!config.signer) {
+    logger.warn('answers are not signed', { hint: 'set SIGNING_KEY_FILE (README.md, "Signed answers")' });
+  }
 });
 server.requestTimeout = 15_000;
 server.headersTimeout = 10_000;

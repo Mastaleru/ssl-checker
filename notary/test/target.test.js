@@ -6,8 +6,11 @@ test('host names are normalized; IDNs become punycode', () => {
   assert.equal(normalizeHost(' Example.COM. '), 'example.com');
   assert.equal(normalizeHost('[2606:4700::1111]'), '2606:4700::1111');
   assert.equal(normalizeHost('bücher.de'), 'xn--bcher-kva.de');
-  for (const bad of ['', 'not a host', 'exa_mple.com', 'a..b', `${'a'.repeat(300)}.com`]) {
-    assert.throws(() => normalizeHost(bad), { code: 'badRequest' }, JSON.stringify(bad));
+  const bad = ['', 'not a host', 'exa_mple.com', 'a..b', `${'a'.repeat(300)}.com`];
+  // What a URL parser would silently trim to another host or port.
+  bad.push('example.com:8443', 'user@example.com', 'example.com/path', 'example.com?x', 'b%C3%BCcher.de', 'a\\b.com');
+  for (const host of bad) {
+    assert.throws(() => normalizeHost(host), { code: 'badRequest' }, JSON.stringify(host));
   }
 });
 

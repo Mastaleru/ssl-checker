@@ -1,7 +1,9 @@
 // Reads the settings from environment variables (see README.md and .env.example).
 // A bad value stops the notary at startup, with every problem listed at once,
 // instead of surfacing later as odd behavior.
+import { readFileSync } from 'node:fs';
 import os from 'node:os';
+import { createSigner } from './signing.js';
 
 export class ConfigError extends Error {
   constructor(problems) {
@@ -102,6 +104,23 @@ export function loadConfig(env = process.env) {
     );
   }
 
+  // The key that signs every answer (signing.js). Without it, answers are not signed.
+  let signer = null;
+  const keyFile = read('SIGNING_KEY_FILE');
+  if (keyFile) {
+    try {
+      signer = createSigner(readFileSync(keyFile));
+    } catch (error) {
+      const reason =
+        error.code === 'ENOENT'
+          ? 'no such file (create one with: openssl genpkey -algorithm ed25519 -out <file>)'
+          : error.code === 'EACCES'
+            ? 'this user may not read it'
+            : error.message;
+      problems.push(`SIGNING_KEY_FILE ${keyFile}: ${reason}`);
+    }
+  }
+
   let upstreamProxy = null;
   if (read('UPSTREAM_PROXY')) {
     try {
@@ -120,6 +139,7 @@ export function loadConfig(env = process.env) {
     host: read('HOST') || '0.0.0.0',
     name: (read('NOTARY_NAME') || os.hostname()).slice(0, 80),
     token,
+    signer,
     allowedPorts,
     allowedOrigins,
     requireOrigin: flag('REQUIRE_ORIGIN'),

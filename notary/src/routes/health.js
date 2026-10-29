@@ -9,6 +9,7 @@ export function healthRoute({ config }) {
       vantage: config.name,
       ports: [...config.allowedPorts],
       auth: Boolean(config.token),
+      key: config.signer ? config.signer.publicKey : null,
     });
   };
 }

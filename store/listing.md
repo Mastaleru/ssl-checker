@@ -38,7 +38,7 @@ YOU DECIDE WHEN THE DEBUGGER RUNS
 Chrome has no dedicated API for the certificate of a loaded page, so SSL Checker attaches Chrome's debugger to the tab for about a second when it reads one. While it does, Chrome shows a bar saying the extension is debugging the browser. In Options you choose: every time, on demand (one click in the popup), or never (external sources only).
 
 NOTARY SERVERS
-The PlusPrivacy notary is built in, and you can turn it off in Options. Any server that implements the small notary protocol described in Options can be added as a source. The notary software (Node.js in a Docker container, protected against SSRF and floods) is available from the developer.
+The PlusPrivacy notary is built in, and you can turn it off in Options. Any server that implements the small notary protocol described in Options can be added as a source. The notary software (Node.js in a Docker container, protected against SSRF and floods) is available from the developer. The PlusPrivacy notary signs every answer and SSL Checker checks the signature, so nobody on the way can fake a confirmation. Give a notary you add its key, and its answers are checked the same way.
 
 PRIVACY
 No analytics, no tracking, no account. Before the first check, SSL Checker tells you what it reads and sends, and asks for your agreement. Only the checked site's host name and port leave your device: they go to the PlusPrivacy notary, which keeps no record of the sites, unless you turn it off, and to the notaries you add. The site memory never leaves your device.
@@ -75,7 +75,7 @@ TU DECIZI CÂND RULEAZĂ DEBUGGER-UL
 Chrome nu are un API dedicat pentru certificatul unei pagini încărcate, așa că SSL Checker atașează debugger-ul Chrome la tab cam o secundă când îl citește. Între timp, Chrome afișează o bară care spune că extensia depanează browserul. În Opțiuni alegi: de fiecare dată, la cerere (un clic în popup) sau niciodată (doar surse externe).
 
 SERVERE NOTAR
-Notarul PlusPrivacy e inclus și îl poți opri din Opțiuni. Orice server care implementează micul protocol de notar descris în Opțiuni poate fi adăugat ca sursă. Programul notarului (Node.js într-un container Docker, protejat împotriva SSRF și a avalanșelor de cereri) e disponibil de la dezvoltator.
+Notarul PlusPrivacy e inclus și îl poți opri din Opțiuni. Orice server care implementează micul protocol de notar descris în Opțiuni poate fi adăugat ca sursă. Programul notarului (Node.js într-un container Docker, protejat împotriva SSRF și a avalanșelor de cereri) e disponibil de la dezvoltator. Notarul PlusPrivacy își semnează fiecare răspuns, iar SSL Checker verifică semnătura, așa că nimeni de pe drum nu poate falsifica o confirmare. Dacă dai cheia unui notar pe care îl adaugi, și răspunsurile lui sunt verificate la fel.
 
 CONFIDENȚIALITATE
 Fără analytics, fără urmărire, fără cont. Înainte de prima verificare, SSL Checker îți spune ce citește și ce trimite și îți cere acordul. Doar numele site-ului verificat și portul pleacă de pe dispozitivul tău: la notarul PlusPrivacy, care nu păstrează nicio evidență a site-urilor, dacă nu îl oprești, și la notarii pe care îi adaugi. Memoria site-urilor nu părăsește dispozitivul tău.

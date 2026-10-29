@@ -1,15 +1,41 @@
 // Shared test helpers: a notary on a free port, a local TLS site to look at, and
 // small HTTP shortcuts. No test touches the internet.
-import { readFileSync } from 'node:fs';
+import { generateKeyPairSync, verify } from 'node:crypto';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer as createNetServer } from 'node:net';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { createServer as createTlsServer } from 'node:tls';
+import { fileURLToPath } from 'node:url';
 import { createApp } from '../src/app.js';
 import { loadConfig } from '../src/config.js';
 import { createBans } from '../src/middleware/bans.js';
 import { createCertService } from '../src/probe/service.js';
 import { probeTls } from '../src/probe/tls.js';
+import { SIGNATURE_CONTEXT } from '../src/signing.js';
 
-export const fixture = (name) => readFileSync(new URL(`./fixtures/${name}`, import.meta.url));
+export const fixturePath = (name) => fileURLToPath(new URL(`./fixtures/${name}`, import.meta.url));
+export const fixture = (name) => readFileSync(fixturePath(name));
+
+/** A new Ed25519 key in a temporary PEM file, as SIGNING_KEY_FILE expects it. */
+export function signingKeyFile() {
+  const { privateKey, publicKey } = generateKeyPairSync('ed25519');
+  const dir = mkdtempSync(join(tmpdir(), 'notary-key-'));
+  const file = join(dir, 'signing-key.pem');
+  writeFileSync(file, privateKey.export({ type: 'pkcs8', format: 'pem' }));
+  return {
+    file,
+    publicKey,
+    text: `ed25519:${publicKey.export({ format: 'jwk' }).x}`,
+    remove: () => rmSync(dir, { recursive: true, force: true }),
+  };
+}
+
+/** What a client checks: the Notary-Signature header signs exactly these bytes. */
+export function signatureHolds(publicKey, body, signature) {
+  const message = Buffer.concat([Buffer.from(SIGNATURE_CONTEXT), body]);
+  return verify(null, message, publicKey, Buffer.from(signature, 'base64url'));
+}
 
 export const EXTENSION_ORIGIN = 'chrome-extension://abcdefghijklmnopabcdefghijklmnop';
 

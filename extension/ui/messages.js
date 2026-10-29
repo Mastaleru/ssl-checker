@@ -37,6 +37,12 @@ const NOTARY_ERRORS = new Set([
   'busy',
   'badRequest',
   'forbiddenOrigin',
+  'internal',
+  'noKey',
+  'unsigned',
+  'unknownKey',
+  'tampered',
+  'cannotVerify',
 ]);
 
 export function notaryErrorText(notary) {
@@ -50,5 +56,5 @@ export function notaryErrorText(notary) {
   if (NOTARY_ERRORS.has(e.code)) {
     return t(`notaryErr_${e.code}`);
   }
-  return t('notaryErr_other', [e.code || '?', e.message || e.status || '']);
+  return t('notaryErr_other', [e.code || '?', e.status || '']);
 }

@@ -75,6 +75,11 @@ export function normalizeHost(raw) {
   if (net.isIP(value)) {
     return value;
   }
+  // A URL parser would quietly drop a port, user name or path ("example.com:8443"
+  // becomes "example.com"), so such input is refused instead.
+  if (/[\s/\\@:?#%]/.test(value)) {
+    throw new NotaryError(400, 'badRequest', 'host must be a bare name or address, without port or path');
+  }
   let ascii;
   try {
     ascii = new URL(`https://${value}/`).hostname;

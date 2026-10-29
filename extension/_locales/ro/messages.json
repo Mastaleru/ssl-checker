@@ -51,6 +51,7 @@
   "witnessViaReload": { "message": "citit după reîncărcarea paginii" },
   "witnessLocalNotRead": { "message": "Încă necitit." },
   "witnessIssuedBy": { "message": "emis de $1" },
+  "witnessSigned": { "message": "răspuns semnat" },
   "durationMs": { "message": "$1 ms" },
   "fingerprintLabel": { "message": "Amprentă SHA-256 $1" },
   "externalSkippedInternal": { "message": "Site intern: sursele externe nu ajung la el, așa că nu le-am întrebat." },
@@ -92,6 +93,10 @@
   "verdictSameCaTitle": { "message": "Același emitent, alt certificat" },
   "verdictSameCaBody": {
     "message": "Sursele externe primesc alt certificat de la aceeași autoritate ($1). E normal la CDN-uri și când certificatele sunt rotite."
+  },
+  "verdictSameCaUnloggedTitle": { "message": "Același nume de emitent, neconfirmat" },
+  "verdictSameCaUnloggedBody": {
+    "message": "Sursele externe primesc alt certificat, de la o autoritate cu același nume ca a ta ($1), iar Chrome nu a confirmat că al tău e înregistrat public. CDN-urile pot servi mai multe certificate, dar și un interceptor poate copia numele unei autorități, așa că asta nu îți confirmă certificatul."
   },
   "verdictPublicTitle": { "message": "Certificat înregistrat public" },
   "verdictPublicBody": {
@@ -136,6 +141,14 @@
   },
   "verdictExternalDisagreeTitle": { "message": "Sursele externe nu se potrivesc" },
   "verdictExternalDisagreeBody": { "message": "Sursele externe văd certificate diferite între ele." },
+  "verdictTamperedTitle": { "message": "Un răspuns a fost schimbat pe drum" },
+  "verdictTamperedBody": {
+    "message": "Răspunsul semnat de la $1 a fost schimbat între acea sursă și browserul tău, așa că nu a fost folosit. Asta o poate face doar ceva care interceptează conexiunile securizate ale acestui browser."
+  },
+  "verdictUnsignedTitle": { "message": "Confirmat doar de răspunsuri nesemnate" },
+  "verdictUnsignedBody": {
+    "message": "Browserul tău primește același certificat ca în răspunsurile de la $1, dar acele răspunsuri nu sunt semnate, iar Chrome nu a confirmat că certificatul tău e înregistrat public. Ceva care îți interceptează conexiunea le-ar fi putut scrie. Răspunsurile semnate cu o cheie cunoscută, cum sunt cele ale notarului PlusPrivacy, nu pot fi falsificate."
+  },
   "verdictHttpTitle": { "message": "Pagină necriptată" },
   "verdictHttpBody": {
     "message": "Pagina s-a încărcat prin HTTP simplu, deci oricine din rețea o poate citi sau modifica. Niciun certificat nu o protejează."
@@ -269,6 +282,18 @@
   "notaryErr_busy": { "message": "Sursa e ocupată; încearcă din nou puțin mai târziu." },
   "notaryErr_badRequest": { "message": "Sursa nu a înțeles cererea." },
   "notaryErr_forbiddenOrigin": { "message": "Sursa nu acceptă cereri de la această copie a extensiei." },
+  "notaryErr_noKey": {
+    "message": "Această versiune nu are cheia cu care să verifice răspunsurile acestei surse, așa că nu a întrebat-o."
+  },
+  "notaryErr_unsigned": { "message": "Răspunsul nu era semnat, așa că nu a fost folosit." },
+  "notaryErr_unknownKey": {
+    "message": "Răspunsul e semnat cu o cheie pe care extensia nu o cunoaște, așa că nu a fost folosit. Poate sursa are o cheie nouă: actualizează extensia sau cheia sursei."
+  },
+  "notaryErr_tampered": { "message": "Răspunsul a fost schimbat pe drum, așa că nu a fost folosit." },
+  "notaryErr_internal": { "message": "Sursa a avut o eroare internă." },
+  "notaryErr_cannotVerify": {
+    "message": "Browserul nu a putut verifica semnătura răspunsului, așa că nu a fost folosit."
+  },
   "notaryErr_other": { "message": "Eroare $1 $2" },
 
   "sectionHistory": { "message": "Istoric" },
@@ -308,6 +333,9 @@
   "warnCaChangedPublic": { "message": "Site-ul a trecut de la $1 la $2. Noul certificat e înregistrat public." },
   "warnCaChangedNowPublic": {
     "message": "Verificările anterioare ale acestui site treceau prin $1, o autoritate instalată pe acest calculator sau în rețea (de exemplu un proxy de firmă). Acum certificatul e public."
+  },
+  "warnNotaryTampered": {
+    "message": "Răspunsul semnat de la $1 a fost schimbat pe drum și nu a fost folosit: ceva interceptează conexiunile securizate ale acestui browser."
   },
 
   "optMemoryTitle": { "message": "Memoria site-urilor" },
@@ -352,13 +380,23 @@
   },
   "fieldToken": { "message": "Token de acces (opțional)" },
   "fieldTokenHelp": { "message": "Trimis ca Authorization: Bearer. Păstrat doar pe acest dispozitiv." },
+  "fieldKey": { "message": "Cheie publică (opțional)" },
+  "fieldKeyHelp": {
+    "message": "Cu o cheie, un răspuns contează doar dacă l-a semnat acest notar, așa că nimeni de pe drum nu îl poate schimba. Notarul își afișează cheia când pornește. Mai multe chei se despart prin spații."
+  },
   "endpointEnabled": { "message": "Folosește $1" },
   "tokenSet": { "message": "Token salvat" },
+  "keySet": { "message": "Doar răspunsuri semnate" },
   "defaultSource": {
-    "message": "Sursă implicită, operată de PlusPrivacy. Nu păstrează nicio evidență a site-urilor verificate."
+    "message": "Sursă implicită, operată de PlusPrivacy. Răspunsurile ei sunt semnate, iar ea nu păstrează nicio evidență a site-urilor verificate."
   },
   "testRunning": { "message": "Întreb sursa despre example.com…" },
   "testOk": { "message": "Funcționează: vede certificatul example.com emis de $1, din $2, în $3 ms." },
+  "testSigned": { "message": "Răspunsul ei e semnat cu cheia așteptată." },
+  "testSelfSigned": {
+    "message": "Răspunsurile ei poartă semnătura cheii $1. Înainte s-o adaugi, verifică dacă e cheia afișată de notar pe serverul lui: un interceptor ar fi putut trimite una a lui."
+  },
+  "testUnsigned": { "message": "Răspunsurile ei nu sunt semnate." },
   "testFailed": { "message": "Eșuat: $1" },
   "endpointErrorInvalidUrl": { "message": "Introdu o adresă validă." },
   "endpointErrorCredentialsInUrl": {
@@ -371,11 +409,18 @@
   },
   "endpointErrorDuplicate": { "message": "Sursa asta e deja în listă." },
   "endpointErrorToken": { "message": "Tokenul poate conține doar caractere ASCII vizibile." },
+  "endpointErrorKey": { "message": "Introdu cheia așa cum o afișează notarul: ed25519: urmat de 43 de caractere." },
+  "endpointErrorKeyUrl": {
+    "message": "O sursă cu cheie trebuie să primească site-ul ca ?host=…&port=…, ca notarul SSL Checker, nu în cale."
+  },
   "optAdvancedTitle": { "message": "Avansat" },
   "fieldTimeout": { "message": "Cât aștept fiecare sursă (secunde)" },
   "optProtocolTitle": { "message": "Protocolul notarilor" },
   "optProtocolIntro": {
-    "message": "Orice server care răspunde la această cerere poate fi o sursă. Implementarea de referință e un singur fișier Node.js pe care îl poți rula pe serverul tău."
+    "message": "Orice server care răspunde la această cerere poate fi o sursă. Implementarea de referință e notarul proiectului SSL Checker, un mic serviciu Node.js împachetat pentru Docker."
+  },
+  "optProtocolSigning": {
+    "message": "Un notar cu cheie de semnare întoarce nonce-ul cererii, își adaugă cheia publică și semnează răspunsul: Notary-Signature conține semnătura Ed25519 a rândului „SSL Checker notary answer v1” urmat exact de corpul răspunsului. Dacă dai unei surse cheia ei, extensia folosește doar răspunsurile semnate cu ea pentru gazda, portul și nonce-ul cerute."
   },
   "optProtocolErrors": {
     "message": "La erori, răspunde cu un status 4xx sau 5xx și {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}}. Extensia nu are permisiuni pe site-uri, deci serverul trebuie să trimită headere CORS."

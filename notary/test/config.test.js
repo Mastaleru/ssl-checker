@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { ConfigError, loadConfig } from '../src/config.js';
+import { fixturePath, signingKeyFile } from './helpers.js';
 
 const problemsOf = (env) => {
   try {
@@ -32,7 +33,19 @@ test('defaults describe a public notary on port 8080', () => {
   assert.equal(config.cacheMs, 60_000);
   assert.equal(config.timeoutMs, 8000);
   assert.equal(config.trustProxy, false);
+  assert.equal(config.signer, null);
   assert.ok(Object.isFrozen(config));
+});
+
+test('SIGNING_KEY_FILE must hold an Ed25519 private key this user can read', () => {
+  const key = signingKeyFile();
+  try {
+    assert.equal(loadConfig({ SIGNING_KEY_FILE: key.file }).signer.publicKey, key.text);
+  } finally {
+    key.remove();
+  }
+  assert.match(problemsOf({ SIGNING_KEY_FILE: key.file })[0], /no such file \(create one with: openssl genpkey/);
+  assert.match(problemsOf({ SIGNING_KEY_FILE: fixturePath('localhost.key') })[0], /Ed25519 key is needed/);
 });
 
 test('every bad value is reported at once', () => {

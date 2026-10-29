@@ -1,5 +1,6 @@
 # The notary on a VPS. Caddy answers on ports 80 and 443 and gets the Let's Encrypt
 # certificate for NOTARY_DOMAIN by itself; the notary publishes no port of its own.
+# The notary signs its answers with the key in secrets/signing-key.pem (README.md).
 #
 #   docker compose up -d --build     start, or update after git pull
 #   docker compose logs -f           follow the logs
@@ -37,10 +38,14 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      # Fixed by this setup: the notary listens inside the network, behind one proxy.
+      # Fixed by this setup: the notary listens inside the network, behind one proxy,
+      # and signs every answer.
       HOST: 0.0.0.0
       PORT: '8080'
       TRUST_PROXY: '1'
+      SIGNING_KEY_FILE: /run/secrets/signing_key
+    secrets:
+      - signing_key
     expose:
       - '8080'
     read_only: true
@@ -55,6 +60,12 @@ services:
     cpus: 1
     pids_limit: 128
     logging: *logging
+
+secrets:
+  # Mounted read-only at /run/secrets/signing_key. The container user (uid 1000)
+  # must be able to read the file; README.md shows how to create it.
+  signing_key:
+    file: ./secrets/signing-key.pem
 
 volumes:
   # Caddy's certificates and account: keep them, or Let's Encrypt is asked again.

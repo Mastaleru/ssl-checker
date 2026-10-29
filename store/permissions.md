@@ -18,7 +18,7 @@ Developer Dashboard → the item → **Privacy practices**. The quoted blocks ar
 
 **storage**
 
-> Stores the user's agreement given in the popup and the user's settings (whether the PlusPrivacy notary is used, reading mode, notary server addresses with their optional access tokens, timeout) in chrome.storage.local on the device, and the last result per tab in chrome.storage.session so that reopening the popup does not repeat the check. For the site memory, which the user can turn off and wipe in Options, it also keeps in chrome.storage.local the host name of each site the user checked and the certificate authority it used (name, key fingerprints, dates, number of checks), so that it can warn when a known site suddenly presents a different authority. Nothing is recorded for tabs in incognito windows, and this data never leaves the device.
+> Stores the user's agreement given in the popup and the user's settings (whether the PlusPrivacy notary is used, reading mode, notary server addresses with their optional access tokens and public keys, timeout) in chrome.storage.local on the device, and the last result per tab in chrome.storage.session so that reopening the popup does not repeat the check. For the site memory, which the user can turn off and wipe in Options, it also keeps in chrome.storage.local the host name of each site the user checked and the certificate authority it used (name, key fingerprints, dates, number of checks), so that it can warn when a known site suddenly presents a different authority. Nothing is recorded for tabs in incognito windows, and this data never leaves the device.
 
 ## Remote code
 

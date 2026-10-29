@@ -11,7 +11,7 @@
 //           E2E_OUT=<folder for screenshots>, E2E_ONLY=<scenario name substring>
 
 import { spawn } from 'node:child_process';
-import { createHash, X509Certificate } from 'node:crypto';
+import { createHash, generateKeyPairSync, X509Certificate } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import http from 'node:http';
 import https from 'node:https';
@@ -40,6 +40,16 @@ const spkiPin = (pem) =>
   createHash('sha256')
     .update(new X509Certificate(pem).publicKey.export({ type: 'spki', format: 'der' }))
     .digest('base64');
+const pemBodies = (pem) =>
+  [...pem.toString().matchAll(/-----BEGIN CERTIFICATE-----([\s\S]+?)-----END/g)].map((m) => m[1].replace(/\s+/g, ''));
+
+/** A signing key for a test notary, in a file as SIGNING_KEY_FILE expects it. */
+function signingKey(dir, name) {
+  const { privateKey, publicKey } = generateKeyPairSync('ed25519');
+  const file = path.join(dir, `${name}.pem`);
+  writeFileSync(file, privateKey.export({ type: 'pkcs8', format: 'pem' }));
+  return { file, publicKey: `ed25519:${publicKey.export({ format: 'jwk' }).x}` };
+}
 
 function freePort() {
   return new Promise((resolve) => {
@@ -86,16 +96,73 @@ async function startNotary(env) {
   return { port, child };
 }
 
-// Points the staged extension's PlusPrivacy notary at a local one.
-function pointDefaultNotary(extDir, url) {
+// Points the staged extension's PlusPrivacy notary at a local one, with that one's keys.
+function pointDefaultNotary(extDir, url, keys) {
   const file = path.join(extDir, 'lib/default-notary.js');
-  const source = readFileSync(file, 'utf8');
-  const changed = source.replace("'https://notary.plusprivacy.com/v1/cert'", `'${url}'`);
-  if (changed === source) {
-    throw new Error('lib/default-notary.js no longer holds the PlusPrivacy URL');
+  const changed = readFileSync(file, 'utf8')
+    .replace("'https://notary.plusprivacy.com/v1/cert'", `'${url}'`)
+    .replace(/keys: Object\.freeze\(\[[^\]]*\]\)/, `keys: Object.freeze(${JSON.stringify(keys)})`);
+  if (!changed.includes(url) || !changed.includes(keys[0])) {
+    throw new Error('lib/default-notary.js no longer holds the PlusPrivacy URL and keys');
   }
   writeFileSync(file, changed);
   return extDir;
+}
+
+/**
+ * Sits between the extension and the PlusPrivacy stand-in, where an interceptor on the
+ * user's network would be. Its `mode` decides what it does to the next requests:
+ *   pass            changes nothing (and keeps the last answer, for replay)
+ *   forgeChain      puts the interceptor's own chain into the answer
+ *   swapTarget      sends the notary to look at another port, keeping the nonce
+ *   replay          answers with an earlier genuine answer
+ *   stripSignature  drops the Notary-Signature header
+ *   spoofError      answers with an error that claims the extension's own "tampered" code
+ */
+async function startTamperProxy(upstreamPort, { forgedChain, fromPort, toPort }) {
+  const proxy = { mode: 'pass', captured: null };
+  const server = http.createServer((req, res) => {
+    if (proxy.mode === 'replay' && proxy.captured) {
+      res.writeHead(200, proxy.captured.headers);
+      res.end(proxy.captured.body);
+      return;
+    }
+    if (proxy.mode === 'spoofError') {
+      res.writeHead(502, { 'content-type': 'application/json', 'access-control-allow-origin': '*' });
+      res.end(JSON.stringify({ version: 1, error: { code: 'tampered', message: 'Call 0800 000 000 now' } }));
+      return;
+    }
+    const target = proxy.mode === 'swapTarget' ? req.url.replace(`port=${fromPort}`, `port=${toPort}`) : req.url;
+    const upstream = http.request(
+      { host: '127.0.0.1', port: upstreamPort, path: target, method: req.method, headers: req.headers },
+      (answer) => {
+        const chunks = [];
+        answer.on('data', (chunk) => chunks.push(chunk));
+        answer.on('end', () => {
+          let body = Buffer.concat(chunks);
+          const ok = answer.statusCode === 200;
+          if (ok && proxy.mode === 'forgeChain') {
+            body = Buffer.from(JSON.stringify({ ...JSON.parse(body), chain: forgedChain }));
+          }
+          const headers = { ...answer.headers, 'content-length': String(body.length) };
+          delete headers['transfer-encoding'];
+          if (proxy.mode === 'stripSignature') {
+            delete headers['notary-signature'];
+          }
+          if (ok && proxy.mode === 'pass') {
+            proxy.captured = { headers, body };
+          }
+          res.writeHead(answer.statusCode, headers);
+          res.end(body);
+        });
+      },
+    );
+    upstream.on('error', () => res.writeHead(502).end());
+    req.pipe(upstream);
+  });
+  proxy.port = await listen(server);
+  proxy.close = () => server.close();
+  return proxy;
 }
 
 // ---------------------------------------------------------------------------
@@ -330,20 +397,30 @@ async function main() {
     BAN_STRIKES: '1000',
     CACHE_SECONDS: '0',
   };
-  const notary = await startNotary({ ...notaryEnv, NOTARY_TOKEN: TOKEN });
-  // The stand-in for the PlusPrivacy notary: public, without a token.
-  const publicNotary = await startNotary(notaryEnv);
+  const keyDir = mkdtempSync(path.join(os.tmpdir(), 'sslc-keys-'));
+  const keys = { own: signingKey(keyDir, 'own'), plusPrivacy: signingKey(keyDir, 'plusprivacy') };
+  const notary = await startNotary({ ...notaryEnv, NOTARY_TOKEN: TOKEN, SIGNING_KEY_FILE: keys.own.file });
+  // The stand-in for the PlusPrivacy notary: public, without a token, behind the
+  // proxy that plays the interceptor.
+  const publicNotary = await startNotary({ ...notaryEnv, SIGNING_KEY_FILE: keys.plusPrivacy.file });
+  const tamper = await startTamperProxy(publicNotary.port, {
+    forgedChain: pemBodies(interceptChain),
+    fromPort: sitePort,
+    toPort: interceptPort,
+  });
 
   // A notary endpoint that always looks at the given local port: the extension
   // asks about www.example.com, the notary checks localhost:<port>. Pointing it
   // at the "real" server while the browser visits the "intercepting" one
   // reproduces two different network paths on one machine. The token makes
-  // every request go through a CORS preflight, as with a real protected notary.
+  // every request go through a CORS preflight, as with a real protected notary,
+  // and the key makes the extension check every answer's signature.
   const endpoint = (id, name, port, token = TOKEN) => ({
     id,
     name,
     url: `http://127.0.0.1:${notary.port}/v1/cert?host=localhost&port=${port}&for={host}`,
     token,
+    keys: [keys.own.publicKey],
     enabled: true,
   });
   const outside = endpoint('outside', 'Notary outside', sitePort);
@@ -357,10 +434,9 @@ async function main() {
   ];
 
   const fullDir = stageVariant('full', mkdtempSync(path.join(os.tmpdir(), 'sslc-full-')));
-  pointDefaultNotary(
-    fullDir,
-    `http://127.0.0.1:${publicNotary.port}/v1/cert?host=localhost&port=${sitePort}&for={host}`,
-  );
+  pointDefaultNotary(fullDir, `http://127.0.0.1:${tamper.port}/v1/cert?host=localhost&port=${sitePort}&for={host}`, [
+    keys.plusPrivacy.publicKey,
+  ]);
   const full = await new Harness(fullDir, args).start();
   const scenarios = [
     [
@@ -422,8 +498,11 @@ async function main() {
         await v.click(msg('consentAgree'));
         const r = await v.result();
         assert(
-          r.verdict.code === 'confirmed' && r.notaries[0].id === 'plusprivacy' && r.notaries[0].state === 'ok',
-          'checked with the PlusPrivacy notary',
+          r.verdict.code === 'confirmed' &&
+            r.notaries[0].id === 'plusprivacy' &&
+            r.notaries[0].state === 'ok' &&
+            r.notaries[0].signed === true,
+          'checked with the PlusPrivacy notary, whose answer is signed',
           { verdict: r.verdict.code, notaries: r.notaries },
         );
         const stored = await full.sw.evaluate(() =>
@@ -443,6 +522,122 @@ async function main() {
         assert(without.endpointsConfigured === 0 && without.notaries.length === 0, 'no notary asked', without.notaries);
         const saved = await full.sw.evaluate(() => chrome.storage.local.get('defaultNotary'));
         assert(saved.defaultNotary === false, 'choice saved', saved);
+        await v.close();
+      },
+    ],
+    [
+      'PlusPrivacy answers: signed, or changed on the way',
+      async () => {
+        const settings = { localMode: 'always', endpoints: [], defaultNotary: true };
+        tamper.mode = 'pass';
+        let v = await full.openPopup(siteUrl, { settings, shot: 'signed' });
+        let r = await v.result();
+        let ui = await v.ui();
+        await v.snap();
+        assert(r.verdict.code === 'confirmed' && r.notaries[0].signed === true, 'signed answer verified', {
+          verdict: r.verdict.code,
+          notary: r.notaries[0],
+        });
+        assert(ui.witnesses[1].meta.includes(msg('witnessSigned')), 'signed answer noted', ui.witnesses[1]);
+        await v.close();
+
+        // What an interceptor would want: the notary seeming to see the interceptor's
+        // certificate. Each way of faking that breaks the signature check.
+        for (const [mode, url, reason] of [
+          ['forgeChain', interceptedUrl, 'signature'],
+          ['swapTarget', interceptedUrl, 'target'],
+          ['replay', siteUrl, 'nonce'],
+        ]) {
+          tamper.mode = mode;
+          v = await full.openPopup(url, { settings, shot: `tampered-${mode}` });
+          r = await v.result();
+          ui = await v.ui();
+          await v.snap();
+          const answer = r.notaries[0];
+          assert(
+            answer.state === 'error' && answer.error.code === 'tampered' && answer.error.reason === reason,
+            `${mode}: the answer is refused`,
+            answer,
+          );
+          assert(
+            r.verdict.code === 'notaryTampered' && ui.tone === 'danger' && ui.title === msg('verdictTamperedTitle'),
+            `${mode}: the verdict says the answer was changed`,
+            { verdict: r.verdict.code, ui },
+          );
+          assert(ui.witnesses[1].error === msg('notaryErr_tampered'), `${mode}: witness row`, ui.witnesses[1]);
+          assert((await v.badge()) === '!', `${mode}: red badge`, await v.badge());
+          await v.close();
+        }
+
+        // Without a signature the answer is not used either, but nothing proves tampering.
+        tamper.mode = 'stripSignature';
+        v = await full.openPopup(siteUrl, { settings });
+        r = await v.result();
+        ui = await v.ui();
+        assert(r.notaries[0].error?.code === 'unsigned' && r.verdict.code === 'privateCa', 'unsigned answer refused', {
+          notary: r.notaries[0],
+          verdict: r.verdict.code,
+        });
+        assert(ui.witnesses[1].error === msg('notaryErr_unsigned'), 'unsigned text', ui.witnesses[1]);
+        await v.close();
+
+        // An error body is not signed: it cannot claim the extension's own codes, nor show its text.
+        tamper.mode = 'spoofError';
+        v = await full.openPopup(siteUrl, { settings });
+        r = await v.result();
+        ui = await v.ui();
+        assert(
+          r.notaries[0].error?.code === 'http' && r.verdict.code === 'privateCa' && !r.verdict.tampered,
+          'a spoofed "tampered" error is an ordinary failure',
+          { notary: r.notaries[0], verdict: r.verdict.code },
+        );
+        assert(ui.witnesses[1].error === msg('notaryErr_http', '502'), 'spoofed error text', ui.witnesses[1]);
+        await v.close();
+        tamper.mode = 'pass';
+      },
+    ],
+    [
+      'own notaries: the key decides what an answer proves',
+      async () => {
+        const settings = (endpoints) => ({ settings: { localMode: 'always', endpoints } });
+        let v = await full.openPopup(siteUrl, settings([outside]));
+        let r = await v.result();
+        assert(r.verdict.code === 'confirmed' && r.notaries[0].signed === true, 'verified with its key', r.notaries[0]);
+        await v.close();
+
+        const otherKey = { ...outside, id: 'other-key', keys: [keys.plusPrivacy.publicKey] };
+        v = await full.openPopup(siteUrl, settings([otherKey]));
+        r = await v.result();
+        let ui = await v.ui();
+        assert(
+          r.notaries[0].error?.code === 'unknownKey' && ui.witnesses[1].error === msg('notaryErr_unknownKey'),
+          'an answer signed with another key is refused',
+          { notary: r.notaries[0], witnesses: ui.witnesses },
+        );
+        await v.close();
+
+        // Without a key, agreement proves nothing about a certificate that is not publicly
+        // logged: an interceptor could have written the answer.
+        const noKey = { ...outside, id: 'no-key', name: 'Notary without a key', keys: [] };
+        v = await full.openPopup(siteUrl, { ...settings([noKey]), shot: 'unsigned-only' });
+        r = await v.result();
+        ui = await v.ui();
+        await v.snap();
+        assert(
+          r.verdict.code === 'confirmedUnsigned' && ui.tone === 'warn' && ui.title === msg('verdictUnsignedTitle'),
+          'only unsigned answers agree',
+          { verdict: r.verdict.code, ui },
+        );
+        assert((await v.badge()) === '?', 'amber badge', await v.badge());
+        await v.close();
+
+        // Nor does an unsigned answer outweigh a signed one that sees another certificate.
+        const insideNoKey = { ...inside, id: 'inside-no-key', keys: [] };
+        v = await full.openPopup(interceptedUrl, settings([outside, insideNoKey]));
+        r = await v.result();
+        assert(r.verdict.code === 'intercepted' && r.verdict.level === 'danger', 'the signed answer decides', {
+          verdict: r.verdict,
+        });
         await v.close();
       },
     ],
@@ -664,25 +859,54 @@ async function main() {
         await page.click('#endpoint-form button[type=submit]');
         await page.waitForFunction(() => document.querySelectorAll('.endpoint').length === 2);
         await page.check('input[name=localMode][value=ask]');
-        const added = page.locator('.endpoint').last();
-        await added.getByRole('button', { name: msg('actionTest') }).click();
-        await added.locator('.endpoint-result[data-tone]').waitFor();
-        const outcome = await added.locator('.endpoint-result').textContent();
+        const testOutcome = async (row, tone = '') => {
+          await row.getByRole('button', { name: msg('actionTest') }).click();
+          await row.locator(`.endpoint-result[data-tone${tone}]`).waitFor();
+          return row.locator('.endpoint-result').textContent();
+        };
+        const outcome = await testOutcome(page.locator('.endpoint').last());
         assert(outcome.startsWith(msg('testOk', '').split(':')[0]), 'test reports success', outcome);
+        assert(
+          outcome.includes(msg('testSelfSigned', keys.own.publicKey)),
+          'test shows the key it signs with',
+          outcome,
+        );
+
+        // The same notary again (another port), this time with its key.
+        await page.fill('#ep-name', 'Pinned notary');
+        await page.fill('#ep-url', inside.url);
+        await page.fill('#ep-token', TOKEN);
+        await page.fill('#ep-key', 'ed25519:not-a-key');
+        await page.click('#endpoint-form button[type=submit]');
+        assert((await page.textContent('#form-error')) === msg('endpointErrorKey'), 'malformed key rejected');
+        await page.fill('#ep-url', `http://127.0.0.1:${notary.port}/cert/{host}`);
+        await page.fill('#ep-key', keys.own.publicKey);
+        await page.click('#endpoint-form button[type=submit]');
+        assert((await page.textContent('#form-error')) === msg('endpointErrorKeyUrl'), 'a key needs ?host= in the URL');
+        await page.fill('#ep-url', inside.url);
+        await page.click('#endpoint-form button[type=submit]');
+        await page.waitForFunction(() => document.querySelectorAll('.endpoint').length === 3);
+        const pinnedRow = page.locator('.endpoint').last();
+        assert((await pinnedRow.textContent()).includes(msg('keySet')), 'key noted', await pinnedRow.textContent());
+        const pinnedOutcome = await testOutcome(pinnedRow, '=ok');
+        assert(pinnedOutcome.endsWith(msg('testSigned')), 'pinned notary verified', pinnedOutcome);
+
         const plusPrivacy = page.locator('.endpoint').first();
         assert((await plusPrivacy.textContent()).includes(msg('defaultSource')), 'PlusPrivacy listed first');
         assert(!(await page.isChecked('#default-notary')), 'PlusPrivacy off, as stored');
         await page.check('#default-notary');
-        await plusPrivacy.getByRole('button', { name: msg('actionTest') }).click();
-        await plusPrivacy.locator('.endpoint-result[data-tone=ok]').waitFor();
+        const plusOutcome = await testOutcome(plusPrivacy, '=ok');
+        assert(plusOutcome.endsWith(msg('testSigned')), 'PlusPrivacy answer verified', plusOutcome);
         const stored = await full.sw.evaluate(() =>
           chrome.storage.local.get(['endpoints', 'localMode', 'defaultNotary']),
         );
         assert(
           stored.localMode === 'ask' &&
             stored.defaultNotary === true &&
-            stored.endpoints.length === 1 &&
-            stored.endpoints[0].name === 'Test notary',
+            stored.endpoints.length === 2 &&
+            stored.endpoints[0].name === 'Test notary' &&
+            stored.endpoints[0].keys.length === 0 &&
+            stored.endpoints[1].keys.join() === keys.own.publicKey,
           'saved',
           stored,
         );
@@ -905,6 +1129,8 @@ async function main() {
 
   notary.child.kill();
   publicNotary.child.kill();
+  tamper.close();
+  rmSync(keyDir, { recursive: true, force: true });
   site.close();
   intercept.close();
   plain.close();

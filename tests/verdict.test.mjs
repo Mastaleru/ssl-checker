@@ -180,6 +180,37 @@ test('plain HTTP pages are flagged whatever the certificate says', () => {
   assert.equal(v.level, 'warn');
 });
 
+test('a signed answer changed on the way outweighs every milder verdict', () => {
+  const tampered = (id) => ({ id, state: 'error', error: { code: 'tampered', reason: 'signature' } });
+  const alone = verdict({ local: local(cert(), 'unknown'), notaries: [tampered('pp')] });
+  assert.equal(alone.code, 'notaryTampered');
+  assert.equal(alone.level, 'danger');
+  assert.deepEqual(alone.tampered, ['pp']);
+  assert.equal(alone.counts.answered, 0, 'the altered answer is not compared');
+
+  // Even when another notary confirms the certificate, something tampers with this browser's traffic.
+  const confirmed = verdict({ local: local(cert()), notaries: [notary('a', cert()), tampered('pp')] });
+  assert.equal(confirmed.code, 'notaryTampered');
+  assert.deepEqual(confirmed.agreeing, ['a']);
+
+  // An interception already found stays the verdict, with the tampering listed.
+  const intercepted = verdict({
+    local: local(cert({ fp: 'ee', spki: 'k9', issuerO: 'Contoso', issuerCN: 'Inspection' }), 'unknown'),
+    notaries: [notary('a', cert()), tampered('pp')],
+  });
+  assert.equal(intercepted.code, 'intercepted');
+  assert.deepEqual(intercepted.warnings[0], { code: 'notaryTampered', source: 'external', ids: ['pp'] });
+
+  const plainHttp = verdict({ target: { secure: false, host: 'example.com', port: 443 }, notaries: [tampered('pp')] });
+  assert.equal(plainHttp.code, 'notaryTampered');
+
+  // Unsigned answers and unknown keys are failures, not proof of tampering.
+  for (const code of ['unsigned', 'unknownKey', 'noKey']) {
+    const v = verdict({ local: local(cert(), 'unknown'), notaries: [{ id: 'pp', state: 'error', error: { code } }] });
+    assert.equal(v.code, 'privateCa', code);
+  }
+});
+
 test('warnings: expiry, host coverage, weak crypto, old TLS, untrusted at notary', () => {
   const codes = (v) => v.warnings.map((w) => w.code).sort();
   assert.deepEqual(codes(verdict({ local: local(cert({ days: -1 })) })), ['expired']);
@@ -196,9 +227,65 @@ test('warnings: expiry, host coverage, weak crypto, old TLS, untrusted at notary
     notaries: [notary('a', cert(), { trusted: false, trustError: 'CERT_HAS_EXPIRED' })],
   });
   assert.deepEqual(codes(untrusted), ['notaryUntrusted']);
-  assert.deepEqual(codes(verdict({ local: local(cert(), 'unknown'), notaries: [notary('a', cert())] })), [
-    'notPubliclyLogged',
-  ]);
+  const signedUnlogged = verdict({
+    local: local(cert(), 'unknown'),
+    notaries: [notary('a', cert(), { signed: true })],
+  });
+  assert.deepEqual(codes(signedUnlogged), ['notPubliclyLogged']);
+});
+
+test('without CT, only signed answers can confirm a certificate', () => {
+  const signed = (id, leaf) => notary(id, leaf, { signed: true });
+  const mitm = cert({ fp: 'ee', spki: 'k9', issuerO: 'Contoso', issuerCN: 'Inspection', aki: 'z' });
+
+  // An interceptor could write an unsigned answer that agrees with its own certificate.
+  const unsigned = verdict({ local: local(mitm, 'unknown'), notaries: [notary('own', mitm)] });
+  assert.equal(unsigned.code, 'confirmedUnsigned');
+  assert.equal(unsigned.level, 'warn');
+  assert.deepEqual(unsigned.agreeing, ['own']);
+  assert.equal(verdict({ local: local(cert(), 'unknown'), notaries: [signed('pp', cert())] }).code, 'confirmed');
+  const both = verdict({ local: local(cert(), 'unknown'), notaries: [signed('pp', cert()), notary('own', cert())] });
+  assert.equal(both.code, 'confirmed');
+  // With CT, no interceptor can make a matching certificate, so unsigned answers confirm too.
+  assert.equal(verdict({ local: local(cert(), 'compliant'), notaries: [notary('own', cert())] }).code, 'confirmed');
+
+  // A genuine answer that differs is not watered down by unsigned ones that agree.
+  const forged = verdict({ local: local(mitm, 'unknown'), notaries: [signed('pp', cert()), notary('own', mitm)] });
+  assert.equal(forged.code, 'intercepted');
+  assert.equal(forged.level, 'danger');
+  // Two genuine answers that disagree still leave the question open.
+  const genuineSplit = verdict({ local: local(mitm, 'unknown'), notaries: [signed('pp', cert()), signed('b', mitm)] });
+  assert.equal(genuineSplit.code, 'split');
+});
+
+test('without CT, an issuer name proves nothing, and a known interceptor is always named', () => {
+  const signed = (id, leaf) => notary(id, leaf, { signed: true });
+  // The interceptor signs with its own key, from a CA it names like the real one.
+  const lookalike = cert({ fp: 'ee', spki: 'k9', issuerCN: 'Inspection', aki: 'z' });
+  const named = verdict({ local: local(lookalike, 'unknown'), notaries: [signed('pp', cert())] });
+  assert.equal(named.code, 'sameCaUnlogged');
+  assert.equal(named.level, 'warn');
+  const plusForged = verdict({
+    local: local(lookalike, 'unknown'),
+    notaries: [signed('pp', cert()), notary('own', lookalike)],
+  });
+  assert.equal(plusForged.code, 'confirmedUnsigned');
+  // Behind a CDN with a public certificate, the same issuer is still normal.
+  assert.equal(verdict({ local: local(lookalike), notaries: [signed('pp', cert())] }).code, 'consistentSameCa');
+
+  // A certificate made by a known inspection product: sources that agree share its network.
+  const zscaler = cert({ fp: 'dd', spki: 'k8', issuerO: 'Zscaler Inc.', issuerCN: 'Zscaler Intermediate Root CA' });
+  for (const notaries of [[notary('own', zscaler)], [signed('office', zscaler)], []]) {
+    const v = verdict({ local: local(zscaler, 'unknown'), notaries });
+    assert.equal(v.code, 'interceptorDetected', notaries.map((n) => n.id).join() || 'no sources');
+    assert.equal(v.level, 'danger');
+    assert.equal(v.interceptor.name, 'Zscaler');
+  }
+  const differs = verdict({
+    local: local(zscaler, 'unknown'),
+    notaries: [signed('pp', cert()), signed('office', zscaler)],
+  });
+  assert.equal(differs.code, 'intercepted');
 });
 
 test('site memory: a switch to an unlogged certificate is an alarm, other switches are notes', () => {

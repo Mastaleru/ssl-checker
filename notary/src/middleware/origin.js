@@ -5,6 +5,7 @@
 // websites cannot use their visitors' browsers to query the notary. Scripts outside
 // a browser can send any Origin; the rate limits and bans deal with those.
 import { NotaryError } from '../errors.js';
+import { SIGNATURE_HEADER } from '../signing.js';
 
 /**
  * @param {object} options
@@ -31,6 +32,8 @@ export function originCheck({ allowedOrigins, requireOrigin = false, enforce = t
       'Access-Control-Allow-Headers': 'Authorization',
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
       'Access-Control-Max-Age': '600',
+      // Without this, the extension could not read the signature of an answer.
+      'Access-Control-Expose-Headers': SIGNATURE_HEADER,
     });
 
     const accepted = origin ? anyOrigin || allowed.has(origin) : !requireOrigin;

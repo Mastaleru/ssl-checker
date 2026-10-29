@@ -6,6 +6,9 @@
 //     antivirus, malware) are trusted locally and never logged.
 //  2. Comparison with notaries: the same certificate (or at least the same key)
 //     seen from elsewhere on the internet means nobody re-signed it on your path.
+//     For a certificate that is not publicly logged, only a signed answer can confirm
+//     it, since an interceptor could write an unsigned one. A signed answer that
+//     arrives altered proves that something tampers with this browser's connections.
 //  3. Known interception products, used only to name what the signals found.
 
 import { certificateCoversHost } from './hostnames.js';
@@ -133,10 +136,29 @@ function applyMemory(result, memory) {
 }
 
 /**
+ * A notary answer whose signature shows it was changed on the way, replayed, or made
+ * to look at another server (notary-signature.js) was not used. Making it takes an
+ * interceptor of this browser's HTTPS traffic, so it outweighs every milder verdict.
+ */
+function applyTampering(result, notaries) {
+  const ids = notaries.filter((n) => n.state === 'error' && n.error && n.error.code === 'tampered').map((n) => n.id);
+  if (ids.length === 0) {
+    return;
+  }
+  result.tampered = ids;
+  if (result.level === 'danger') {
+    result.warnings.unshift({ code: 'notaryTampered', source: 'external', ids });
+  } else {
+    result.code = 'notaryTampered';
+    result.level = 'danger';
+  }
+}
+
+/**
  * @param {object} input
  * @param {{secure:boolean, host:string}} input.target
  * @param {null|{chain:object[], security?:object}} input.local   local view (null when not read)
- * @param {Array<{id:string, state:string, chain?:object[], trusted?:boolean, trustError?:string}>} input.notaries
+ * @param {Array<{id:string, state:string, chain?:object[], trusted?:boolean, trustError?:string, signed?:boolean}>} input.notaries
  * @param {null|object} [input.memory]  site memory assessment (site-memory.js describe())
  * @param {number} [input.now]
  */
@@ -190,43 +212,56 @@ export function computeVerdict({ target, local, notaries = [], memory = null, no
     }
     const agreeingCount = result.counts.consistent + result.counts.sameCa;
     const confirmedCode = result.counts.consistent > 0 ? 'confirmed' : 'consistentSameCa';
+    const set = (code, level) => {
+      result.code = code;
+      result.level = level;
+    };
 
-    // Chromium reports CT as "unknown" for certificates that chain to a
-    // locally installed root, which is exactly where interception CAs live.
-    if (result.counts.different > 0 && agreeingCount > 0) {
-      if (publiclyLogged) {
-        // Your certificate is public and matches some sources: the odd ones
-        // out are seeing something else on their own side.
-        result.code = confirmedCode;
-        result.level = 'ok';
+    if (publiclyLogged) {
+      // No interceptor can get its certificate publicly logged, so any agreement,
+      // even of the issuer alone, confirms it.
+      if (result.counts.different > 0 && agreeingCount > 0) {
+        // The odd sources out are seeing something else on their own side.
+        set(confirmedCode, 'ok');
         warnings.push({
           code: 'someSourcesDiffer',
           source: 'external',
           ids: result.differing.slice(),
           issuer: result.externalIssuer,
         });
+      } else if (result.counts.different > 0) {
+        set('conflictingPublic', 'warn');
+      } else if (answered.length > 0) {
+        set(confirmedCode, 'ok');
       } else {
-        result.code = 'split';
-        result.level = 'warn';
+        set('publicLocalOnly', 'ok');
       }
-    } else if (result.counts.different > 0) {
-      result.code = publiclyLogged && !interceptor ? 'conflictingPublic' : 'intercepted';
-      result.level = result.code === 'intercepted' ? 'danger' : 'warn';
-    } else if (answered.length > 0) {
-      result.code = confirmedCode;
-      result.level = 'ok';
-      if (!publiclyLogged) {
-        warnings.push({ code: 'notPubliclyLogged', source: 'local' });
-      }
-    } else if (interceptor) {
-      result.code = 'interceptorDetected';
-      result.level = 'danger';
-    } else if (publiclyLogged) {
-      result.code = 'publicLocalOnly';
-      result.level = 'ok';
     } else {
-      result.code = 'privateCa';
-      result.level = 'warn';
+      // Chromium reports CT as "unknown" for certificates that chain to a locally
+      // installed root, which is exactly where interception CAs live. Here only what
+      // an interceptor cannot fake is proof: a signed answer with the same certificate
+      // or key. It can copy an issuer's name, and write an unsigned answer.
+      const signed = (test) => answered.some((n, i) => n.signed && test(result.comparisons[i].relation));
+      const proven = signed(isConsistent);
+      const signedDiffer = signed((relation) => relation === RELATION.DIFFERENT);
+      if (interceptor) {
+        // A known interception product made this certificate; notaries that agree share its network.
+        set(result.counts.different > 0 ? 'intercepted' : 'interceptorDetected', 'danger');
+      } else if (result.counts.different > 0 && agreeingCount > 0 && (proven || !signedDiffer)) {
+        // Genuine views on both sides, or on neither: the question stays open.
+        set('split', 'warn');
+      } else if (result.counts.different > 0) {
+        set('intercepted', 'danger');
+      } else if (proven) {
+        set(confirmedCode, 'ok');
+        warnings.push({ code: 'notPubliclyLogged', source: 'local' });
+      } else if (result.counts.consistent > 0) {
+        set('confirmedUnsigned', 'warn');
+      } else if (result.counts.sameCa > 0) {
+        set('sameCaUnlogged', 'warn');
+      } else {
+        set('privateCa', 'warn');
+      }
     }
     warnings.push(...certificateWarnings(local.chain, null, now, 'local'));
     const protocol = local.security && local.security.protocol;
@@ -255,5 +290,6 @@ export function computeVerdict({ target, local, notaries = [], memory = null, no
     result.code = 'insecureHttp';
     result.level = 'warn';
   }
+  applyTampering(result, notaries);
   return result;
 }

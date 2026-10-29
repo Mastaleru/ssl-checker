@@ -251,8 +251,12 @@ function verdictText(r) {
   switch (v.code) {
     case 'confirmed':
       return [plural('verdictConfirmedTitle', v.counts.consistent), t('verdictConfirmedBody')];
+    case 'confirmedUnsigned':
+      return [t('verdictUnsignedTitle'), t('verdictUnsignedBody', [notaryNames(r, v.agreeing)])];
     case 'consistentSameCa':
       return [t('verdictSameCaTitle'), t('verdictSameCaBody', [v.localIssuer])];
+    case 'sameCaUnlogged':
+      return [t('verdictSameCaUnloggedTitle'), t('verdictSameCaUnloggedBody', [v.localIssuer])];
     case 'publicLocalOnly':
       return [t('verdictPublicTitle'), t(r.endpointsConfigured ? 'verdictPublicBodyNoAnswer' : 'verdictPublicBody')];
     case 'split':
@@ -296,6 +300,8 @@ function verdictText(r) {
     }
     case 'externalDisagree':
       return [t('verdictExternalDisagreeTitle'), t('verdictExternalDisagreeBody')];
+    case 'notaryTampered':
+      return [t('verdictTamperedTitle'), t('verdictTamperedBody', [notaryNames(r, v.tampered)])];
     case 'insecureHttp':
       return [t('verdictHttpTitle'), t(v.counts.answered ? 'verdictHttpBodyWithCert' : 'verdictHttpBody')];
     default: {
@@ -379,6 +385,9 @@ function warningList(r) {
         break;
       case 'caChangedNowPublic':
         entry = ['info', t('warnCaChangedNowPublic', [w.previous])];
+        break;
+      case 'notaryTampered':
+        entry = ['danger', t('warnNotaryTampered', [notaryNames(r, w.ids)])];
         break;
       default:
         break;
@@ -515,7 +524,9 @@ function witnessSection(r, animate) {
         chipEl: key ? chip(tone, t(key)) : null,
         leaf: n.chain[0],
         bars,
-        meta: [n.vantage, n.address, t('durationMs', [n.durationMs]), issuer].filter(Boolean).join(', '),
+        meta: [n.vantage, n.address, t('durationMs', [n.durationMs]), n.signed ? t('witnessSigned') : null, issuer]
+          .filter(Boolean)
+          .join(', '),
         animate,
       }),
     );

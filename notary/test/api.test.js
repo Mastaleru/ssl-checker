@@ -43,7 +43,14 @@ test('health endpoint and CORS preflight', async (t) => {
   const { base } = await notary(t, {});
   const health = await get(base, '/v1/health');
   assert.equal(health.status, 200);
-  assert.deepEqual(health.body, { version: 1, ok: true, vantage: 'Test vantage', ports: [443, 8443], auth: false });
+  assert.deepEqual(health.body, {
+    version: 1,
+    ok: true,
+    vantage: 'Test vantage',
+    ports: [443, 8443],
+    auth: false,
+    key: null,
+  });
   const preflight = await fetch(`${base}/v1/cert`, {
     method: 'OPTIONS',
     headers: { Origin: EXTENSION_ORIGIN, 'Access-Control-Request-Headers': 'authorization' },

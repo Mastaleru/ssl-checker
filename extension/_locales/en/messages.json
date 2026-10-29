@@ -49,6 +49,7 @@
   "witnessViaReload": { "message": "read after reloading the page" },
   "witnessLocalNotRead": { "message": "Not read yet." },
   "witnessIssuedBy": { "message": "issued by $1" },
+  "witnessSigned": { "message": "signed answer" },
   "durationMs": { "message": "$1 ms" },
   "fingerprintLabel": { "message": "SHA-256 fingerprint $1" },
   "externalSkippedInternal": { "message": "Internal site: external sources cannot reach it, so they were not asked." },
@@ -90,6 +91,10 @@
   "verdictSameCaTitle": { "message": "Same issuer, different certificate" },
   "verdictSameCaBody": {
     "message": "The external sources receive another certificate from the same authority ($1). That is normal for CDNs and during certificate rotation."
+  },
+  "verdictSameCaUnloggedTitle": { "message": "Same issuer name, not confirmed" },
+  "verdictSameCaUnloggedBody": {
+    "message": "The external sources receive another certificate, from an authority named like yours ($1), and Chrome did not confirm that yours is publicly logged. CDNs can serve several certificates, but an interceptor can also copy an authority's name, so this does not confirm your certificate."
   },
   "verdictPublicTitle": { "message": "Publicly logged certificate" },
   "verdictPublicBody": {
@@ -136,6 +141,14 @@
   },
   "verdictExternalDisagreeTitle": { "message": "External sources disagree" },
   "verdictExternalDisagreeBody": { "message": "The external sources see different certificates from one another." },
+  "verdictTamperedTitle": { "message": "An answer was changed on the way" },
+  "verdictTamperedBody": {
+    "message": "The signed answer from $1 was changed between that source and your browser, so it was not used. Only something that intercepts this browser's secure connections can do that."
+  },
+  "verdictUnsignedTitle": { "message": "Confirmed only by unsigned answers" },
+  "verdictUnsignedBody": {
+    "message": "Your browser receives the same certificate as in the answers from $1, but those answers are not signed, and Chrome did not confirm that your certificate is publicly logged. Something that intercepts your connection could have written them. Answers signed with a known key, like the PlusPrivacy notary's, cannot be faked."
+  },
   "verdictHttpTitle": { "message": "Unencrypted page" },
   "verdictHttpBody": {
     "message": "This page loaded over plain HTTP, so anyone on the network can read or change it. No certificate protects it."
@@ -269,6 +282,14 @@
   "notaryErr_busy": { "message": "The source is busy; try again shortly." },
   "notaryErr_badRequest": { "message": "The source did not understand the request." },
   "notaryErr_forbiddenOrigin": { "message": "The source does not accept requests from this copy of the extension." },
+  "notaryErr_noKey": { "message": "This version has no key to check this source's answers, so it was not asked." },
+  "notaryErr_unsigned": { "message": "The answer was not signed, so it was not used." },
+  "notaryErr_unknownKey": {
+    "message": "The answer is signed with a key this extension does not know, so it was not used. The source may have a new key: update the extension or the source's key."
+  },
+  "notaryErr_tampered": { "message": "The answer was changed on the way, so it was not used." },
+  "notaryErr_internal": { "message": "The source had an internal error." },
+  "notaryErr_cannotVerify": { "message": "This browser could not check the answer's signature, so it was not used." },
   "notaryErr_other": { "message": "Error $1 $2" },
 
   "sectionHistory": { "message": "History" },
@@ -304,6 +325,9 @@
   "warnCaChangedPublic": { "message": "This site switched from $1 to $2. The new certificate is publicly logged." },
   "warnCaChangedNowPublic": {
     "message": "Earlier checks of this site went through $1, an authority installed on this computer or network (for example a company proxy). Now the certificate is public."
+  },
+  "warnNotaryTampered": {
+    "message": "The signed answer from $1 was changed on the way and was not used: something intercepts this browser's secure connections."
   },
 
   "optMemoryTitle": { "message": "Site memory" },
@@ -348,11 +372,23 @@
   },
   "fieldToken": { "message": "Access token (optional)" },
   "fieldTokenHelp": { "message": "Sent as Authorization: Bearer. Stored only on this device." },
+  "fieldKey": { "message": "Public key (optional)" },
+  "fieldKeyHelp": {
+    "message": "With a key, an answer counts only when this notary signed it, so nobody on the way can change it. The notary prints its key when it starts. Separate several keys with spaces."
+  },
   "endpointEnabled": { "message": "Use $1" },
   "tokenSet": { "message": "Token saved" },
-  "defaultSource": { "message": "Default source, run by PlusPrivacy. It keeps no record of the sites you check." },
+  "keySet": { "message": "Signed answers only" },
+  "defaultSource": {
+    "message": "Default source, run by PlusPrivacy. Its answers are signed, and it keeps no record of the sites you check."
+  },
   "testRunning": { "message": "Asking the source about example.com…" },
   "testOk": { "message": "Works: it sees example.com's certificate issued by $1, from $2, in $3 ms." },
+  "testSigned": { "message": "Its answer is signed with the expected key." },
+  "testSelfSigned": {
+    "message": "Its answers carry a signature by the key $1. Before you add that key, check that it is the one the notary printed on its server: an interceptor could have sent its own."
+  },
+  "testUnsigned": { "message": "Its answers are not signed." },
   "testFailed": { "message": "Failed: $1" },
   "endpointErrorInvalidUrl": { "message": "Enter a valid address." },
   "endpointErrorCredentialsInUrl": {
@@ -363,11 +399,18 @@
   "endpointErrorHttps": { "message": "The address must use HTTPS (plain HTTP is allowed only for localhost)." },
   "endpointErrorDuplicate": { "message": "This source is already in the list." },
   "endpointErrorToken": { "message": "The token can contain only visible ASCII characters." },
+  "endpointErrorKey": { "message": "Enter the key as the notary prints it: ed25519: followed by 43 characters." },
+  "endpointErrorKeyUrl": {
+    "message": "A source with a key must take the site as ?host=…&port=…, as the SSL Checker notary does, not in the path."
+  },
   "optAdvancedTitle": { "message": "Advanced" },
   "fieldTimeout": { "message": "Wait for each source (seconds)" },
   "optProtocolTitle": { "message": "Notary protocol" },
   "optProtocolIntro": {
-    "message": "Any server that answers this request can be a source. The reference implementation is a single Node.js file you can run on your own server."
+    "message": "Any server that answers this request can be a source. The reference implementation is the notary of the SSL Checker project, a small Node.js service packaged for Docker."
+  },
+  "optProtocolSigning": {
+    "message": "A notary with a signing key echoes the nonce of the request, adds its public key and signs the answer: Notary-Signature holds the Ed25519 signature of the line \"SSL Checker notary answer v1\" followed by the exact body. Give a source its key, and the extension uses only answers signed with it for the host, port and nonce it asked."
   },
   "optProtocolErrors": {
     "message": "On errors, answer with a 4xx or 5xx status and {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}}. The extension holds no host permissions, so the server must send CORS headers."

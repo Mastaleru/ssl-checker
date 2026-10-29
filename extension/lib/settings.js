@@ -131,12 +131,33 @@ export function validateEndpointUrl(input) {
 /** Builds the request URL for a notary: placeholders, or ?host=&port= appended. */
 export function buildEndpointRequestUrl(template, host, port) {
   if (template.includes('{host}')) {
-    return template.replace(/\{host\}/g, encodeURIComponent(host)).replace(/\{port\}/g, String(port));
+    const filled = template.replace(/\{host\}/g, encodeURIComponent(host)).replace(/\{port\}/g, String(port));
+    if (template.includes('{port}')) {
+      return filled;
+    }
+    // Without {port} the notary would look at port 443, whatever the tab's port.
+    const u = new URL(filled);
+    if (!u.searchParams.has('port')) {
+      u.searchParams.set('port', String(port));
+    }
+    return u.toString();
   }
   const u = new URL(template);
   u.searchParams.set('host', host);
   u.searchParams.set('port', String(port));
   return u.toString();
+}
+
+/**
+ * True when requests to this endpoint name the site in the query (?host=…), as the
+ * SSL Checker notary expects. A signed answer is checked against that host.
+ */
+export function namesHostInQuery(template) {
+  try {
+    return new URL(buildEndpointRequestUrl(template, 'example.com', 443)).searchParams.has('host');
+  } catch {
+    return false;
+  }
 }
 
 export function newEndpointId() {

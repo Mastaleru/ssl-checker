@@ -3,3 +3,5 @@ node_modules/
 dist/
 tests/e2e/output/
 .env
+# The notary's signing key never goes into git.
+notary/secrets/

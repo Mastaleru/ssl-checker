@@ -70,7 +70,7 @@ async function buildResults() {
   const genuine = await describeChain(pemChain('genuine-chain.pem'));
   const intercepted = await describeChain(pemChain('intercepted-chain.pem'));
   const target = { secure: true, host: HOST, port: 443, origin: `https://${HOST}` };
-  const notary = (id, name, origin, vantage, ms) => ({
+  const notary = (id, name, origin, vantage, ms, signed) => ({
     id,
     name,
     origin,
@@ -83,11 +83,12 @@ async function buildResults() {
     trustError: null,
     tls: { protocol: 'TLSv1.3', cipher: 'TLS_AES_128_GCM_SHA256', group: 'X25519MLKEM768' },
     chain: genuine,
+    signed,
   });
-  // The built-in PlusPrivacy notary, plus one the user added.
+  // The built-in PlusPrivacy notary, whose answers are signed, plus one the user added.
   const notaries = [
-    notary('plusprivacy', 'PlusPrivacy', 'https://notary.plusprivacy.com', 'PlusPrivacy', 48),
-    notary('iad', 'Virginia', 'https://notary-iad.example.net', 'Ashburn, US', 112),
+    notary('plusprivacy', 'PlusPrivacy', 'https://notary.plusprivacy.com', 'PlusPrivacy', 48, true),
+    notary('iad', 'Virginia', 'https://notary-iad.example.net', 'Ashburn, US', 112, false),
   ];
   const sct = (log, minute) => ({
     status: 'Verified',

@@ -90,6 +90,19 @@
             <input id="ep-token" name="token" type="password" autocomplete="off" spellcheck="false" class="mono" />
             <small data-i18n="fieldTokenHelp"></small>
           </label>
+          <label class="field">
+            <span data-i18n="fieldKey"></span>
+            <input
+              id="ep-key"
+              name="key"
+              type="text"
+              autocomplete="off"
+              spellcheck="false"
+              class="mono"
+              placeholder="ed25519:…"
+            />
+            <small data-i18n="fieldKeyHelp"></small>
+          </label>
           <p id="form-error" class="form-error" role="alert" hidden></p>
           <div class="form-actions">
             <button type="submit" class="button primary" data-i18n="actionAddSource"></button>
@@ -110,11 +123,13 @@
           <summary data-i18n="optProtocolTitle"></summary>
           <p data-i18n="optProtocolIntro"></p>
           <pre class="mono">
-GET https://notary.example.net/v1/cert?host=example.com&amp;port=443
+GET https://notary.example.net/v1/cert?host=example.com&amp;port=443&amp;nonce=Xq3MpTb0vR9kLs2eWn5yZA
 Authorization: Bearer &lt;token&gt;
 
 200 OK
 Access-Control-Allow-Origin: *
+Access-Control-Expose-Headers: Notary-Signature
+Notary-Signature: &lt;Ed25519 signature, base64url&gt;
 {
   "version": 1,
   "host": "example.com",
@@ -125,8 +140,11 @@ Access-Control-Allow-Origin: *
   "trusted": true,
   "trustError": null,
   "tls": { "protocol": "TLSv1.3", "cipher": "TLS_AES_256_GCM_SHA384", "group": "X25519" },
-  "chain": ["MIIF…leaf", "MIIE…intermediate"]
+  "chain": ["MIIF…leaf", "MIIE…intermediate"],
+  "nonce": "Xq3MpTb0vR9kLs2eWn5yZA",
+  "key": "ed25519:&lt;public key, base64url&gt;"
 }</pre>
+          <p data-i18n="optProtocolSigning"></p>
           <p data-i18n="optProtocolErrors"></p>
         </details>
       </section>

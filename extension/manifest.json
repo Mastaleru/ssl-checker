@@ -4,7 +4,7 @@
   "description": "__MSG_extDescription__",
   "version": "2.0.0",
   "default_locale": "en",
-  "minimum_chrome_version": "120",
+  "minimum_chrome_version": "137",
   "icons": {
     "16": "icons/ssl16.png",
     "32": "icons/ssl32.png",

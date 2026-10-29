@@ -8,6 +8,7 @@ import { cpSync, mkdirSync, readdirSync, readFileSync, realpathSync, rmSync, sta
 import { dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import zlib from 'node:zlib';
+import { DEFAULT_NOTARY } from '../extension/lib/default-notary.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SOURCE = join(ROOT, 'extension');
@@ -151,5 +152,11 @@ if (isEntryPoint()) {
   mkdirSync(DIST, { recursive: true });
   for (const variant of requested ? [requested] : ['full', 'lite']) {
     build(variant);
+  }
+  if (DEFAULT_NOTARY.keys.length === 0) {
+    console.warn(
+      '\nWarning: extension/lib/default-notary.js holds no key for the PlusPrivacy notary, so these packages ' +
+        'never ask it. Deploy the notary and copy its key there before publishing (store/PUBLISHING.md).',
+    );
   }
 }
