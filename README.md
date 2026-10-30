@@ -81,6 +81,7 @@ scripts/
   notary-image.mjs      builds the notary's Docker image into dist/, to upload to the VPS
 build/package.cmd       Windows shortcut for scripts/build.mjs
 store/                  Chrome Web Store texts, screenshots, privacy policy and publishing guide
+.github/workflows/      CI on every push and pull request; release on version tags
 tests/                  unit and end-to-end (Chromium) tests of the extension
 ```
 
@@ -95,6 +96,8 @@ npm run test:e2e            # 18 scenarios in Chromium; E2E_LANG=ro for the Roma
 ```
 
 `npm test` needs no `npm install`: it only uses Node.js 20 or newer. The notary needs Node.js 22 or newer.
+
+GitHub Actions runs all of it on every push and pull request (`.github/workflows/ci.yml`): lint, the unit tests on Node.js 20 and 24, the notary tests on Node.js 22 and 24, and the end-to-end tests in English and Romanian. Screenshots of a failed end-to-end run are kept as an artifact for a week.
 
 The end-to-end tests need Chromium or Chrome for Testing, because Google Chrome ignores `--load-extension` since version 137. They start two real notary processes, each with its own signing key: a private one with a token, and a public one that stands in for PlusPrivacy's (the staged extension is pointed at it, with its key). Interception is simulated on a single machine: the browser visits a server with a "Contoso Inspection CA" certificate, while the notary is pointed at the server with the "real" certificate. Between the extension and the PlusPrivacy stand-in sits a proxy that plays the interceptor: it rewrites the chain in the answer, sends the notary to another server, replays an old answer or drops the signature, and each attempt must be caught. For the site memory, one server swaps its certificate between two checks, and a check in an incognito window confirms that nothing is recorded there (that scenario loads the extension through the DevTools protocol, the only way to allow it in incognito from a test).
 
@@ -118,6 +121,17 @@ npm run notary:image        # dist/ssl-checker-notary-<version>-linux-amd64.tar.
 ```
 
 On Windows you can double-click `build\package.cmd` instead (it needs Node.js 20 or newer). From a terminal, `build\package.cmd full` or `build\package.cmd lite` builds a single package. The version comes from `extension/manifest.json`.
+
+### Releases
+
+A version tag publishes a GitHub Release (`.github/workflows/release.yml`):
+
+```bash
+npm run release:check -- v2.0.1     # after raising the version in extension/manifest.json and package.json
+git tag v2.0.1 && git push origin v2 v2.0.1
+```
+
+The workflow runs every CI job first; only when all of them pass does it check the tag against the version, check that the PlusPrivacy key is built in, build both packages, and publish them with `SHA256SUMS.txt` and a signed build provenance attestation. Anyone can check that a package was built here, from that commit: `gh attestation verify ssl-checker-<version>.zip --repo Mastaleru/ssl-checker`. The build is reproducible, so `node scripts/build.mjs` at the tag gives the same bytes. Uploading to the Chrome Web Store stays manual. In the repository settings, a tag ruleset that lets only maintainers create `v*` tags, and immutable releases, keep the published packages as they were built.
 
 Chrome Web Store steps, listing texts and screenshots: [`store/PUBLISHING.md`](store/PUBLISHING.md). Deploy the PlusPrivacy notary first ([`notary/README.md`](notary/README.md)) and copy its public key into `extension/lib/default-notary.js`: the extension asks it by default, and only with its key.
 

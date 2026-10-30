@@ -258,7 +258,8 @@ async function main() {
   for (const lang of ['en', 'ro']) {
     const profile = mkdtempSync(path.join(os.tmpdir(), 'sslc-store-profile-'));
     const ctx = await chromium.launchPersistentContext(profile, {
-      executablePath: process.env.CHROME_PATH || undefined,
+      // Playwright's headless shell cannot load extensions: use the full Chromium.
+      ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : { channel: 'chromium' }),
       headless: true,
       deviceScaleFactor: 2,
       args: [

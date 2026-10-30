@@ -9,6 +9,8 @@
 //   node tests/e2e/run.mjs                 (E2E_LANG=ro for the Romanian UI)
 // Optional: CHROME_PATH=<chrome binary>, PLAYWRIGHT_MODULE=<path to playwright>,
 //           E2E_OUT=<folder for screenshots>, E2E_ONLY=<scenario name substring>
+// Without CHROME_PATH, Playwright's full Chromium runs in its new headless mode
+// (channel "chromium"): its default headless shell cannot load extensions.
 
 import { spawn } from 'node:child_process';
 import { createHash, generateKeyPairSync, X509Certificate } from 'node:crypto';
@@ -31,6 +33,7 @@ const TLS = path.join(ROOT, 'tests/fixtures/tls');
 const LANG = process.env.E2E_LANG || 'en';
 const OUT = process.env.E2E_OUT || path.join(ROOT, 'tests/e2e/output', LANG);
 const ONLY = process.env.E2E_ONLY || '';
+const BROWSER = process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : { channel: 'chromium' };
 const HOST = 'www.example.com';
 const messages = JSON.parse(readFileSync(path.join(ROOT, 'extension/_locales', LANG, 'messages.json'), 'utf8'));
 const msg = (key, ...subs) => subs.reduce((m, s, i) => m.replace(`$${i + 1}`, s), messages[key].message);
@@ -181,7 +184,7 @@ class Harness {
     const common = ['--headless=new', `--lang=${LANG}`, '--no-proxy-server', ...this.args];
     if (!this.incognito) {
       this.ctx = await chromium.launchPersistentContext(this.profile, {
-        executablePath: process.env.CHROME_PATH || undefined,
+        ...BROWSER,
         headless: true,
         args: [`--disable-extensions-except=${this.extDir}`, `--load-extension=${this.extDir}`, ...common],
       });
@@ -194,7 +197,7 @@ class Harness {
       // disables a command-line extension, so load it through CDP instead.
       const port = await freePort();
       this.ctx = await chromium.launchPersistentContext(this.profile, {
-        executablePath: process.env.CHROME_PATH || undefined,
+        ...BROWSER,
         headless: true,
         ignoreDefaultArgs: ['--disable-extensions'],
         args: ['--enable-unsafe-extension-debugging', `--remote-debugging-port=${port}`, ...common],
