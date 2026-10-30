@@ -7,6 +7,7 @@ Texts ready to paste into Developer Dashboard → **Store listing**. English is 
 - **Screenshots:** `store/screenshots/en/1-…4-*.png` and `store/screenshots/ro/…` (1280×800)
 - **Small promo tile:** `store/screenshots/<language>/promo-440x280.png`
 - **Icon:** `extension/icons/ssl128.png`
+- **Homepage URL:** `https://sslchecker.plusprivacy.com/`
 
 ---
 

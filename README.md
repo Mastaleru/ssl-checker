@@ -2,6 +2,8 @@
 
 A Chrome extension (Manifest V3) that shows the TLS certificate of the site in the current tab — the one your browser **actually received** — and tells you whether something between you and the site is replacing it: a company proxy, an antivirus or something else.
 
+Website and privacy policy: <https://sslchecker.plusprivacy.com>, published from the [ssl-checker-website](https://github.com/Mastaleru/ssl-checker-website) repository.
+
 ## Features
 
 - **The real certificate.** Reads the certificate chain your browser received for the current tab, with the connection details: TLS version, key exchange (including post-quantum hybrids), cipher, Encrypted Client Hello and Certificate Transparency status.
@@ -82,7 +84,7 @@ scripts/
   release-check.mjs     what the release workflow checks before it builds
   notary-image.mjs      builds the notary's Docker image into dist/, to upload to the VPS
 build/package.cmd       Windows shortcut for scripts/build.mjs
-store/                  Chrome Web Store texts, screenshots, privacy policy and publishing guide
+store/                  Chrome Web Store texts, screenshots and publishing guide
 .github/workflows/      CI on every push and pull request; release on version tags
 tests/                  unit and end-to-end (Chromium) tests of the extension
 ```
