@@ -378,7 +378,7 @@
   "fieldNamePlaceholder": { "message": "Serverul din Frankfurt" },
   "fieldUrl": { "message": "Adresă" },
   "fieldUrlHelp": {
-    "message": "Adresa HTTPS a notarului. SSL Checker îi trimite site-ul în corpul unei cereri POST; dacă serverul tău așteaptă site-ul în adresă, pune {host} și {port} în ea."
+    "message": "Adresa HTTPS a notarului. SSL Checker îi trimite site-ul în corpul unei cereri POST, niciodată în adresă."
   },
   "fieldToken": { "message": "Token de acces (opțional)" },
   "fieldTokenHelp": { "message": "Trimis ca Authorization: Bearer. Păstrat doar pe acest dispozitiv." },
@@ -405,16 +405,15 @@
     "message": "Nu pune nume de utilizator sau parolă în adresă; folosește câmpul pentru token."
   },
   "endpointErrorFragment": { "message": "Scoate partea cu # din adresă." },
-  "endpointErrorPlaceholderInHost": { "message": "{host} poate apărea doar în calea sau în query-ul adresei." },
+  "endpointErrorTemplate": {
+    "message": "Dă adresa notarului fără {host} sau {port}: SSL Checker trimite site-ul în corpul cererii."
+  },
   "endpointErrorHttps": {
     "message": "Adresa trebuie să folosească HTTPS (HTTP simplu e permis doar pentru localhost)."
   },
   "endpointErrorDuplicate": { "message": "Sursa asta e deja în listă." },
   "endpointErrorToken": { "message": "Tokenul poate conține doar caractere ASCII vizibile." },
   "endpointErrorKey": { "message": "Introdu cheia așa cum o afișează notarul: ed25519: urmat de 43 de caractere." },
-  "endpointErrorKeyUrl": {
-    "message": "Cu o cheie, dă adresa fără {host} sau cu site-ul în query (?host={host}): fiecare răspuns semnat e verificat după site-ul despre care a fost întrebat."
-  },
   "optAdvancedTitle": { "message": "Avansat" },
   "fieldTimeout": { "message": "Cât aștept fiecare sursă (secunde)" },
   "optProtocolTitle": { "message": "Protocolul notarilor" },

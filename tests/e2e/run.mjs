@@ -11,8 +11,8 @@
 //           E2E_OUT=<folder for screenshots>, E2E_ONLY=<scenario name substring>
 // Without CHROME_PATH, Playwright's full Chromium runs in its new headless mode
 // (channel "chromium"): its default headless shell cannot load extensions.
-// The notaries reach the real site at 127.0.0.2 (tests/e2e/notary-hosts.mjs). Linux and
-// Windows answer on all of 127.0.0.0/8; on macOS, add it first: sudo ifconfig lo0 alias 127.0.0.2
+// The notaries "outside" reach the real site at 127.0.0.2 (tests/e2e/notary-hosts.mjs). Linux
+// and Windows answer on all of 127.0.0.0/8; on macOS, add it first: sudo ifconfig lo0 alias 127.0.0.2
 
 import { spawn } from 'node:child_process';
 import { createHash, generateKeyPairSync, X509Certificate } from 'node:crypto';
@@ -428,38 +428,42 @@ async function main() {
   const TOKEN = 'e2e-secret-token-for-a-private-notary';
   const notaryEnv = {
     ALLOW_PRIVATE: '1',
-    ALLOWED_PORTS: `${sitePort},${interceptPort}`,
+    // 443 for a plain HTTP page, whose HTTPS side is looked at there: the real site's
+    // port stands in for it (tests/e2e/notary-hosts.mjs).
+    ALLOWED_PORTS: `${sitePort},${interceptPort},443`,
+    E2E_PORT_443: String(sitePort),
     RATE_LIMIT: '0',
     BAN_STRIKES: '1000',
     CACHE_SECONDS: '0',
   };
   const keyDir = mkdtempSync(path.join(os.tmpdir(), 'sslc-keys-'));
   const keys = { own: signingKey(keyDir, 'own'), plusPrivacy: signingKey(keyDir, 'plusprivacy') };
-  const notary = await startNotary({ ...notaryEnv, NOTARY_TOKEN: TOKEN, SIGNING_KEY_FILE: keys.own.file });
+  // Two private notaries with a token and the same key. The one outside reaches the real
+  // site wherever the browser meets the interceptor; the one inside the user's network
+  // goes where the browser goes (127.0.0.1), and so meets the interceptor too. The token
+  // makes every request go through a CORS preflight, as with a real protected notary,
+  // and the key makes the extension check every answer's signature.
+  const ownNotary = { ...notaryEnv, NOTARY_TOKEN: TOKEN, SIGNING_KEY_FILE: keys.own.file };
+  const outsideNotary = await startNotary(ownNotary);
+  const insideNotary = await startNotary({ ...ownNotary, E2E_SITE_ADDRESS: '127.0.0.1' });
   // The stand-in for the PlusPrivacy notary: public, without a token, behind the
   // proxy that plays the interceptor.
   const publicNotary = await startNotary({ ...notaryEnv, SIGNING_KEY_FILE: keys.plusPrivacy.file });
   const tamper = await startTamperProxy(publicNotary.port, { forgedChain: pemBodies(interceptChain) });
 
-  // A notary endpoint that always looks at the given local port: the extension
-  // asks about www.example.com, the notary checks 127.0.0.1:<port>. Pointing it
-  // at the "real" server while the browser visits the "intercepting" one
-  // reproduces two different network paths on one machine. The token makes
-  // every request go through a CORS preflight, as with a real protected notary,
-  // and the key makes the extension check every answer's signature.
-  // The address, not "localhost": the notary connects to the first address a name
-  // resolves to, which is ::1 on GitHub's runners and on Windows, and the sites
-  // listen on 127.0.0.1 only.
-  const endpoint = (id, name, port, token = TOKEN) => ({
+  // Sources as Options saves them: the extension posts www.example.com and the tab's
+  // port to each, and each looks from where it stands. 127.0.0.1, not "localhost",
+  // which resolves to ::1 first on GitHub's runners and on Windows.
+  const endpoint = (id, name, notaryPort, token = TOKEN) => ({
     id,
     name,
-    url: `http://127.0.0.1:${notary.port}/v1/cert?host=127.0.0.1&port=${port}&for={host}`,
+    url: `http://127.0.0.1:${notaryPort}/v1/cert`,
     token,
     keys: [keys.own.publicKey],
     enabled: true,
   });
-  const outside = endpoint('outside', 'Notary outside', sitePort);
-  const inside = endpoint('inside', 'Notary inside your network', interceptPort);
+  const outside = endpoint('outside', 'Notary outside', outsideNotary.port);
+  const inside = endpoint('inside', 'Notary inside your network', insideNotary.port);
   const siteUrl = `https://${HOST}:${sitePort}/`;
   const interceptedUrl = `https://${HOST}:${interceptPort}/`;
 
@@ -715,7 +719,10 @@ async function main() {
       'wrong notary token',
       async () => {
         const v = await full.openPopup(siteUrl, {
-          settings: { localMode: 'always', endpoints: [endpoint('bad', 'Notary with wrong token', sitePort, 'nope')] },
+          settings: {
+            localMode: 'always',
+            endpoints: [{ ...outside, id: 'bad', name: 'Notary with wrong token', token: 'nope' }],
+          },
           shot: 'bad-token',
         });
         const r = await v.result();
@@ -918,17 +925,20 @@ async function main() {
           outcome,
         );
 
-        // The same notary again (another port), this time with its key.
+        // The other notary, this time with its key.
         await page.fill('#ep-name', 'Pinned notary');
         await page.fill('#ep-url', inside.url);
         await page.fill('#ep-token', TOKEN);
         await page.fill('#ep-key', 'ed25519:not-a-key');
         await page.click('#endpoint-form button[type=submit]');
         assert((await page.textContent('#form-error')) === msg('endpointErrorKey'), 'malformed key rejected');
-        await page.fill('#ep-url', `http://127.0.0.1:${notary.port}/cert/{host}`);
         await page.fill('#ep-key', keys.own.publicKey);
+        await page.fill('#ep-url', `${inside.url}?host={host}&port={port}`);
         await page.click('#endpoint-form button[type=submit]');
-        assert((await page.textContent('#form-error')) === msg('endpointErrorKeyUrl'), 'a key needs ?host= in the URL');
+        assert(
+          (await page.textContent('#form-error')) === msg('endpointErrorTemplate'),
+          'an address that would carry the site is refused',
+        );
         await page.fill('#ep-url', inside.url);
         await page.click('#endpoint-form button[type=submit]');
         await page.waitForFunction(() => document.querySelectorAll('.endpoint').length === 3);
@@ -1173,7 +1183,8 @@ async function main() {
     await lite.stop();
   }
 
-  notary.child.kill();
+  outsideNotary.child.kill();
+  insideNotary.child.kill();
   publicNotary.child.kill();
   tamper.close();
   rmSync(keyDir, { recursive: true, force: true });

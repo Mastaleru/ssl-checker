@@ -6,7 +6,6 @@ import {
   localReadingAvailable,
   newEndpointId,
   saveSettings,
-  targetCanBeChecked,
   validateEndpointUrl,
 } from '../lib/settings.js';
 import { countSites, forgetAllSites } from '../lib/site-memory-store.js';
@@ -189,9 +188,6 @@ async function onAddEndpoint(event) {
   const keys = parseKeyList($('ep-key').value);
   if (!keys.ok) {
     return showFormError(t('endpointErrorKey'));
-  }
-  if (keys.keys.length && !targetCanBeChecked(valid.url)) {
-    return showFormError(t('endpointErrorKeyUrl'));
   }
   showFormError('');
   const endpoint = {

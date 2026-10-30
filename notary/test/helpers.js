@@ -119,3 +119,6 @@ export async function post(base, path, body, headers = {}) {
   const text = await res.text();
   return { status: res.status, headers: res.headers, body: text ? JSON.parse(text) : null };
 }
+
+/** Asks the notary about a site, as the extension does: {host, port, nonce} posted to /v1/cert. */
+export const ask = (base, target, headers = {}) => post(base, '/v1/cert', target, headers);

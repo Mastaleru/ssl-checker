@@ -370,7 +370,7 @@
   "fieldNamePlaceholder": { "message": "Frankfurt server" },
   "fieldUrl": { "message": "Address" },
   "fieldUrlHelp": {
-    "message": "HTTPS address of the notary. SSL Checker sends it the site in the body of a POST request; if your server expects the site in the address instead, put {host} and {port} in it."
+    "message": "HTTPS address of the notary. SSL Checker sends it the site in the body of a POST request, never in the address."
   },
   "fieldToken": { "message": "Access token (optional)" },
   "fieldTokenHelp": { "message": "Sent as Authorization: Bearer. Stored only on this device." },
@@ -397,14 +397,13 @@
     "message": "Do not put a user name or password in the address; use the token field."
   },
   "endpointErrorFragment": { "message": "Remove the # part from the address." },
-  "endpointErrorPlaceholderInHost": { "message": "{host} can appear only in the path or the query of the address." },
+  "endpointErrorTemplate": {
+    "message": "Give the notary's address without {host} or {port}: SSL Checker sends the site in the body of the request."
+  },
   "endpointErrorHttps": { "message": "The address must use HTTPS (plain HTTP is allowed only for localhost)." },
   "endpointErrorDuplicate": { "message": "This source is already in the list." },
   "endpointErrorToken": { "message": "The token can contain only visible ASCII characters." },
   "endpointErrorKey": { "message": "Enter the key as the notary prints it: ed25519: followed by 43 characters." },
-  "endpointErrorKeyUrl": {
-    "message": "With a key, give the address without {host}, or with the site in the query (?host={host}): each signed answer is checked against the site that was asked about."
-  },
   "optAdvancedTitle": { "message": "Advanced" },
   "fieldTimeout": { "message": "Wait for each source (seconds)" },
   "optProtocolTitle": { "message": "Notary protocol" },

@@ -249,9 +249,7 @@ Authorization: Bearer <token>        (only for a private notary)
 { "host": "example.com", "port": 443, "nonce": "Xq3MpTb0vR9kLs2eWn5yZA" }
 ```
 
-The site travels in the body, so its name never appears in a URL, where servers and proxies tend to log it; the Chrome Web Store asks extensions not to put user data in query strings, even over HTTPS. `port` is a number and defaults to 443. `nonce` is optional: 16 to 128 characters from `A-Z a-z 0-9 - _`, new for every request; the extension sends 16 random bytes in base64url. The body may hold at most 1 KB.
-
-The same request as `GET /v1/cert?host=example.com&port=443&nonce=…` is accepted too, for sources given as URL templates and for SSL Checker 2.0.1, which asks that way.
+The site travels only in the body, so its name never appears in a URL, where servers and proxies tend to log it; the Chrome Web Store asks extensions not to put user data in query strings, even over HTTPS. `/v1/cert` answers no other method (`405`) and never reads a query string. `port` is a number and defaults to 443. `nonce` is optional: 16 to 128 characters from `A-Z a-z 0-9 - _`, new for every request; the extension sends 16 random bytes in base64url. The body may hold at most 1 KB.
 
 `200` response:
 

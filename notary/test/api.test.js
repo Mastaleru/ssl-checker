@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { X509Certificate } from 'node:crypto';
 import { after, before, test } from 'node:test';
-import { EXTENSION_ORIGIN, fixture, freePort, get, post, startNotary, startTlsSite } from './helpers.js';
+import { EXTENSION_ORIGIN, ask, fixture, freePort, get, post, startNotary, startTlsSite } from './helpers.js';
 
 const expectedFingerprint = new X509Certificate(fixture('localhost.crt')).fingerprint256;
 let site;
@@ -22,7 +22,7 @@ async function notary(t, env, options) {
 
 test('reports the chain a site presents, and that it is not trusted', async (t) => {
   const { base } = await notary(t, { ALLOW_PRIVATE: '1', ALLOWED_PORTS: String(site.port) });
-  const { status, body, headers } = await get(base, `/v1/cert?host=localhost&port=${site.port}`);
+  const { status, body, headers } = await ask(base, { host: 'localhost', port: site.port });
   assert.equal(status, 200);
   assert.equal(headers.get('access-control-allow-origin'), '*');
   assert.equal(headers.get('cache-control'), 'no-store');
@@ -61,7 +61,7 @@ test('health endpoint and CORS preflight', async (t) => {
   });
   assert.equal(preflight.status, 204);
   assert.equal(preflight.headers.get('access-control-allow-headers'), 'Authorization, Content-Type');
-  assert.equal(preflight.headers.get('access-control-allow-methods'), 'GET, POST, OPTIONS');
+  assert.equal(preflight.headers.get('access-control-allow-methods'), 'POST, OPTIONS');
   const healthPreflight = await fetch(`${base}/v1/health`, {
     method: 'OPTIONS',
     headers: { Origin: EXTENSION_ORIGIN },
@@ -69,17 +69,25 @@ test('health endpoint and CORS preflight', async (t) => {
   assert.equal(healthPreflight.headers.get('access-control-allow-methods'), 'GET, OPTIONS');
 });
 
-test('takes the site as JSON in a POST body, which keeps it out of URLs', async (t) => {
-  const { base } = await notary(t, { ALLOW_PRIVATE: '1', ALLOWED_PORTS: String(site.port) });
-  const { status, body } = await post(base, '/v1/cert', { host: 'localhost', port: site.port });
-  assert.equal(status, 200);
-  assert.equal(body.host, 'localhost');
-  assert.equal(body.port, site.port);
-  const leaf = new X509Certificate(Buffer.from(body.chain[0], 'base64'));
-  assert.equal(leaf.fingerprint256, expectedFingerprint);
+test('takes the site only from the body, never from the URL', async (t) => {
+  let probes = 0;
+  const probe = async () => {
+    probes += 1;
+    throw new Error('the site must not be contacted');
+  };
+  const { base } = await notary(t, { RATE_LIMIT: '0' }, { probe });
+  for (const method of ['GET', 'HEAD']) {
+    const refused = await get(base, '/v1/cert?host=example.com&port=443', {}, method);
+    assert.equal(refused.status, 405, method);
+    assert.equal(refused.headers.get('allow'), 'POST, OPTIONS', method);
+  }
+  const { status, body } = await post(base, '/v1/cert?host=example.com', {});
+  assert.equal(status, 400, 'a query string is not read');
+  assert.equal(body.error.code, 'badRequest');
+  assert.equal(probes, 0);
 });
 
-test('refuses a POST body that is not the expected JSON, and the same targets as GET', async (t) => {
+test('refuses a body that is not the expected JSON', async (t) => {
   const { base } = await notary(t, { RATE_LIMIT: '0' });
   const malformed = [
     ['not json', 'application/json'],
@@ -88,6 +96,7 @@ test('refuses a POST body that is not the expected JSON, and the same targets as
     [JSON.stringify({ host: 42 }), 'application/json'],
     [JSON.stringify({ host: 'example.com', port: '443' }), 'application/json'],
     [JSON.stringify({ host: 'example.com', port: 443.5 }), 'application/json'],
+    [JSON.stringify({ host: 'example.com', port: null }), 'application/json'],
     [JSON.stringify({ host: 'example.com', nonce: 1234567890123456 }), 'application/json'],
     [JSON.stringify({ host: `${'a'.repeat(2000)}.com` }), 'application/json'],
   ];
@@ -95,14 +104,6 @@ test('refuses a POST body that is not the expected JSON, and the same targets as
     const { status, body } = await post(base, '/v1/cert', text, { 'Content-Type': type });
     assert.ok(status === 400 || status === 413, `${type} ${text.slice(0, 40)}: ${status}`);
     assert.equal(body.error.code, 'badRequest');
-  }
-  const port = await post(base, '/v1/cert', { host: 'example.com', port: 22 });
-  assert.equal(port.status, 403);
-  assert.equal(port.body.error.code, 'forbiddenPort');
-  for (const host of ['127.0.0.1', 'localhost', '169.254.169.254', '[::1]']) {
-    const { status, body } = await post(base, '/v1/cert', { host, port: 443 });
-    assert.equal(status, 403, host);
-    assert.equal(body.error.code, 'forbiddenTarget', host);
   }
 });
 
@@ -124,7 +125,7 @@ test('refuses private and reserved targets (SSRF protection)', async (t) => {
     '64:ff9b::7f00:1',
   ];
   for (const host of refused) {
-    const { status, body } = await get(base, `/v1/cert?host=${encodeURIComponent(host)}&port=443`);
+    const { status, body } = await ask(base, { host, port: 443 });
     assert.equal(status, 403, host);
     assert.equal(body.error.code, 'forbiddenTarget', host);
   }
@@ -133,29 +134,31 @@ test('refuses private and reserved targets (SSRF protection)', async (t) => {
 test('lets public addresses through (they may still fail without network)', async (t) => {
   const { base } = await notary(t, { TIMEOUT_SECONDS: '1' });
   for (const host of ['1.1.1.1', '2606:4700:4700::1111']) {
-    const { body } = await get(base, `/v1/cert?host=${encodeURIComponent(host)}&port=443`);
+    const { body } = await ask(base, { host, port: 443 });
     assert.notEqual(body.error?.code, 'forbiddenTarget', host);
   }
 });
 
 test('refuses ports that are not allowed, malformed requests and other methods', async (t) => {
   const { base } = await notary(t, { RATE_LIMIT: '0' });
-  const port = await get(base, '/v1/cert?host=example.com&port=22');
+  const port = await ask(base, { host: 'example.com', port: 22 });
   assert.equal(port.status, 403);
   assert.equal(port.body.error.code, 'forbiddenPort');
-  assert.equal((await get(base, '/v1/cert?host=example.com&port=https')).status, 400);
-  assert.equal((await get(base, '/v1/cert?host=a.example&host=b.example')).status, 400);
-  for (const host of ['', 'not a host', `${'a'.repeat(300)}.com`, 'exa_mple.com', 'a..b']) {
-    const { status, body } = await get(base, `/v1/cert?host=${encodeURIComponent(host)}`);
+  for (const number of [0, 65536]) {
+    assert.equal((await ask(base, { host: 'example.com', port: number })).status, 400, String(number));
+  }
+  for (const host of [undefined, '', 'not a host', `${'a'.repeat(300)}.com`, 'exa_mple.com', 'a..b']) {
+    const { status, body } = await ask(base, { host });
     assert.equal(status, 400, JSON.stringify(host));
     assert.equal(body.error.code, 'badRequest');
   }
   const unknown = await get(base, '/elsewhere');
   assert.equal(unknown.status, 404);
   assert.equal(unknown.body.error.code, 'badRequest');
-  const put = await get(base, '/v1/cert?host=example.com', {}, 'PUT');
+  const put = await get(base, '/v1/cert', {}, 'PUT');
   assert.equal(put.status, 405);
-  assert.equal(put.headers.get('allow'), 'GET, POST, OPTIONS');
+  assert.equal(put.headers.get('allow'), 'POST, OPTIONS');
+  assert.equal(put.body.error.message, 'use POST');
   const healthPost = await get(base, '/v1/health', {}, 'POST');
   assert.equal(healthPost.status, 405);
   assert.equal(healthPost.headers.get('allow'), 'GET, OPTIONS');
@@ -163,21 +166,21 @@ test('refuses ports that are not allowed, malformed requests and other methods',
 
 test('reports connection failures with a code', async (t) => {
   const { base } = await notary(t, { ALLOW_PRIVATE: '1', ALLOWED_PORTS: String(closedPort) });
-  const { status, body } = await get(base, `/v1/cert?host=localhost&port=${closedPort}`);
+  const { status, body } = await ask(base, { host: 'localhost', port: closedPort });
   assert.equal(status, 502);
   assert.equal(body.error.code, 'connectFailed');
 });
 
 test('only the allowed origins may use the notary from a browser', async (t) => {
   const { base } = await notary(t, { ALLOWED_ORIGINS: EXTENSION_ORIGIN, RATE_LIMIT: '0' });
-  const path = '/v1/cert?host=10.0.0.1';
+  const target = { host: '10.0.0.1' };
 
-  const ours = await get(base, path, { Origin: EXTENSION_ORIGIN });
+  const ours = await ask(base, target, { Origin: EXTENSION_ORIGIN });
   assert.equal(ours.body.error.code, 'forbiddenTarget', 'the request reached the target check');
   assert.equal(ours.headers.get('access-control-allow-origin'), EXTENSION_ORIGIN);
   assert.equal(ours.headers.get('vary'), 'Origin');
 
-  const foreign = await get(base, path, { Origin: 'https://evil.example' });
+  const foreign = await ask(base, target, { Origin: 'https://evil.example' });
   assert.equal(foreign.status, 403);
   assert.equal(foreign.body.error.code, 'forbiddenOrigin');
   assert.equal(
@@ -189,12 +192,12 @@ test('only the allowed origins may use the notary from a browser', async (t) => 
   const preflight = await fetch(`${base}/v1/cert`, { method: 'OPTIONS', headers: { Origin: 'https://evil.example' } });
   assert.equal(preflight.status, 403);
 
-  assert.equal((await get(base, path)).body.error.code, 'forbiddenTarget', 'no Origin (curl) is accepted by default');
+  assert.equal((await ask(base, target)).body.error.code, 'forbiddenTarget', 'no Origin (curl) is accepted by default');
 });
 
 test('REQUIRE_ORIGIN refuses requests without an Origin, except health checks', async (t) => {
   const { base } = await notary(t, { ALLOWED_ORIGINS: EXTENSION_ORIGIN, REQUIRE_ORIGIN: '1' });
-  const bare = await get(base, '/v1/cert?host=10.0.0.1');
+  const bare = await ask(base, { host: '10.0.0.1' });
   assert.equal(bare.status, 403);
   assert.equal(bare.body.error.code, 'forbiddenOrigin');
   assert.equal((await get(base, '/v1/health')).status, 200);
@@ -203,10 +206,10 @@ test('REQUIRE_ORIGIN refuses requests without an Origin, except health checks', 
 test('requires the bearer token when one is configured', async (t) => {
   const token = 'a-long-random-token-for-tests-0123456789';
   const { base } = await notary(t, { NOTARY_TOKEN: token, ALLOW_PRIVATE: '1', ALLOWED_PORTS: String(site.port) });
-  const path = `/v1/cert?host=localhost&port=${site.port}`;
-  assert.equal((await get(base, path)).status, 401);
-  assert.equal((await get(base, path, { Authorization: 'Bearer wrong' })).status, 401);
-  assert.equal((await get(base, path, { Authorization: `Bearer ${token}` })).status, 200);
+  const target = { host: 'localhost', port: site.port };
+  assert.equal((await ask(base, target)).status, 401);
+  assert.equal((await ask(base, target, { Authorization: 'Bearer wrong' })).status, 401);
+  assert.equal((await ask(base, target, { Authorization: `Bearer ${token}` })).status, 200);
   assert.equal((await get(base, '/v1/health')).body.auth, true);
 });
 
@@ -214,11 +217,11 @@ test('over the rate limit, then banned with growing waits (flood protection)', a
   const { base, logs } = await notary(t, { RATE_LIMIT: '2', BAN_STRIKES: '2' });
   const statuses = [];
   for (let i = 0; i < 4; i++) {
-    const { status, body } = await get(base, '/v1/cert?host=10.0.0.1');
+    const { status, body } = await ask(base, { host: '10.0.0.1' });
     statuses.push(`${status} ${body.error.code}`);
   }
   assert.deepEqual(statuses, ['403 forbiddenTarget', '403 forbiddenTarget', '429 rateLimited', '429 rateLimited']);
-  const banned = await get(base, '/v1/cert?host=10.0.0.1');
+  const banned = await ask(base, { host: '10.0.0.1' });
   assert.equal(banned.status, 429);
   assert.equal(banned.body.error.message, 'temporarily blocked after repeated abuse');
   assert.equal(banned.headers.get('retry-after'), '60');
@@ -232,15 +235,15 @@ test('guessing tokens gets the client banned (brute-force protection)', async (t
   const token = 'a-long-random-token-for-tests-0123456789';
   const { base } = await notary(t, { NOTARY_TOKEN: token, BAN_STRIKES: '3', RATE_LIMIT: '0' });
   for (let i = 0; i < 3; i++) {
-    assert.equal((await get(base, '/v1/cert?host=10.0.0.1', { Authorization: `Bearer guess-${i}` })).status, 401);
+    assert.equal((await ask(base, { host: '10.0.0.1' }, { Authorization: `Bearer guess-${i}` })).status, 401);
   }
-  const right = await get(base, '/v1/cert?host=10.0.0.1', { Authorization: `Bearer ${token}` });
+  const right = await ask(base, { host: '10.0.0.1' }, { Authorization: `Bearer ${token}` });
   assert.equal(right.status, 429, 'even the right token waits out the ban');
 });
 
 test('X-Forwarded-For counts only when TRUST_PROXY says a proxy is in front', async (t) => {
   const proxied = await notary(t, { TRUST_PROXY: '1', RATE_LIMIT: '1' });
-  const via = (base, address) => get(base, '/v1/cert?host=10.0.0.1', { 'X-Forwarded-For': address });
+  const via = (base, address) => ask(base, { host: '10.0.0.1' }, { 'X-Forwarded-For': address });
   assert.equal((await via(proxied.base, '198.51.100.1')).status, 403);
   assert.equal((await via(proxied.base, '198.51.100.1')).status, 429);
   assert.equal((await via(proxied.base, '198.51.100.2')).status, 403, 'another client has its own limit');
@@ -252,7 +255,7 @@ test('X-Forwarded-For counts only when TRUST_PROXY says a proxy is in front', as
 
 test('logs requests without hosts, unless LOG_HOSTS=1', async (t) => {
   const quiet = await notary(t, { RATE_LIMIT: '0' });
-  await get(quiet.base, '/v1/cert?host=10.0.0.1');
+  await ask(quiet.base, { host: '10.0.0.1' });
   const line = quiet.logs.find((l) => l.msg === 'request');
   assert.equal(line.path, '/v1/cert');
   assert.equal(line.status, 403);
@@ -260,6 +263,6 @@ test('logs requests without hosts, unless LOG_HOSTS=1', async (t) => {
   assert.ok(!JSON.stringify(quiet.logs).includes('10.0.0.1'));
 
   const verbose = await notary(t, { RATE_LIMIT: '0', LOG_HOSTS: '1' });
-  await get(verbose.base, '/v1/cert?host=10.0.0.1');
+  await ask(verbose.base, { host: '10.0.0.1' });
   assert.equal(verbose.logs.find((l) => l.msg === 'request').target, '10.0.0.1:443');
 });

@@ -37,25 +37,23 @@ export function createApp({ config, logger, bans, service }) {
   );
   app.get('/v1/health', healthRoute({ config }));
 
-  // Certificates: every check runs before the notary contacts a site, and before a
-  // POST body is read. POST carries the site in its JSON body, out of URLs and logs;
-  // GET with a query string stays for URL templates and older versions.
+  // Certificates: every check runs before the notary contacts a site, and before the
+  // body is read. The site travels only in the JSON body of a POST, so its name never
+  // appears in a URL, where servers and proxies on the way tend to log it.
   app.use(
     '/v1/cert',
     originCheck({
       allowedOrigins: config.allowedOrigins,
       requireOrigin: config.requireOrigin,
-      methods: ['GET', 'POST'],
+      methods: ['POST'],
       onRefused: strike('origin'),
     }),
     bans.guard(clientKey),
     bearerToken({ token: config.token, onFailure: strike('token') }),
     perClientLimit({ perMinute: config.ratePerMinute, onLimited: strike('rate') }),
-    allowMethods('GET', 'POST'),
+    allowMethods('POST'),
   );
-  const certificate = certRoute({ config, service });
-  app.get('/v1/cert', certificate);
-  app.post('/v1/cert', express.json({ limit: '1kb' }), certificate);
+  app.post('/v1/cert', express.json({ limit: '1kb' }), certRoute({ config, service }));
 
   app.use(notFound);
   app.use(errorHandler(logger));

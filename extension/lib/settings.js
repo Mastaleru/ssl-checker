@@ -101,15 +101,20 @@ const LOOPBACK = new Set(['localhost', '127.0.0.1', '[::1]']);
 
 /**
  * Validates a notary endpoint URL. HTTPS is required, except on loopback
- * (useful while testing a notary on your own machine).
+ * (useful while testing a notary on your own machine). The address never carries the
+ * site: every notary gets it in the body of a POST, so that its name stays out of
+ * URLs, where servers and proxies log it. An address with {host} or {port}, the URL
+ * templates of earlier versions, is refused.
  * Returns { ok: true, url } or { ok: false, error: <i18n key> }.
  */
 export function validateEndpointUrl(input) {
   const raw = String(input || '').trim();
+  if (/\{(?:host|port)\}/i.test(raw)) {
+    return { ok: false, error: 'endpointErrorTemplate' };
+  }
   let u;
   try {
-    // Placeholders are not valid URL characters in the host; keep them in path/query only.
-    u = new URL(raw.replace(/\{host\}/g, 'HOST_PLACEHOLDER').replace(/\{port\}/g, '443'));
+    u = new URL(raw);
   } catch {
     return { ok: false, error: 'endpointErrorInvalidUrl' };
   }
@@ -119,50 +124,10 @@ export function validateEndpointUrl(input) {
   if (u.hash) {
     return { ok: false, error: 'endpointErrorFragment' };
   }
-  if (u.hostname.includes('host_placeholder')) {
-    return { ok: false, error: 'endpointErrorPlaceholderInHost' };
-  }
   if (u.protocol !== 'https:' && !(u.protocol === 'http:' && LOOPBACK.has(u.hostname))) {
     return { ok: false, error: 'endpointErrorHttps' };
   }
   return { ok: true, url: raw };
-}
-
-/**
- * How to ask a notary about host:port. Any address without {host} gets a POST with
- * {host, port} as JSON, so that the site's name never appears in a URL, where servers
- * and proxies log it. An address with {host} is a template for servers that expect
- * the site in the URL: it is filled in and fetched with GET.
- * @returns {{method: 'POST', url: string, target: {host: string, port: number}} | {method: 'GET', url: string}}
- */
-export function buildNotaryRequest(url, host, port) {
-  if (!url.includes('{host}')) {
-    return { method: 'POST', url: new URL(url).toString(), target: { host, port: Number(port) } };
-  }
-  const filled = url.replace(/\{host\}/g, encodeURIComponent(host)).replace(/\{port\}/g, String(port));
-  if (url.includes('{port}')) {
-    return { method: 'GET', url: filled };
-  }
-  // Without {port} the notary would look at port 443, whatever the tab's port.
-  const u = new URL(filled);
-  if (!u.searchParams.has('port')) {
-    u.searchParams.set('port', String(port));
-  }
-  return { method: 'GET', url: u.toString() };
-}
-
-/**
- * True when a signed answer from this endpoint can be checked against the site it
- * was asked about: a POST names the site in its body, a template only when it puts
- * the site in the query (?host={host}), where the request can be read back.
- */
-export function targetCanBeChecked(url) {
-  try {
-    const request = buildNotaryRequest(url, 'example.com', 443);
-    return request.method === 'POST' || new URL(request.url).searchParams.has('host');
-  } catch {
-    return false;
-  }
 }
 
 export function newEndpointId() {
