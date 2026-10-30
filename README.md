@@ -78,6 +78,8 @@ extension/              what Chrome loads (Load unpacked) and what gets packaged
 notary/                 the notary service (Express), its Docker and VPS setup, and its own tests
 scripts/
   build.mjs             builds the full and the lite package into dist/
+  bump-version.mjs      sets a new version in the manifest, package.json and package-lock.json
+  release-check.mjs     what the release workflow checks before it builds
   notary-image.mjs      builds the notary's Docker image into dist/, to upload to the VPS
 build/package.cmd       Windows shortcut for scripts/build.mjs
 store/                  Chrome Web Store texts, screenshots, privacy policy and publishing guide
@@ -127,11 +129,15 @@ On Windows you can double-click `build\package.cmd` instead (it needs Node.js 20
 A version tag publishes a GitHub Release (`.github/workflows/release.yml`):
 
 ```bash
-npm run release:check -- v2.0.1     # after raising the version in extension/manifest.json and package.json
-git tag v2.0.1 && git push origin v2 v2.0.1
+npm run bump-version 2.0.2          # extension/manifest.json, package.json and package-lock.json; prints the git commands
+git commit -m "Bump version to 2.0.2" extension/manifest.json package.json package-lock.json && git push
+npm run release:check -- v2.0.2     # optional: the checks the release workflow makes first
+git tag -a v2.0.2 -m "SSL Checker 2.0.2" && git push origin v2.0.2     # once CI is green on that push
 ```
 
-The workflow runs every CI job first; only when all of them pass does it check the tag against the version, check that the PlusPrivacy key is built in, build both packages, and publish them with `SHA256SUMS.txt` and a signed build provenance attestation. Anyone can check that a package was built here, from that commit: `gh attestation verify ssl-checker-<version>.zip --repo Mastaleru/ssl-checker`. The build is reproducible, so `node scripts/build.mjs` at the tag gives the same bytes. Uploading to the Chrome Web Store stays manual. In the repository settings, a tag ruleset that lets only maintainers create `v*` tags, and immutable releases, keep the published packages as they were built.
+`bump-version` accepts only a version higher than the current one, since the Chrome Web Store refuses an equal or lower one, written the way Chrome reads it: one to four numbers from 0 to 65535, separated by dots.
+
+The workflow runs every CI job first; only when all of them pass does it check the tag against the version, check that the PlusPrivacy key is built in, build both packages, and publish them with `SHA256SUMS.txt` and a signed build provenance attestation. Anyone can check that a package was built here, from that commit: `gh attestation verify ssl-checker-<version>.zip --repo Mastaleru/ssl-checker`. The build is reproducible, so `node scripts/build.mjs` at the tag gives the same bytes. Uploading to the Chrome Web Store stays manual. In the repository settings, a tag ruleset that forbids moving or deleting `v*` tags, and immutable releases, keep the published packages as they were built.
 
 Chrome Web Store steps, listing texts and screenshots: [`store/PUBLISHING.md`](store/PUBLISHING.md). Deploy the PlusPrivacy notary first ([`notary/README.md`](notary/README.md)) and copy its public key into `extension/lib/default-notary.js`: the extension asks it by default, and only with its key.
 

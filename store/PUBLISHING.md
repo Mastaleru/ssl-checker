@@ -23,6 +23,6 @@
 
 ## On every update
 
-- Increase `version` in `extension/manifest.json` (for example from `2.0.0` to `2.0.1`), since the store refuses an equal or lower version, and keep `package.json` on the same version.
-- Commit, then push the tag `v<version>`: the release workflow runs every test and publishes the packages as a GitHub Release. Upload `ssl-checker-<version>.zip` from there.
+- Raise the version with `npm run bump-version <version>` (for example `npm run bump-version 2.0.2`): it sets `extension/manifest.json`, `package.json` and `package-lock.json`, and refuses a version that is not higher, since the store refuses an equal or lower one.
+- Commit and push, then, once CI is green, push the tag `v<version>`: the release workflow runs every test and publishes the packages as a GitHub Release. Upload `ssl-checker-<version>.zip` from there.
 - If you change the UI, `node store/tools/make-screenshots.mjs` regenerates the screenshots from the real code.
