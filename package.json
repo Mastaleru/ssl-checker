@@ -1,6 +1,6 @@
 {
   "name": "ssl-checker",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "private": true,
   "type": "module",
   "description": "Chrome extension that shows the TLS certificate of the current tab and detects interception by comparing it with independent notaries.",
