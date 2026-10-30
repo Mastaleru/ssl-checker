@@ -15,3 +15,6 @@ export const DEFAULT_NOTARY = Object.freeze({
 });
 
 export const DEFAULT_NOTARY_HOST = new URL(DEFAULT_NOTARY.url).host;
+
+// The site that the Test button in Options asks a notary about.
+export const NOTARY_TEST_SITE = Object.freeze({ host: 'example.com', port: 443 });

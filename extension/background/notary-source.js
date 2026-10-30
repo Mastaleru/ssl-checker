@@ -1,7 +1,7 @@
 // Asks external "notary" endpoints which certificate chain they see for a host.
 //
 // Protocol v1 (see notary/README.md):
-//   GET <endpoint>?host=<host>&port=<port>&nonce=<nonce>   (or a URL template with {host}/{port})
+//   POST <endpoint>  {"host": "<host>", "port": <port>, "nonce": "<nonce>"}
 //   Authorization: Bearer <token>                          (optional)
 //   200 → { version: 1, chain: ["<base64 DER leaf>", ...], vantage, address,
 //           observedAt, trusted, trustError, tls: { protocol, cipher, group }, nonce, key }
@@ -12,7 +12,7 @@
 // only when its signature holds (lib/notary-signature.js).
 
 import { checkSignature, newNonce, SIGNATURE_HEADER } from '../lib/notary-signature.js';
-import { buildEndpointRequestUrl } from '../lib/settings.js';
+import { validateEndpointUrl } from '../lib/settings.js';
 import { describeChain } from '../lib/x509.js';
 
 const MAX_BODY_BYTES = 512 * 1024;
@@ -23,7 +23,7 @@ const text = (value, max = 120) => (typeof value === 'string' ? value.slice(0, m
 
 function endpointOrigin(url) {
   try {
-    return new URL(url.replace(/\{host\}/g, 'x').replace(/\{port\}/g, '443')).origin;
+    return new URL(url).origin;
   } catch {
     return null;
   }
@@ -76,29 +76,26 @@ export async function queryNotary(endpoint, host, port, timeoutMs) {
     return finish({ state: 'error', error: { code: 'noKey' } });
   }
 
-  let url;
-  try {
-    url = new URL(buildEndpointRequestUrl(endpoint.url, host, port));
-  } catch {
+  // The same check as in Options, for addresses saved by earlier versions.
+  const endpointUrl = validateEndpointUrl(endpoint.url);
+  if (!endpointUrl.ok) {
     return finish({ state: 'error', error: { code: 'badEndpoint' } });
   }
+  // What the notary is asked to look at, which its signed answer must repeat.
+  const asked = { host, port: Number(port) };
   const nonce = newNonce();
-  url.searchParams.set('nonce', nonce);
-  // What the notary is asked to look at; a URL template may fix a host of its own.
-  const asked = { host: url.searchParams.get('host'), port: Number(url.searchParams.get('port') || 443) };
-  if (signed && !asked.host) {
-    return finish({ state: 'error', error: { code: 'badEndpoint' } });
+  const headers = { Accept: 'application/json', 'Content-Type': 'application/json' };
+  if (endpoint.token) {
+    headers.Authorization = `Bearer ${endpoint.token}`;
   }
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const headers = { Accept: 'application/json' };
-    if (endpoint.token) {
-      headers.Authorization = `Bearer ${endpoint.token}`;
-    }
-    const res = await fetch(url, {
+    const res = await fetch(endpointUrl.url, {
+      method: 'POST',
       headers,
+      body: JSON.stringify({ host: asked.host, port: asked.port, nonce }),
       signal: controller.signal,
       cache: 'no-store',
       credentials: 'omit',

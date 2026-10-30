@@ -10,12 +10,18 @@ export function baseHeaders(req, res, next) {
   next();
 }
 
-export function onlyGet(req, res, next) {
-  if (req.method === 'GET' || req.method === 'HEAD') {
-    next();
-    return;
-  }
-  next(new NotaryError(405, 'badRequest', 'only GET is supported', { Allow: 'GET, OPTIONS' }));
+/** Lets through the given methods (HEAD with GET); anything else is refused with 405. */
+export function allowMethods(...methods) {
+  const allowed = new Set(methods.includes('GET') ? [...methods, 'HEAD'] : methods);
+  const allow = [...methods, 'OPTIONS'].join(', ');
+  const message = `use ${methods.join(' or ')}`;
+  return function onlyTheseMethods(req, res, next) {
+    if (allowed.has(req.method)) {
+      next();
+      return;
+    }
+    next(new NotaryError(405, 'badRequest', message, { Allow: allow }));
+  };
 }
 
 export function notFound(req, res, next) {

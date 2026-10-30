@@ -2,6 +2,8 @@
 
 A Chrome extension (Manifest V3) that shows the TLS certificate of the site in the current tab — the one your browser **actually received** — and tells you whether something between you and the site is replacing it: a company proxy, an antivirus or something else.
 
+Website and privacy policy: <https://sslchecker.plusprivacy.com>, published from the [ssl-checker-website](https://github.com/Mastaleru/ssl-checker-website) repository.
+
 ## Features
 
 - **The real certificate.** Reads the certificate chain your browser received for the current tab, with the connection details: TLS version, key exchange (including post-quantum hybrids), cipher, Encrypted Client Hello and Certificate Transparency status.
@@ -25,7 +27,7 @@ A Chrome extension (Manifest V3) that shows the TLS certificate of the site in t
 
 **Local reading.** Chrome has no extension API for the certificate of a loaded page, so the extension attaches `chrome.debugger` to the tab for about a second: `Network.enable`, a cookie-less `HEAD /favicon.ico` request sent from an isolated world (the page cannot intercept it), then `Network.getCertificate`. The page's service worker is bypassed, so the response comes from the network. Pages with a strict Content Security Policy block that request; for them the popup offers "Reload page and read". The mode is chosen in Options: _every time_, _on demand_ or _never_. Chrome does not allow `debugger` as an optional permission, which is why there is also a lite package without it.
 
-**Notaries.** Each endpoint receives `?host=&port=&nonce=` (or a URL template with `{host}` and `{port}`) and returns the certificate chain it sees from where it runs. The PlusPrivacy notary at `notary.plusprivacy.com` is built in (`lib/default-notary.js`), is asked first, and can be turned off in Options. It runs the service in `notary/`, whose README describes the protocol, the protection against abuse and the deployment on a VPS.
+**Notaries.** Each endpoint receives the site as JSON in a POST body, `{"host", "port", "nonce"}`, so that its name never appears in a URL; Options refuses an address that contains `{host}` or `{port}`. The endpoint returns the certificate chain it sees from where it runs. The PlusPrivacy notary at `notary.plusprivacy.com` is built in (`lib/default-notary.js`), is asked first, and can be turned off in Options. It runs the service in `notary/`, whose README describes the protocol, the protection against abuse and the deployment on a VPS. Options links to that folder on GitHub, next to "Add a source", for anyone who wants to run a notary of their own.
 
 **Signed answers.** The notary signs each answer with its Ed25519 key, and the answer repeats the request's random nonce. For a notary whose keys it knows (always PlusPrivacy, whose keys are built into `lib/default-notary.js`, and any source given a key in Options), the extension uses an answer only when the signature holds, the nonce is the one it sent, and the host and port are the ones it asked (`lib/notary-signature.js`). The proxy that re-signs a site can intercept the notary's HTTPS connection too, but it cannot fake an answer: a changed answer, an old one replayed, or one about the interceptor's own server is refused. Since only something that intercepts the browser's secure connections can do that, the verdict becomes **An answer was changed on the way**. An unsigned answer, or one signed with an unknown key, is refused without that alarm. For a certificate that is not publicly logged, only what an interceptor cannot fake confirms it: a signed answer with the same certificate or key. An interceptor can copy an issuer's name and write an unsigned answer, so neither confirms such a certificate on its own, nor outweighs a signed answer that differs; and a certificate made by a known inspection product is reported whatever the notaries say. Sources without a key remain useful for publicly logged certificates. Error answers are not signed, so the extension accepts only the protocol's error codes and never shows their text. A build without a key for PlusPrivacy never asks it, and `scripts/build.mjs` warns about it.
 
@@ -78,9 +80,11 @@ extension/              what Chrome loads (Load unpacked) and what gets packaged
 notary/                 the notary service (Express), its Docker and VPS setup, and its own tests
 scripts/
   build.mjs             builds the full and the lite package into dist/
+  bump-version.mjs      sets a new version in the manifest, package.json and package-lock.json
+  release-check.mjs     what the release workflow checks before it builds
   notary-image.mjs      builds the notary's Docker image into dist/, to upload to the VPS
 build/package.cmd       Windows shortcut for scripts/build.mjs
-store/                  Chrome Web Store texts, screenshots, privacy policy and publishing guide
+store/                  Chrome Web Store texts, screenshots and publishing guide
 .github/workflows/      CI on every push and pull request; release on version tags
 tests/                  unit and end-to-end (Chromium) tests of the extension
 ```
@@ -127,11 +131,15 @@ On Windows you can double-click `build\package.cmd` instead (it needs Node.js 20
 A version tag publishes a GitHub Release (`.github/workflows/release.yml`):
 
 ```bash
-npm run release:check -- v2.0.1     # after raising the version in extension/manifest.json and package.json
-git tag v2.0.1 && git push origin v2 v2.0.1
+npm run bump-version 2.0.2          # extension/manifest.json, package.json and package-lock.json; prints the git commands
+git commit -m "Bump version to 2.0.2" extension/manifest.json package.json package-lock.json && git push
+npm run release:check -- v2.0.2     # optional: the checks the release workflow makes first
+git tag -a v2.0.2 -m "SSL Checker 2.0.2" && git push origin v2.0.2     # once CI is green on that push
 ```
 
-The workflow runs every CI job first; only when all of them pass does it check the tag against the version, check that the PlusPrivacy key is built in, build both packages, and publish them with `SHA256SUMS.txt` and a signed build provenance attestation. Anyone can check that a package was built here, from that commit: `gh attestation verify ssl-checker-<version>.zip --repo Mastaleru/ssl-checker`. The build is reproducible, so `node scripts/build.mjs` at the tag gives the same bytes. Uploading to the Chrome Web Store stays manual. In the repository settings, a tag ruleset that lets only maintainers create `v*` tags, and immutable releases, keep the published packages as they were built.
+`bump-version` accepts only a version higher than the current one, since the Chrome Web Store refuses an equal or lower one, written the way Chrome reads it: one to four numbers from 0 to 65535, separated by dots.
+
+The workflow runs every CI job first; only when all of them pass does it check the tag against the version, check that the PlusPrivacy key is built in, build both packages, and publish them with `SHA256SUMS.txt` and a signed build provenance attestation. Anyone can check that a package was built here, from that commit: `gh attestation verify ssl-checker-<version>.zip --repo Mastaleru/ssl-checker`. The build is reproducible, so `node scripts/build.mjs` at the tag gives the same bytes. Uploading to the Chrome Web Store stays manual. In the repository settings, a tag ruleset that forbids moving or deleting `v*` tags, and immutable releases, keep the published packages as they were built.
 
 Chrome Web Store steps, listing texts and screenshots: [`store/PUBLISHING.md`](store/PUBLISHING.md). Deploy the PlusPrivacy notary first ([`notary/README.md`](notary/README.md)) and copy its public key into `extension/lib/default-notary.js`: the extension asks it by default, and only with its key.
 

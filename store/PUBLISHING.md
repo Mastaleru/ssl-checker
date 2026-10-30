@@ -13,7 +13,7 @@
    If the dashboard refuses it (removed item), create a **new item** with the same zip. It gets a new ID, and existing users have to install it again.
 4. **Store listing:** copy the texts from `store/listing.md` and add the **Romanian** localization. For each language, upload the screenshots from `store/screenshots/<language>/1-…4-*.png` and the `promo-440x280.png` tile. Category: _Developer Tools_.
 5. **Privacy practices:** fill them in from `store/permissions.md` (single purpose, justifications for `debugger`, `activeTab` and `storage`, "no remote code", data usage).
-6. **Privacy policy:** add your contact address to `store/privacy-policy.html`, host the page (on GitHub Pages, for example) and put its URL in the dashboard.
+6. **Privacy policy:** put `https://sslchecker.plusprivacy.com/privacy/` in the dashboard. The page lives in the [ssl-checker-website](https://github.com/Mastaleru/ssl-checker-website) repository, which GitHub Pages publishes; its README has the one-time setup.
 7. **Test instructions:** use the text from `store/permissions.md`. The reviewer needs no notary address or token: the PlusPrivacy notary answers by default.
 8. **Submit for review.** The `debugger` permission gets a more thorough review; the detailed justification from step 5 helps.
 
@@ -23,6 +23,7 @@
 
 ## On every update
 
-- Increase `version` in `extension/manifest.json` (for example from `2.0.0` to `2.0.1`), since the store refuses an equal or lower version, and keep `package.json` on the same version.
-- Commit, then push the tag `v<version>`: the release workflow runs every test and publishes the packages as a GitHub Release. Upload `ssl-checker-<version>.zip` from there.
+- Raise the version with `npm run bump-version <version>` (for example `npm run bump-version 2.0.2`): it sets `extension/manifest.json`, `package.json` and `package-lock.json`, and refuses a version that is not higher, since the store refuses an equal or lower one.
+- Commit and push, then, once CI is green, push the tag `v<version>`: the release workflow runs every test and publishes the packages as a GitHub Release. Upload `ssl-checker-<version>.zip` from there.
 - If you change the UI, `node store/tools/make-screenshots.mjs` regenerates the screenshots from the real code.
+- If the update changes what the extension or the notary does with data (a permission, something new that is sent, stored or kept), update the privacy policy in ssl-checker-website, with its date, before you submit.

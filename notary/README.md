@@ -12,7 +12,7 @@ Node.js 22 or newer:
 npm ci
 npm run keygen -- secrets/signing-key.pem       # once: creates the key and prints its public half
 NOTARY_NAME="My laptop" SIGNING_KEY_FILE=secrets/signing-key.pem npm start
-curl "http://127.0.0.1:8080/v1/cert?host=example.com"
+curl -H "Content-Type: application/json" -d '{"host":"example.com"}' http://127.0.0.1:8080/v1/cert
 ```
 
 Without `SIGNING_KEY_FILE` the notary works too, but its answers are not signed. `npm test` runs the tests; none of them needs the internet.
@@ -157,8 +157,8 @@ The smallest plan of most providers is enough: 1 vCPU, 1 GB of RAM, Ubuntu 24.04
 
     ```bash
     curl https://notary.plusprivacy.com/v1/health
-    curl -H "Origin: chrome-extension://nbanpljakngdndmmekhogfliinegiapb" \
-      "https://notary.plusprivacy.com/v1/cert?host=example.com"
+    curl -H "Origin: chrome-extension://nbanpljakngdndmmekhogfliinegiapb" -H "Content-Type: application/json" \
+      -d '{"host":"example.com"}' https://notary.plusprivacy.com/v1/cert
     ```
 
     Then use the **Test** button next to PlusPrivacy in the extension's Options: it reports whether the answer is signed with the expected key.
@@ -242,11 +242,14 @@ Its log lists requests without client addresses or sites. Only bans name the cli
 Request:
 
 ```
-GET /v1/cert?host=example.com&port=443&nonce=Xq3MpTb0vR9kLs2eWn5yZA
+POST /v1/cert
+Content-Type: application/json
 Authorization: Bearer <token>        (only for a private notary)
+
+{ "host": "example.com", "port": 443, "nonce": "Xq3MpTb0vR9kLs2eWn5yZA" }
 ```
 
-`port` defaults to 443. `nonce` is optional: 16 to 128 characters from `A-Z a-z 0-9 - _`, new for every request; the extension sends 16 random bytes in base64url.
+The site travels only in the body, so its name never appears in a URL, where servers and proxies tend to log it; the Chrome Web Store asks extensions not to put user data in query strings, even over HTTPS. `/v1/cert` answers no other method (`405`) and never reads a query string. `port` is a number and defaults to 443. `nonce` is optional: 16 to 128 characters from `A-Z a-z 0-9 - _`, new for every request; the extension sends 16 random bytes in base64url. The body may hold at most 1 KB.
 
 `200` response:
 
@@ -280,7 +283,7 @@ Errors use a `4xx` or `5xx` status and this body:
 
 | Code                                      | Status        | Meaning                                                                       |
 | ----------------------------------------- | ------------- | ----------------------------------------------------------------------------- |
-| `badRequest`                              | 400, 404, 405 | Malformed host, port or nonce, unknown path, or a method other than GET.      |
+| `badRequest`                              | 400, 404, 405 | Malformed host, port, nonce or body, unknown path, or another method.         |
 | `unauthorized`                            | 401           | Missing or wrong token (private notaries only).                               |
 | `forbiddenOrigin`                         | 403           | The request came from an origin that is not allowed, or without one.          |
 | `forbiddenTarget`                         | 403           | The site resolves only to private or reserved addresses.                      |
@@ -292,7 +295,7 @@ Errors use a `4xx` or `5xx` status and this body:
 
 `GET /v1/health` returns `{ "version": 1, "ok": true, "vantage": "…", "ports": [443, 8443], "auth": false, "key": "ed25519:…" }`.
 
-Any server that follows this contract can be a source. The extension has no host permissions, so the server **must** send the CORS headers (`Access-Control-Allow-Origin`, `Access-Control-Allow-Headers: Authorization`, and `Access-Control-Expose-Headers: Notary-Signature` when it signs) and answer `OPTIONS` requests.
+Any server that follows this contract can be a source. The extension has no host permissions, so the server **must** send the CORS headers (`Access-Control-Allow-Origin`, `Access-Control-Allow-Methods` with `POST`, `Access-Control-Allow-Headers: Authorization, Content-Type`, and `Access-Control-Expose-Headers: Notary-Signature` when it signs) and answer `OPTIONS` requests.
 
 ### Signed answers
 
@@ -309,7 +312,11 @@ import { createPublicKey, randomBytes, verify } from 'node:crypto';
 
 const key = 'ed25519:…'; // the notary's public key, as it prints it
 const nonce = randomBytes(16).toString('base64url'); // a new one for every request
-const res = await fetch(`http://127.0.0.1:8080/v1/cert?host=example.com&port=443&nonce=${nonce}`);
+const res = await fetch('http://127.0.0.1:8080/v1/cert', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ host: 'example.com', port: 443, nonce }),
+});
 const body = Buffer.from(await res.arrayBuffer()); // the raw bytes, before any JSON parsing
 const publicKey = createPublicKey({ format: 'jwk', key: { kty: 'OKP', crv: 'Ed25519', x: key.slice(8) } });
 const message = Buffer.concat([Buffer.from('SSL Checker notary answer v1\n'), body]);

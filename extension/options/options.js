@@ -4,7 +4,6 @@ import { parseKeyList } from '../lib/notary-signature.js';
 import {
   getSettings,
   localReadingAvailable,
-  namesHostInQuery,
   newEndpointId,
   saveSettings,
   validateEndpointUrl,
@@ -189,9 +188,6 @@ async function onAddEndpoint(event) {
   const keys = parseKeyList($('ep-key').value);
   if (!keys.ok) {
     return showFormError(t('endpointErrorKey'));
-  }
-  if (keys.keys.length && !namesHostInQuery(valid.url)) {
-    return showFormError(t('endpointErrorKeyUrl'));
   }
   showFormError('');
   const endpoint = {

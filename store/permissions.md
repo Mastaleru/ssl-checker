@@ -44,7 +44,7 @@ Why "Web history": Google counts any transfer of data off the device as collecti
 
 ## Privacy policy URL
 
-Host `store/privacy-policy.html` (on GitHub Pages, for example) and put its address in the **Privacy policy** field. Fill in the contact address in the page first.
+`https://sslchecker.plusprivacy.com/privacy/`, in the **Privacy policy** field. The page is published from the [ssl-checker-website](https://github.com/Mastaleru/ssl-checker-website) repository.
 
 ## Test instructions (for the reviewer)
 

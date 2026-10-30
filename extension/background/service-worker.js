@@ -1,4 +1,5 @@
 import { readLocalCertificate } from './local-source.js';
+import { NOTARY_TEST_SITE } from '../lib/default-notary.js';
 import { queryNotary } from './notary-source.js';
 import { describeChain } from '../lib/x509.js';
 import { computeVerdict } from '../lib/verdict.js';
@@ -244,7 +245,7 @@ function checkTab(request) {
 
 async function testEndpoint(endpoint) {
   const settings = await getSettings();
-  return queryNotary(endpoint, 'example.com', 443, settings.timeoutMs);
+  return queryNotary(endpoint, NOTARY_TEST_SITE.host, NOTARY_TEST_SITE.port, settings.timeoutMs);
 }
 
 const handlers = {

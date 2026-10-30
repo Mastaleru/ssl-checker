@@ -101,15 +101,20 @@ const LOOPBACK = new Set(['localhost', '127.0.0.1', '[::1]']);
 
 /**
  * Validates a notary endpoint URL. HTTPS is required, except on loopback
- * (useful while testing a notary on your own machine).
+ * (useful while testing a notary on your own machine). The address never carries the
+ * site: every notary gets it in the body of a POST, so that its name stays out of
+ * URLs, where servers and proxies log it. An address with {host} or {port}, the URL
+ * templates of earlier versions, is refused.
  * Returns { ok: true, url } or { ok: false, error: <i18n key> }.
  */
 export function validateEndpointUrl(input) {
   const raw = String(input || '').trim();
+  if (/\{(?:host|port)\}/i.test(raw)) {
+    return { ok: false, error: 'endpointErrorTemplate' };
+  }
   let u;
   try {
-    // Placeholders are not valid URL characters in the host; keep them in path/query only.
-    u = new URL(raw.replace(/\{host\}/g, 'HOST_PLACEHOLDER').replace(/\{port\}/g, '443'));
+    u = new URL(raw);
   } catch {
     return { ok: false, error: 'endpointErrorInvalidUrl' };
   }
@@ -119,45 +124,10 @@ export function validateEndpointUrl(input) {
   if (u.hash) {
     return { ok: false, error: 'endpointErrorFragment' };
   }
-  if (u.hostname.includes('host_placeholder')) {
-    return { ok: false, error: 'endpointErrorPlaceholderInHost' };
-  }
   if (u.protocol !== 'https:' && !(u.protocol === 'http:' && LOOPBACK.has(u.hostname))) {
     return { ok: false, error: 'endpointErrorHttps' };
   }
   return { ok: true, url: raw };
-}
-
-/** Builds the request URL for a notary: placeholders, or ?host=&port= appended. */
-export function buildEndpointRequestUrl(template, host, port) {
-  if (template.includes('{host}')) {
-    const filled = template.replace(/\{host\}/g, encodeURIComponent(host)).replace(/\{port\}/g, String(port));
-    if (template.includes('{port}')) {
-      return filled;
-    }
-    // Without {port} the notary would look at port 443, whatever the tab's port.
-    const u = new URL(filled);
-    if (!u.searchParams.has('port')) {
-      u.searchParams.set('port', String(port));
-    }
-    return u.toString();
-  }
-  const u = new URL(template);
-  u.searchParams.set('host', host);
-  u.searchParams.set('port', String(port));
-  return u.toString();
-}
-
-/**
- * True when requests to this endpoint name the site in the query (?host=…), as the
- * SSL Checker notary expects. A signed answer is checked against that host.
- */
-export function namesHostInQuery(template) {
-  try {
-    return new URL(buildEndpointRequestUrl(template, 'example.com', 443)).searchParams.has('host');
-  } catch {
-    return false;
-  }
 }
 
 export function newEndpointId() {

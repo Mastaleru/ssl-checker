@@ -1,23 +1,37 @@
-// GET /v1/cert?host=example.com&port=443&nonce=… → the certificate chain, as seen from here.
+// POST /v1/cert {"host":"example.com","port":443,"nonce":"…"} → the certificate chain, as seen from here.
 import { NotaryError } from '../errors.js';
 import { normalizeHost } from '../probe/target.js';
 import { SIGNATURE_HEADER } from '../signing.js';
 
 const NONCE = /^[A-Za-z0-9_-]{16,128}$/;
 
-function single(value, name) {
-  if (Array.isArray(value) || (value !== undefined && typeof value !== 'string')) {
-    throw new NotaryError(400, 'badRequest', `give ${name} once`);
+/**
+ * What to check, from the JSON body: the only place the site's name travels, so that
+ * it stays out of URLs and logs. A query string is never read.
+ */
+function readTarget(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    throw new NotaryError(
+      400,
+      'badRequest',
+      'send {"host", "port", "nonce"} as JSON, with Content-Type: application/json',
+    );
   }
-  return value;
+  const { host, port, nonce } = body;
+  if (host !== undefined && typeof host !== 'string') {
+    throw new NotaryError(400, 'badRequest', 'host must be a string');
+  }
+  if (nonce !== undefined && typeof nonce !== 'string') {
+    throw new NotaryError(400, 'badRequest', 'nonce must be a string');
+  }
+  return { host, port, nonce };
 }
 
-function parsePort(raw, allowedPorts) {
-  if (raw === undefined || raw === '') {
+function parsePort(port, allowedPorts) {
+  if (port === undefined) {
     return 443;
   }
-  const port = Number(raw);
-  if (!/^\d{1,5}$/.test(raw) || port < 1 || port > 65535) {
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
     throw new NotaryError(400, 'badRequest', 'port must be a number from 1 to 65535');
   }
   if (!allowedPorts.has(port)) {
@@ -40,9 +54,10 @@ function parseNonce(raw) {
 
 export function certRoute({ config, service }) {
   return async function certificate(req, res) {
-    const host = normalizeHost(single(req.query.host, 'host'));
-    const port = parsePort(single(req.query.port, 'port'), config.allowedPorts);
-    const nonce = parseNonce(single(req.query.nonce, 'nonce'));
+    const target = readTarget(req.body);
+    const host = normalizeHost(target.host);
+    const port = parsePort(target.port, config.allowedPorts);
+    const nonce = parseNonce(target.nonce);
     res.locals.target = `${host}:${port}`;
     const { value, cached } = await service.lookup(host, port);
     res.locals.cached = cached;

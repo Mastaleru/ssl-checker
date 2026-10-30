@@ -122,6 +122,13 @@ body {
   color: var(--ink-3);
   font-size: 13px;
 }
+.own-notary {
+  margin-bottom: 14px;
+  max-width: 64ch;
+}
+.own-notary a {
+  white-space: nowrap;
+}
 
 /* Endpoints --------------------------------------------------------------- */
 
