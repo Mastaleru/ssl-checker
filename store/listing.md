@@ -17,32 +17,31 @@ Texts ready to paste into Developer Dashboard → **Store listing**. English is 
 
 **Summary (132 max):** See the real TLS certificate of the current site and detect interception by comparing it with independent notaries.
 
-**Description:**
+**Description (2,000 max):**
 
 SSL Checker shows the TLS certificate of the site in your current tab — the one your browser actually received — and tells you whether something between you and the site is replacing it.
 
 WHAT YOU SEE
-• The certificate as Chrome received it: names covered, issuer, validity and days left, validation level (DV, OV, EV), key and signature algorithms.
-• The connection: TLS version, key exchange (including post-quantum hybrids), cipher, Encrypted Client Hello and Certificate Transparency status.
-• The full chain, SHA-256 and SHA-1 fingerprints, the public key pin, serial number, OCSP and CRL addresses, SCTs and every extension. Copy the PEM or download the whole chain.
+• The certificate: names, issuer, validity, validation level (DV, OV, EV), key and signature algorithms.
+• The connection: TLS version, key exchange (post-quantum hybrids included), cipher, Encrypted Client Hello, Certificate Transparency.
+• The full chain, fingerprints, serial number and all extensions. Copy the PEM or download the chain.
 
 CATCH INTERCEPTION
-SSL Checker asks the PlusPrivacy notary, and any notary server you add, which certificate the same site presents to them. Each one connects to the site from elsewhere on the internet. SSL Checker compares the fingerprints:
+SSL Checker asks the PlusPrivacy notary, and any notary you add, which certificate the same site shows them from elsewhere on the internet, and compares:
 • Same certificate everywhere → confirmed.
-• Your certificate is different and not publicly logged → your HTTPS traffic is being decrypted and re-signed (company proxy, antivirus, or worse), and SSL Checker shows which authority issued the replacement. Known inspection products are named.
-• Sources that disagree with each other are reported as such, with an explanation of what each case can mean.
+• Yours is different and not publicly logged → your HTTPS traffic is decrypted and re-signed (company proxy, antivirus or worse), and SSL Checker names the authority that issued the replacement.
 
 REMEMBERS THE SITES YOU CHECK
-SSL Checker remembers which certificate authority each site you check uses, and warns you when a site you know suddenly arrives with a different one, for example on a new Wi-Fi network. This memory stays on your device, is never used in incognito windows, and can be turned off or wiped in Options.
+SSL Checker remembers each site's certificate authority and warns you when a known site suddenly arrives with another one. The memory stays on your device; incognito windows are never recorded.
 
 YOU DECIDE WHEN THE DEBUGGER RUNS
-Chrome has no dedicated API for the certificate of a loaded page, so SSL Checker attaches Chrome's debugger to the tab for about a second when it reads one. While it does, Chrome shows a bar saying the extension is debugging the browser. In Options you choose: every time, on demand (one click in the popup), or never (external sources only).
+Chrome has no API for a loaded page's certificate, so SSL Checker attaches Chrome's debugger to the tab for about a second, and Chrome shows its debugging bar meanwhile. In Options: every time, on demand, or never (notaries only).
 
-NOTARY SERVERS
-The PlusPrivacy notary is built in, and you can turn it off in Options. Any server that implements the small notary protocol described in Options can be added as a source. The notary software (Node.js in a Docker container, protected against SSRF and floods) is available from the developer. The PlusPrivacy notary signs every answer and SSL Checker checks the signature, so nobody on the way can fake a confirmation. Give a notary you add its key, and its answers are checked the same way.
+SIGNED ANSWERS
+The PlusPrivacy notary signs every answer and SSL Checker checks the signature, so nobody on the way can fake a confirmation. The notary is open source: run your own and add it with its key.
 
 PRIVACY
-No analytics, no tracking, no account. Before the first check, SSL Checker tells you what it reads and sends, and asks for your agreement. Only the checked site's host name and port leave your device: they go to the PlusPrivacy notary, which keeps no record of the sites, unless you turn it off, and to the notaries you add. The site memory never leaves your device.
+No analytics, no tracking, no account. Before the first check, SSL Checker says what it reads and sends and asks for your agreement. Only the checked site's host name and port leave your device, for the notaries. The PlusPrivacy notary keeps no record of them and can be turned off.
 
 ---
 
@@ -54,32 +53,31 @@ These are the texts for the Romanian localization of the listing, so they stay i
 
 **Summary (132 max):** Vezi certificatul TLS real al site-ului curent și detectează interceptarea, comparându-l cu notari independenți.
 
-**Description:**
+**Description (2,000 max):**
 
-SSL Checker îți arată certificatul TLS al site-ului din tabul curent — cel pe care browserul tău l-a primit cu adevărat — și îți spune dacă ceva dintre tine și site îl înlocuiește.
+SSL Checker îți arată certificatul TLS al site-ului din tabul curent — cel primit de fapt de browserul tău — și îți spune dacă ceva dintre tine și site îl înlocuiește.
 
 CE VEZI
-• Certificatul așa cum l-a primit Chrome: numele acoperite, emitentul, valabilitatea și zilele rămase, nivelul de validare (DV, OV, EV), algoritmii de cheie și de semnătură.
-• Conexiunea: versiunea TLS, schimbul de chei (inclusiv hibrizii post-cuantici), cifrul, Encrypted Client Hello și statusul Certificate Transparency.
-• Lanțul complet, amprentele SHA-256 și SHA-1, pinul cheii publice, numărul de serie, adresele OCSP și CRL, SCT-urile și toate extensiile. Copiezi PEM-ul sau descarci tot lanțul.
+• Certificatul: numele, emitentul, valabilitatea, nivelul de validare (DV, OV, EV), algoritmii de cheie și semnătură.
+• Conexiunea: versiunea TLS, schimbul de chei (inclusiv hibrizi post-cuantici), cifrul, Encrypted Client Hello, Certificate Transparency.
+• Lanțul complet, amprentele, numărul de serie și toate extensiile. Copiezi PEM-ul sau descarci lanțul.
 
 PRINDE INTERCEPTAREA
-SSL Checker întreabă notarul PlusPrivacy și orice server notar adaugi tu ce certificat le prezintă același site. Fiecare se conectează la site din alt punct al internetului. SSL Checker compară amprentele:
+SSL Checker întreabă notarul PlusPrivacy și notarii adăugați de tine ce certificat le arată același site din alt punct al internetului, apoi compară:
 • Același certificat peste tot → confirmat.
-• Certificatul tău e diferit și neînregistrat public → traficul tău HTTPS e decriptat și re-semnat (proxy de firmă, antivirus sau mai rău), iar SSL Checker arată ce autoritate a emis înlocuitorul. Produsele de inspecție cunoscute sunt numite.
-• Sursele care nu sunt de acord între ele sunt raportate ca atare, cu explicația fiecărui caz posibil.
+• Al tău e diferit și neînregistrat public → traficul tău HTTPS e decriptat și re-semnat (proxy de firmă, antivirus sau mai rău), iar SSL Checker numește autoritatea care a emis înlocuitorul.
 
 ȚINE MINTE SITE-URILE VERIFICATE
-SSL Checker ține minte ce autoritate de certificare folosește fiecare site pe care îl verifici și te avertizează când un site cunoscut apare brusc cu alta, de exemplu într-o rețea Wi-Fi nouă. Memoria rămâne pe dispozitivul tău, nu e folosită niciodată în ferestrele incognito și poate fi oprită sau ștearsă din Opțiuni.
+SSL Checker ține minte autoritatea de certificare a fiecărui site și te avertizează când un site cunoscut apare brusc cu alta. Memoria rămâne pe dispozitiv și ignoră ferestrele incognito.
 
 TU DECIZI CÂND RULEAZĂ DEBUGGER-UL
-Chrome nu are un API dedicat pentru certificatul unei pagini încărcate, așa că SSL Checker atașează debugger-ul Chrome la tab cam o secundă când îl citește. Între timp, Chrome afișează o bară care spune că extensia depanează browserul. În Opțiuni alegi: de fiecare dată, la cerere (un clic în popup) sau niciodată (doar surse externe).
+Chrome nu are un API pentru certificatul unei pagini, așa că SSL Checker atașează debugger-ul la tab cam o secundă; între timp, Chrome afișează bara de depanare. În Opțiuni: de fiecare dată, la cerere sau niciodată (doar notari).
 
-SERVERE NOTAR
-Notarul PlusPrivacy e inclus și îl poți opri din Opțiuni. Orice server care implementează micul protocol de notar descris în Opțiuni poate fi adăugat ca sursă. Programul notarului (Node.js într-un container Docker, protejat împotriva SSRF și a avalanșelor de cereri) e disponibil de la dezvoltator. Notarul PlusPrivacy își semnează fiecare răspuns, iar SSL Checker verifică semnătura, așa că nimeni de pe drum nu poate falsifica o confirmare. Dacă dai cheia unui notar pe care îl adaugi, și răspunsurile lui sunt verificate la fel.
+RĂSPUNSURI SEMNATE
+Notarul PlusPrivacy semnează fiecare răspuns și SSL Checker verifică semnătura, așa că nimeni de pe drum nu poate falsifica o confirmare. Notarul e open source: instalează-ți unul propriu și adaugă-l cu cheia lui.
 
 CONFIDENȚIALITATE
-Fără analytics, fără urmărire, fără cont. Înainte de prima verificare, SSL Checker îți spune ce citește și ce trimite și îți cere acordul. Doar numele site-ului verificat și portul pleacă de pe dispozitivul tău: la notarul PlusPrivacy, care nu păstrează nicio evidență a site-urilor, dacă nu îl oprești, și la notarii pe care îi adaugi. Memoria site-urilor nu părăsește dispozitivul tău.
+Fără analytics, fără urmărire, fără cont. Înainte de prima verificare, îți spune ce citește și ce trimite și îți cere acordul. Doar numele site-ului verificat și portul pleacă de pe dispozitiv, către notari. Notarul PlusPrivacy nu le păstrează și îl poți opri.
 
 ---
 
