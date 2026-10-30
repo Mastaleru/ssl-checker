@@ -21,7 +21,7 @@ Without `SIGNING_KEY_FILE` the notary works too, but its answers are not signed.
 
 The smallest plan of most providers is enough: 1 vCPU, 1 GB of RAM, Ubuntu 24.04 or 26.04 LTS. Pick a provider and a country different from your own network: the notary only helps if it reaches sites by another path than your browser.
 
-1. **DNS.** Point `notary.plusprivacy.com` at the server: an A record, plus AAAA if it has IPv6.
+1. **DNS.** Point `notary.plusprivacy.com` at the server: an A record, plus AAAA if it has IPv6. `compose.yaml` gives its Docker network IPv6, so that visitors who come over IPv6 reach the notary with their own address: its rate limits and bans count per address. Add the AAAA record only once IPv6 works on the server (`ping -6 -c 3 one.one.one.one`), since Let's Encrypt tries IPv6 first when it checks the domain.
 
 2. **Two users.** Logged in as root, bring the system up to date, then create them:
 
@@ -164,7 +164,7 @@ The smallest plan of most providers is enough: 1 vCPU, 1 GB of RAM, Ubuntu 24.04
     Then use the **Test** button next to PlusPrivacy in the extension's Options: it reports whether the answer is signed with the expected key.
 
 11. **Keep it running.**
-    - **Updates:** `git pull && sudo docker compose up -d --build`. With an image built on your computer: `git pull`, upload and `sudo docker load` the new image, then `sudo docker compose up -d`.
+    - **Updates:** `git pull && sudo docker compose up -d --build`. With an image built on your computer: `git pull`, upload and `sudo docker load` the new image, then `sudo docker compose up -d`. When an update changes the network in `compose.yaml` (as turning on IPv6 did), run `sudo docker compose down` before `up`: Docker cannot change an existing network, so it has to be created again. `down` keeps the volumes, and with them Caddy's certificates.
     - **Base images:** once a month, run `sudo docker compose build --pull && sudo docker compose up -d` to pick up their security fixes.
     - **Backups:** back up `.env`, and `secrets/signing-key.pem` somewhere safe and offline, such as a password manager (`sudo cat secrets/signing-key.pem`). If the key is lost, every installed extension rejects the answers of a new one until it is updated. Caddy's certificates live in the `caddy-data` volume and are renewed automatically.
     - **Monitoring:** an external uptime check on `/v1/health` tells you when the notary goes down.

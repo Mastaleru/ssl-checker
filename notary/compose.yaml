@@ -61,6 +61,14 @@ services:
     pids_limit: 128
     logging: *logging
 
+networks:
+  # IPv6 as well, so that visitors who come over IPv6 reach Caddy with their own
+  # address. On an IPv4-only network Docker relays them through docker-proxy, and
+  # the notary would count every IPv6 visitor as one address for its rate limits
+  # and bans. Docker picks a private (ULA) IPv6 subnet by itself.
+  default:
+    enable_ipv6: true
+
 secrets:
   # Mounted read-only at /run/secrets/signing_key. The container user (uid 1000)
   # must be able to read the file; README.md shows how to create it.
