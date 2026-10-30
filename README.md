@@ -76,7 +76,9 @@ extension/              what Chrome loads (Load unpacked) and what gets packaged
   _locales/{en,ro}/     messages
   fonts/  icons/
 notary/                 the notary service (Express), its Docker and VPS setup, and its own tests
-scripts/build.mjs       builds the full and the lite package into dist/
+scripts/
+  build.mjs             builds the full and the lite package into dist/
+  notary-image.mjs      builds the notary's Docker image into dist/, to upload to the VPS
 build/package.cmd       Windows shortcut for scripts/build.mjs
 store/                  Chrome Web Store texts, screenshots, privacy policy and publishing guide
 tests/                  unit and end-to-end (Chromium) tests of the extension
@@ -112,6 +114,7 @@ The commit that reformatted the whole project is listed in `.git-blame-ignore-re
 
 ```bash
 node scripts/build.mjs      # dist/ssl-checker-<version>.zip and dist/ssl-checker-lite-<version>.zip
+npm run notary:image        # dist/ssl-checker-notary-<version>-linux-amd64.tar.gz, the notary's Docker image for the VPS
 ```
 
 On Windows you can double-click `build\package.cmd` instead (it needs Node.js 20 or newer). From a terminal, `build\package.cmd full` or `build\package.cmd lite` builds a single package. The version comes from `extension/manifest.json`.

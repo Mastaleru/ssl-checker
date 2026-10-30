@@ -78,6 +78,22 @@ The smallest plan of most providers is enough: 1 vCPU, 1 GB of RAM, Ubuntu 24.04
 
    The key never leaves the server and is not in git (`notary/secrets/` is ignored). The notary runs as user 1000 inside its container, so the file must belong to that user; the `secrets` folder keeps everyone else out. Compose mounts the file read-only, and the notary refuses to start if it is missing or unreadable.
 
+   **Or build the image on your own computer** and upload it, so that the server builds nothing. With Docker Desktop running, from the project folder:
+
+   ```bash
+   npm run notary:image                                # for an ARM server: npm run notary:image -- --platform linux/arm64
+   scp dist/ssl-checker-notary-1.0.0-linux-amd64.tar.gz dist/ssl-checker-notary-1.0.0-linux-amd64.tar.gz.sha256 rafael@<server>:
+   ```
+
+   Then, on the server, instead of `docker compose up -d --build`:
+
+   ```bash
+   sha256sum -c ssl-checker-notary-1.0.0-linux-amd64.tar.gz.sha256 && docker load -i ssl-checker-notary-1.0.0-linux-amd64.tar.gz
+   cd ssl-checker/notary && docker compose up -d
+   ```
+
+   The script tags the image `ssl-checker-notary:local`, the name `compose.yaml` runs, and `docker compose up -d` without `--build` uses the loaded image. It labels the image with the commit it was built from (`docker inspect ssl-checker-notary:local`), and prints these commands with the exact file names. The server still needs the repository for `compose.yaml`, the `Caddyfile` and `.env`, and it pulls Caddy's image itself. The signing key is never in the image: `.dockerignore` leaves `secrets/` out.
+
 9. **The key for the extension.** Print the notary's public key on the server:
 
    ```bash
@@ -97,7 +113,7 @@ The smallest plan of most providers is enough: 1 vCPU, 1 GB of RAM, Ubuntu 24.04
     Then use the **Test** button next to PlusPrivacy in the extension's Options: it reports whether the answer is signed with the expected key.
 
 11. **Keep it running.**
-    - **Updates:** `git pull && docker compose up -d --build`.
+    - **Updates:** `git pull && docker compose up -d --build`. With an image built on your computer: `git pull`, upload and `docker load` the new image, then `docker compose up -d`.
     - **Base images:** once a month, run `docker compose build --pull && docker compose up -d` to pick up their security fixes.
     - **Backups:** back up `.env`, and `secrets/signing-key.pem` somewhere safe and offline, such as a password manager (`sudo cat secrets/signing-key.pem`). If the key is lost, every installed extension rejects the answers of a new one until it is updated. Caddy's certificates live in the `caddy-data` volume and are renewed automatically.
     - **Monitoring:** an external uptime check on `/v1/health` tells you when the notary goes down.

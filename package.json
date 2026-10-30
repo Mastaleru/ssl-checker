@@ -15,6 +15,7 @@
     "format": "eslint --fix . && prettier --write .",
     "build": "node scripts/build.mjs",
     "notary": "npm --prefix notary start",
+    "notary:image": "node scripts/notary-image.mjs",
     "screenshots": "node store/tools/make-screenshots.mjs"
   },
   "devDependencies": {
