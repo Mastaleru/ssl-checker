@@ -1,6 +1,7 @@
 // Shared test helpers: a notary on a free port, a local TLS site to look at, and
 // small HTTP shortcuts. No test touches the internet.
 import { generateKeyPairSync, verify } from 'node:crypto';
+import dns from 'node:dns/promises';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer as createNetServer } from 'node:net';
 import { tmpdir } from 'node:os';
@@ -78,12 +79,17 @@ export async function startNotary(env = {}, { probe } = {}) {
   };
 }
 
-/** A TLS server on 127.0.0.1 with the self-signed "localhost" test certificate. */
+/**
+ * A TLS server with the self-signed "localhost" test certificate. It listens on the
+ * first address "localhost" resolves to, which is the one the notary connects to:
+ * ::1 on GitHub's runners and on Windows, 127.0.0.1 where only that one is listed.
+ */
 export async function startTlsSite() {
+  const [{ address }] = await dns.lookup('localhost', { all: true, verbatim: true });
   const server = createTlsServer({ key: fixture('localhost.key'), cert: fixture('localhost.crt') }, (socket) =>
     socket.end(),
   );
-  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  await new Promise((resolve) => server.listen(0, address, resolve));
   return { port: server.address().port, close: () => new Promise((resolve) => server.close(resolve)) };
 }
 
