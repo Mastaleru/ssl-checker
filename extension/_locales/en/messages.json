@@ -370,7 +370,7 @@
   "fieldNamePlaceholder": { "message": "Frankfurt server" },
   "fieldUrl": { "message": "Address" },
   "fieldUrlHelp": {
-    "message": "HTTPS address of the notary. Put {host} and {port} in it if the server expects them in the path; otherwise they are added as ?host=…&port=…"
+    "message": "HTTPS address of the notary. SSL Checker sends it the site in the body of a POST request; if your server expects the site in the address instead, put {host} and {port} in it."
   },
   "fieldToken": { "message": "Access token (optional)" },
   "fieldTokenHelp": { "message": "Sent as Authorization: Bearer. Stored only on this device." },
@@ -403,7 +403,7 @@
   "endpointErrorToken": { "message": "The token can contain only visible ASCII characters." },
   "endpointErrorKey": { "message": "Enter the key as the notary prints it: ed25519: followed by 43 characters." },
   "endpointErrorKeyUrl": {
-    "message": "A source with a key must take the site as ?host=…&port=…, as the SSL Checker notary does, not in the path."
+    "message": "With a key, give the address without {host}, or with the site in the query (?host={host}): each signed answer is checked against the site that was asked about."
   },
   "optAdvancedTitle": { "message": "Advanced" },
   "fieldTimeout": { "message": "Wait for each source (seconds)" },
@@ -415,7 +415,7 @@
     "message": "A notary with a signing key echoes the nonce of the request, adds its public key and signs the answer: Notary-Signature holds the Ed25519 signature of the line \"SSL Checker notary answer v1\" followed by the exact body. Give a source its key, and the extension uses only answers signed with it for the host, port and nonce it asked."
   },
   "optProtocolErrors": {
-    "message": "On errors, answer with a 4xx or 5xx status and {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}}. The extension holds no host permissions, so the server must send CORS headers."
+    "message": "On errors, answer with a 4xx or 5xx status and {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}}. The extension holds no host permissions, so the server must send CORS headers and answer the preflight of a POST with Content-Type."
   },
   "saved": { "message": "Saved" },
   "versionLabel": { "message": "Version $1" }

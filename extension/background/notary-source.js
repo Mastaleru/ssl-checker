@@ -1,7 +1,8 @@
 // Asks external "notary" endpoints which certificate chain they see for a host.
 //
 // Protocol v1 (see notary/README.md):
-//   GET <endpoint>?host=<host>&port=<port>&nonce=<nonce>   (or a URL template with {host}/{port})
+//   POST <endpoint>  {"host": "<host>", "port": <port>, "nonce": "<nonce>"}
+//     (a URL template with {host}/{port} gets a GET instead, with the nonce in its query)
 //   Authorization: Bearer <token>                          (optional)
 //   200 → { version: 1, chain: ["<base64 DER leaf>", ...], vantage, address,
 //           observedAt, trusted, trustError, tls: { protocol, cipher, group }, nonce, key }
@@ -12,7 +13,7 @@
 // only when its signature holds (lib/notary-signature.js).
 
 import { checkSignature, newNonce, SIGNATURE_HEADER } from '../lib/notary-signature.js';
-import { buildEndpointRequestUrl } from '../lib/settings.js';
+import { buildNotaryRequest } from '../lib/settings.js';
 import { describeChain } from '../lib/x509.js';
 
 const MAX_BODY_BYTES = 512 * 1024;
@@ -76,16 +77,33 @@ export async function queryNotary(endpoint, host, port, timeoutMs) {
     return finish({ state: 'error', error: { code: 'noKey' } });
   }
 
-  let url;
+  let request;
   try {
-    url = new URL(buildEndpointRequestUrl(endpoint.url, host, port));
+    request = buildNotaryRequest(endpoint.url, host, port);
   } catch {
     return finish({ state: 'error', error: { code: 'badEndpoint' } });
   }
   const nonce = newNonce();
-  url.searchParams.set('nonce', nonce);
-  // What the notary is asked to look at; a URL template may fix a host of its own.
-  const asked = { host: url.searchParams.get('host'), port: Number(url.searchParams.get('port') || 443) };
+  const headers = { Accept: 'application/json' };
+  if (endpoint.token) {
+    headers.Authorization = `Bearer ${endpoint.token}`;
+  }
+  // What the notary is asked to look at, which its signed answer must repeat.
+  let asked;
+  let url;
+  let payload;
+  if (request.method === 'POST') {
+    asked = request.target;
+    url = request.url;
+    headers['Content-Type'] = 'application/json';
+    payload = JSON.stringify({ host: asked.host, port: asked.port, nonce });
+  } else {
+    const u = new URL(request.url);
+    u.searchParams.set('nonce', nonce);
+    url = u.toString();
+    // A URL template may fix a host of its own.
+    asked = { host: u.searchParams.get('host'), port: Number(u.searchParams.get('port') || 443) };
+  }
   if (signed && !asked.host) {
     return finish({ state: 'error', error: { code: 'badEndpoint' } });
   }
@@ -93,12 +111,10 @@ export async function queryNotary(endpoint, host, port, timeoutMs) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const headers = { Accept: 'application/json' };
-    if (endpoint.token) {
-      headers.Authorization = `Bearer ${endpoint.token}`;
-    }
     const res = await fetch(url, {
+      method: request.method,
       headers,
+      body: payload,
       signal: controller.signal,
       cache: 'no-store',
       credentials: 'omit',

@@ -108,3 +108,14 @@ export async function get(base, path, headers = {}, method = 'GET') {
   const text = await res.text();
   return { status: res.status, headers: res.headers, body: text ? JSON.parse(text) : null };
 }
+
+/** A POST with a JSON body, as the extension asks; a string body is sent as it is. */
+export async function post(base, path, body, headers = {}) {
+  const res = await fetch(base + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: typeof body === 'string' ? body : JSON.stringify(body),
+  });
+  const text = await res.text();
+  return { status: res.status, headers: res.headers, body: text ? JSON.parse(text) : null };
+}

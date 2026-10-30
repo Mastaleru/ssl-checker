@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { X509Certificate } from 'node:crypto';
 import { after, before, test } from 'node:test';
-import { EXTENSION_ORIGIN, fixture, freePort, get, startNotary, startTlsSite } from './helpers.js';
+import { EXTENSION_ORIGIN, fixture, freePort, get, post, startNotary, startTlsSite } from './helpers.js';
 
 const expectedFingerprint = new X509Certificate(fixture('localhost.crt')).fingerprint256;
 let site;
@@ -53,11 +53,57 @@ test('health endpoint and CORS preflight', async (t) => {
   });
   const preflight = await fetch(`${base}/v1/cert`, {
     method: 'OPTIONS',
-    headers: { Origin: EXTENSION_ORIGIN, 'Access-Control-Request-Headers': 'authorization' },
+    headers: {
+      Origin: EXTENSION_ORIGIN,
+      'Access-Control-Request-Method': 'POST',
+      'Access-Control-Request-Headers': 'authorization,content-type',
+    },
   });
   assert.equal(preflight.status, 204);
-  assert.equal(preflight.headers.get('access-control-allow-headers'), 'Authorization');
-  assert.equal(preflight.headers.get('access-control-allow-methods'), 'GET, OPTIONS');
+  assert.equal(preflight.headers.get('access-control-allow-headers'), 'Authorization, Content-Type');
+  assert.equal(preflight.headers.get('access-control-allow-methods'), 'GET, POST, OPTIONS');
+  const healthPreflight = await fetch(`${base}/v1/health`, {
+    method: 'OPTIONS',
+    headers: { Origin: EXTENSION_ORIGIN },
+  });
+  assert.equal(healthPreflight.headers.get('access-control-allow-methods'), 'GET, OPTIONS');
+});
+
+test('takes the site as JSON in a POST body, which keeps it out of URLs', async (t) => {
+  const { base } = await notary(t, { ALLOW_PRIVATE: '1', ALLOWED_PORTS: String(site.port) });
+  const { status, body } = await post(base, '/v1/cert', { host: 'localhost', port: site.port });
+  assert.equal(status, 200);
+  assert.equal(body.host, 'localhost');
+  assert.equal(body.port, site.port);
+  const leaf = new X509Certificate(Buffer.from(body.chain[0], 'base64'));
+  assert.equal(leaf.fingerprint256, expectedFingerprint);
+});
+
+test('refuses a POST body that is not the expected JSON, and the same targets as GET', async (t) => {
+  const { base } = await notary(t, { RATE_LIMIT: '0' });
+  const malformed = [
+    ['not json', 'application/json'],
+    [JSON.stringify(['example.com']), 'application/json'],
+    [JSON.stringify({ host: 'example.com' }), 'text/plain'],
+    [JSON.stringify({ host: 42 }), 'application/json'],
+    [JSON.stringify({ host: 'example.com', port: '443' }), 'application/json'],
+    [JSON.stringify({ host: 'example.com', port: 443.5 }), 'application/json'],
+    [JSON.stringify({ host: 'example.com', nonce: 1234567890123456 }), 'application/json'],
+    [JSON.stringify({ host: `${'a'.repeat(2000)}.com` }), 'application/json'],
+  ];
+  for (const [text, type] of malformed) {
+    const { status, body } = await post(base, '/v1/cert', text, { 'Content-Type': type });
+    assert.ok(status === 400 || status === 413, `${type} ${text.slice(0, 40)}: ${status}`);
+    assert.equal(body.error.code, 'badRequest');
+  }
+  const port = await post(base, '/v1/cert', { host: 'example.com', port: 22 });
+  assert.equal(port.status, 403);
+  assert.equal(port.body.error.code, 'forbiddenPort');
+  for (const host of ['127.0.0.1', 'localhost', '169.254.169.254', '[::1]']) {
+    const { status, body } = await post(base, '/v1/cert', { host, port: 443 });
+    assert.equal(status, 403, host);
+    assert.equal(body.error.code, 'forbiddenTarget', host);
+  }
 });
 
 test('refuses private and reserved targets (SSRF protection)', async (t) => {
@@ -107,9 +153,12 @@ test('refuses ports that are not allowed, malformed requests and other methods',
   const unknown = await get(base, '/elsewhere');
   assert.equal(unknown.status, 404);
   assert.equal(unknown.body.error.code, 'badRequest');
-  const post = await get(base, '/v1/cert?host=example.com', {}, 'POST');
-  assert.equal(post.status, 405);
-  assert.equal(post.headers.get('allow'), 'GET, OPTIONS');
+  const put = await get(base, '/v1/cert?host=example.com', {}, 'PUT');
+  assert.equal(put.status, 405);
+  assert.equal(put.headers.get('allow'), 'GET, POST, OPTIONS');
+  const healthPost = await get(base, '/v1/health', {}, 'POST');
+  assert.equal(healthPost.status, 405);
+  assert.equal(healthPost.headers.get('allow'), 'GET, OPTIONS');
 });
 
 test('reports connection failures with a code', async (t) => {

@@ -378,7 +378,7 @@
   "fieldNamePlaceholder": { "message": "Serverul din Frankfurt" },
   "fieldUrl": { "message": "Adresă" },
   "fieldUrlHelp": {
-    "message": "Adresa HTTPS a notarului. Pune {host} și {port} în ea dacă serverul le așteaptă în cale; altfel sunt adăugate ca ?host=…&port=…"
+    "message": "Adresa HTTPS a notarului. SSL Checker îi trimite site-ul în corpul unei cereri POST; dacă serverul tău așteaptă site-ul în adresă, pune {host} și {port} în ea."
   },
   "fieldToken": { "message": "Token de acces (opțional)" },
   "fieldTokenHelp": { "message": "Trimis ca Authorization: Bearer. Păstrat doar pe acest dispozitiv." },
@@ -413,7 +413,7 @@
   "endpointErrorToken": { "message": "Tokenul poate conține doar caractere ASCII vizibile." },
   "endpointErrorKey": { "message": "Introdu cheia așa cum o afișează notarul: ed25519: urmat de 43 de caractere." },
   "endpointErrorKeyUrl": {
-    "message": "O sursă cu cheie trebuie să primească site-ul ca ?host=…&port=…, ca notarul SSL Checker, nu în cale."
+    "message": "Cu o cheie, dă adresa fără {host} sau cu site-ul în query (?host={host}): fiecare răspuns semnat e verificat după site-ul despre care a fost întrebat."
   },
   "optAdvancedTitle": { "message": "Avansat" },
   "fieldTimeout": { "message": "Cât aștept fiecare sursă (secunde)" },
@@ -425,7 +425,7 @@
     "message": "Un notar cu cheie de semnare întoarce nonce-ul cererii, își adaugă cheia publică și semnează răspunsul: Notary-Signature conține semnătura Ed25519 a rândului „SSL Checker notary answer v1” urmat exact de corpul răspunsului. Dacă dai unei surse cheia ei, extensia folosește doar răspunsurile semnate cu ea pentru gazda, portul și nonce-ul cerute."
   },
   "optProtocolErrors": {
-    "message": "La erori, răspunde cu un status 4xx sau 5xx și {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}}. Extensia nu are permisiuni pe site-uri, deci serverul trebuie să trimită headere CORS."
+    "message": "La erori, răspunde cu un status 4xx sau 5xx și {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}}. Extensia nu are permisiuni pe site-uri, deci serverul trebuie să trimită headere CORS și să răspundă la preflight-ul unui POST cu Content-Type."
   },
   "saved": { "message": "Salvat" },
   "versionLabel": { "message": "Versiunea $1" }

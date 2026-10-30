@@ -3,7 +3,7 @@
 import express from 'express';
 import { accessLog } from './log.js';
 import { bearerToken } from './middleware/auth.js';
-import { baseHeaders, errorHandler, notFound, onlyGet } from './middleware/common.js';
+import { allowMethods, baseHeaders, errorHandler, notFound } from './middleware/common.js';
 import { clientKey, perClientLimit } from './middleware/limits.js';
 import { originCheck } from './middleware/origin.js';
 import { certRoute } from './routes/cert.js';
@@ -33,24 +33,29 @@ export function createApp({ config, logger, bans, service }) {
     '/v1/health',
     originCheck({ allowedOrigins: config.allowedOrigins, enforce: false }),
     perClientLimit({ perMinute: config.healthPerMinute }),
-    onlyGet,
+    allowMethods('GET'),
   );
   app.get('/v1/health', healthRoute({ config }));
 
-  // Certificates: every check runs before the notary contacts a site.
+  // Certificates: every check runs before the notary contacts a site, and before a
+  // POST body is read. POST carries the site in its JSON body, out of URLs and logs;
+  // GET with a query string stays for URL templates and older versions.
   app.use(
     '/v1/cert',
     originCheck({
       allowedOrigins: config.allowedOrigins,
       requireOrigin: config.requireOrigin,
+      methods: ['GET', 'POST'],
       onRefused: strike('origin'),
     }),
     bans.guard(clientKey),
     bearerToken({ token: config.token, onFailure: strike('token') }),
     perClientLimit({ perMinute: config.ratePerMinute, onLimited: strike('rate') }),
-    onlyGet,
+    allowMethods('GET', 'POST'),
   );
-  app.get('/v1/cert', certRoute({ config, service }));
+  const certificate = certRoute({ config, service });
+  app.get('/v1/cert', certificate);
+  app.post('/v1/cert', express.json({ limit: '1kb' }), certificate);
 
   app.use(notFound);
   app.use(errorHandler(logger));

@@ -5,11 +5,11 @@ import { DEFAULT_NOTARY } from '../extension/lib/default-notary.js';
 import { parsePublicKey } from '../extension/lib/notary-signature.js';
 import {
   activeEndpoints,
-  buildEndpointRequestUrl,
+  buildNotaryRequest,
   CONSENT_VERSION,
   DEFAULTS,
   hasConsent,
-  namesHostInQuery,
+  targetCanBeChecked,
 } from '../extension/lib/settings.js';
 
 const own = (id, enabled = true) => ({ id, name: id, url: `https://${id}.example/v1/cert`, enabled });
@@ -41,17 +41,30 @@ test('the PlusPrivacy notary is reached over HTTPS, without a token', () => {
   assert.ok(Object.isFrozen(DEFAULT_NOTARY));
 });
 
-test('notary requests name the site and its port, whatever the URL form', () => {
-  const build = (url) => buildEndpointRequestUrl(url, 'example.com', 8443);
-  assert.equal(build('https://n.example/v1/cert'), 'https://n.example/v1/cert?host=example.com&port=8443');
-  assert.equal(build('https://n.example/check?site={host}:{port}'), 'https://n.example/check?site=example.com:8443');
+test('a notary gets the site in a POST body, or in the URL only when its address is a template', () => {
+  const build = (url) => buildNotaryRequest(url, 'example.com', 8443);
+  const post = (url) => ({ method: 'POST', url, target: { host: 'example.com', port: 8443 } });
+  // No {host}: a POST, and the site's name stays out of the URL.
+  assert.deepEqual(build('https://n.example/v1/cert'), post('https://n.example/v1/cert'));
+  assert.deepEqual(build('https://n.example/v1/cert?key=abc'), post('https://n.example/v1/cert?key=abc'));
+  assert.deepEqual(build('https://n.example/check?site={host}:{port}'), {
+    method: 'GET',
+    url: 'https://n.example/check?site=example.com:8443',
+  });
   // Without {port}, the port is added, so that the notary does not fall back to 443.
-  assert.equal(build('https://n.example/v1/cert?host={host}'), 'https://n.example/v1/cert?host=example.com&port=8443');
-  assert.equal(build('https://n.example/cert/{host}'), 'https://n.example/cert/example.com?port=8443');
-  // A source with a key must name the host in the query, where its signed answer is checked.
-  assert.equal(namesHostInQuery('https://n.example/v1/cert'), true);
-  assert.equal(namesHostInQuery('https://n.example/v1/cert?host={host}&port={port}'), true);
-  assert.equal(namesHostInQuery('https://n.example/cert/{host}'), false);
+  assert.deepEqual(build('https://n.example/v1/cert?host={host}'), {
+    method: 'GET',
+    url: 'https://n.example/v1/cert?host=example.com&port=8443',
+  });
+  assert.deepEqual(build('https://n.example/cert/{host}'), {
+    method: 'GET',
+    url: 'https://n.example/cert/example.com?port=8443',
+  });
+  // A source with a key must be asked in a way its signed answer can be checked against.
+  assert.equal(targetCanBeChecked('https://n.example/v1/cert'), true);
+  assert.equal(targetCanBeChecked('https://n.example/v1/cert?host={host}&port={port}'), true);
+  assert.equal(targetCanBeChecked('https://n.example/cert/{host}'), false);
+  assert.equal(targetCanBeChecked('not a url'), false);
 });
 
 test('the PlusPrivacy notary counts only with signed answers, checked with built-in keys', () => {

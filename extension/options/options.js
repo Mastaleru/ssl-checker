@@ -4,9 +4,9 @@ import { parseKeyList } from '../lib/notary-signature.js';
 import {
   getSettings,
   localReadingAvailable,
-  namesHostInQuery,
   newEndpointId,
   saveSettings,
+  targetCanBeChecked,
   validateEndpointUrl,
 } from '../lib/settings.js';
 import { countSites, forgetAllSites } from '../lib/site-memory-store.js';
@@ -190,7 +190,7 @@ async function onAddEndpoint(event) {
   if (!keys.ok) {
     return showFormError(t('endpointErrorKey'));
   }
-  if (keys.keys.length && !namesHostInQuery(valid.url)) {
+  if (keys.keys.length && !targetCanBeChecked(valid.url)) {
     return showFormError(t('endpointErrorKeyUrl'));
   }
   showFormError('');

@@ -136,8 +136,11 @@
           <summary data-i18n="optProtocolTitle"></summary>
           <p data-i18n="optProtocolIntro"></p>
           <pre class="mono">
-GET https://notary.example.net/v1/cert?host=example.com&amp;port=443&amp;nonce=Xq3MpTb0vR9kLs2eWn5yZA
+POST https://notary.example.net/v1/cert
+Content-Type: application/json
 Authorization: Bearer &lt;token&gt;
+
+{"host": "example.com", "port": 443, "nonce": "Xq3MpTb0vR9kLs2eWn5yZA"}
 
 200 OK
 Access-Control-Allow-Origin: *

@@ -12,11 +12,19 @@ import { SIGNATURE_HEADER } from '../signing.js';
  * @param {string[]} options.allowedOrigins  empty = any origin
  * @param {boolean} [options.requireOrigin]  refuse requests that carry no Origin
  * @param {boolean} [options.enforce]        false = only add the CORS headers
+ * @param {string[]} [options.methods]       the methods the path answers, besides OPTIONS
  * @param {(req: import('express').Request) => void} [options.onRefused]
  */
-export function originCheck({ allowedOrigins, requireOrigin = false, enforce = true, onRefused = () => {} }) {
+export function originCheck({
+  allowedOrigins,
+  requireOrigin = false,
+  enforce = true,
+  methods = ['GET'],
+  onRefused = () => {},
+}) {
   const anyOrigin = allowedOrigins.length === 0;
   const allowed = new Set(allowedOrigins);
+  const allowMethods = [...methods, 'OPTIONS'].join(', ');
 
   return function checkOrigin(req, res, next) {
     const origin = req.get('Origin');
@@ -29,8 +37,9 @@ export function originCheck({ allowedOrigins, requireOrigin = false, enforce = t
       }
     }
     res.set({
-      'Access-Control-Allow-Headers': 'Authorization',
-      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      // Content-Type: the extension posts its question as JSON.
+      'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+      'Access-Control-Allow-Methods': allowMethods,
       'Access-Control-Max-Age': '600',
       // Without this, the extension could not read the signature of an answer.
       'Access-Control-Expose-Headers': SIGNATURE_HEADER,

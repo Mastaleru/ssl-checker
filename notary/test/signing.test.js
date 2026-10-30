@@ -69,6 +69,23 @@ test('signs the exact bytes of each answer, which carry the nonce and the key', 
   assert.equal((await get(base, '/v1/health')).body.key, key.text, 'health shows the public key');
 });
 
+test('a POST answer is signed the same way, with the nonce from its body', async (t) => {
+  const { base } = await notary(t, signedEnv());
+  const nonce = 'nonce-in-the-body_000001';
+  const res = await fetch(`${base}/v1/cert`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Origin: EXTENSION_ORIGIN },
+    body: JSON.stringify({ host: 'localhost', port: site.port, nonce }),
+  });
+  const body = Buffer.from(await res.arrayBuffer());
+  assert.equal(res.status, 200);
+  assert.ok(signatureHolds(key.publicKey, body, res.headers.get('notary-signature')));
+  const answer = JSON.parse(body);
+  assert.equal(answer.nonce, nonce);
+  assert.equal(answer.host, 'localhost');
+  assert.equal(answer.port, site.port);
+});
+
 test('a cached answer is signed again for each nonce', async (t) => {
   const { base, logs } = await notary(t, signedEnv());
   const ask = (nonce) => fetchRaw(base, `/v1/cert?host=localhost&port=${site.port}&nonce=${nonce}`);

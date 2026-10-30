@@ -101,8 +101,9 @@
           return the certificate the site presents. It writes nothing to disk and keeps no record of the sites checked.
           In memory it keeps each answer for 60 seconds, so that a site is not contacted again for every request, and it
           counts requests per network address to stop abuse; an address that abuses it is blocked for up to 24 hours and
-          appears in its log. All requests to it are encrypted (HTTPS). It signs each answer, so that the extension can
-          tell it was not changed on the way.
+          appears in its log. All requests to it are encrypted (HTTPS), and the name of the site travels in the body of
+          the request, never in its address. It signs each answer, so that the extension can tell it was not changed on
+          the way.
         </p>
         <p>
           <strong>What is stored.</strong> Your agreement and your settings (the PlusPrivacy notary on or off, reading
@@ -148,8 +149,9 @@
           întoarcă certificatul pe care acesta îl prezintă. Nu scrie nimic pe disc și nu păstrează nicio evidență a
           site-urilor verificate. În memorie păstrează fiecare răspuns 60 de secunde, ca un site să nu fie contactat din
           nou la fiecare cerere, și numără cererile pe adresă de rețea ca să oprească abuzurile; o adresă care abuzează
-          e blocată cel mult 24 de ore și apare în jurnalul lui. Toate cererile către el sunt criptate (HTTPS). Își
-          semnează fiecare răspuns, ca extensia să poată verifica dacă nu a fost schimbat pe drum.
+          e blocată cel mult 24 de ore și apare în jurnalul lui. Toate cererile către el sunt criptate (HTTPS), iar
+          numele site-ului călătorește în corpul cererii, niciodată în adresa ei. Își semnează fiecare răspuns, ca
+          extensia să poată verifica dacă nu a fost schimbat pe drum.
         </p>
         <p>
           <strong>Ce se păstrează.</strong> Acordul și setările tale (notarul PlusPrivacy pornit sau oprit, modul de

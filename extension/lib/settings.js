@@ -128,33 +128,38 @@ export function validateEndpointUrl(input) {
   return { ok: true, url: raw };
 }
 
-/** Builds the request URL for a notary: placeholders, or ?host=&port= appended. */
-export function buildEndpointRequestUrl(template, host, port) {
-  if (template.includes('{host}')) {
-    const filled = template.replace(/\{host\}/g, encodeURIComponent(host)).replace(/\{port\}/g, String(port));
-    if (template.includes('{port}')) {
-      return filled;
-    }
-    // Without {port} the notary would look at port 443, whatever the tab's port.
-    const u = new URL(filled);
-    if (!u.searchParams.has('port')) {
-      u.searchParams.set('port', String(port));
-    }
-    return u.toString();
+/**
+ * How to ask a notary about host:port. Any address without {host} gets a POST with
+ * {host, port} as JSON, so that the site's name never appears in a URL, where servers
+ * and proxies log it. An address with {host} is a template for servers that expect
+ * the site in the URL: it is filled in and fetched with GET.
+ * @returns {{method: 'POST', url: string, target: {host: string, port: number}} | {method: 'GET', url: string}}
+ */
+export function buildNotaryRequest(url, host, port) {
+  if (!url.includes('{host}')) {
+    return { method: 'POST', url: new URL(url).toString(), target: { host, port: Number(port) } };
   }
-  const u = new URL(template);
-  u.searchParams.set('host', host);
-  u.searchParams.set('port', String(port));
-  return u.toString();
+  const filled = url.replace(/\{host\}/g, encodeURIComponent(host)).replace(/\{port\}/g, String(port));
+  if (url.includes('{port}')) {
+    return { method: 'GET', url: filled };
+  }
+  // Without {port} the notary would look at port 443, whatever the tab's port.
+  const u = new URL(filled);
+  if (!u.searchParams.has('port')) {
+    u.searchParams.set('port', String(port));
+  }
+  return { method: 'GET', url: u.toString() };
 }
 
 /**
- * True when requests to this endpoint name the site in the query (?host=…), as the
- * SSL Checker notary expects. A signed answer is checked against that host.
+ * True when a signed answer from this endpoint can be checked against the site it
+ * was asked about: a POST names the site in its body, a template only when it puts
+ * the site in the query (?host={host}), where the request can be read back.
  */
-export function namesHostInQuery(template) {
+export function targetCanBeChecked(url) {
   try {
-    return new URL(buildEndpointRequestUrl(template, 'example.com', 443)).searchParams.has('host');
+    const request = buildNotaryRequest(url, 'example.com', 443);
+    return request.method === 'POST' || new URL(request.url).searchParams.has('host');
   } catch {
     return false;
   }
