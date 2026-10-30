@@ -413,15 +413,18 @@ async function main() {
   });
 
   // A notary endpoint that always looks at the given local port: the extension
-  // asks about www.example.com, the notary checks localhost:<port>. Pointing it
+  // asks about www.example.com, the notary checks 127.0.0.1:<port>. Pointing it
   // at the "real" server while the browser visits the "intercepting" one
   // reproduces two different network paths on one machine. The token makes
   // every request go through a CORS preflight, as with a real protected notary,
   // and the key makes the extension check every answer's signature.
+  // The address, not "localhost": the notary connects to the first address a name
+  // resolves to, which is ::1 on GitHub's runners and on Windows, and the sites
+  // listen on 127.0.0.1 only.
   const endpoint = (id, name, port, token = TOKEN) => ({
     id,
     name,
-    url: `http://127.0.0.1:${notary.port}/v1/cert?host=localhost&port=${port}&for={host}`,
+    url: `http://127.0.0.1:${notary.port}/v1/cert?host=127.0.0.1&port=${port}&for={host}`,
     token,
     keys: [keys.own.publicKey],
     enabled: true,
@@ -437,7 +440,7 @@ async function main() {
   ];
 
   const fullDir = stageVariant('full', mkdtempSync(path.join(os.tmpdir(), 'sslc-full-')));
-  pointDefaultNotary(fullDir, `http://127.0.0.1:${tamper.port}/v1/cert?host=localhost&port=${sitePort}&for={host}`, [
+  pointDefaultNotary(fullDir, `http://127.0.0.1:${tamper.port}/v1/cert?host=127.0.0.1&port=${sitePort}&for={host}`, [
     keys.plusPrivacy.publicKey,
   ]);
   const full = await new Harness(fullDir, args).start();
