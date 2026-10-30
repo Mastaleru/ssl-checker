@@ -3,7 +3,10 @@
 // The popup shows results built by the extension's own parser and verdict code
 // from the fictional certificates in store/tools/certs (no real site involved).
 //   node store/tools/make-screenshots.mjs        (needs Playwright + Chromium, see tests/e2e/run.mjs)
-import { mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+// For the website (the ssl-checker-website repository), SITE_IMAGES=<its img folder>
+// writes the bare popup and Options images instead, in WebP, light and dark:
+//   SITE_IMAGES=../ssl-checker-website/img node store/tools/make-screenshots.mjs
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
@@ -151,7 +154,25 @@ async function buildResults() {
   return { confirmed: result(genuineLocal), intercepted: result(interceptedLocal) };
 }
 
-async function popupShot(ctx, sw, extId, result, tabId, { expand = false } = {}) {
+/** A screenshot as PNG, or as WebP encoded by Chromium itself, so no image tool is needed. */
+async function capture(page, clip, format) {
+  if (format !== 'webp') {
+    return page.screenshot({ clip });
+  }
+  // Unlike Playwright's, this clip is measured from the top of the document, and its
+  // scale is the device pixel ratio.
+  const view = await page.evaluate(() => ({ x: window.scrollX, y: window.scrollY, ratio: window.devicePixelRatio }));
+  const cdp = await page.context().newCDPSession(page);
+  const { data } = await cdp.send('Page.captureScreenshot', {
+    format: 'webp',
+    quality: 92,
+    clip: { ...clip, x: clip.x + view.x, y: clip.y + view.y, scale: view.ratio },
+  });
+  await cdp.detach();
+  return Buffer.from(data, 'base64');
+}
+
+async function popupShot(ctx, sw, extId, result, tabId, { expand = false, format = 'png' } = {}) {
   await sw.evaluate(
     async ([key, value]) => chrome.storage.session.set({ [key]: value }),
     [`result:${tabId}`, { ...result, tabId, checkedAt: new Date().toISOString() }],
@@ -170,12 +191,12 @@ async function popupShot(ctx, sw, extId, result, tabId, { expand = false } = {})
     await page.evaluate(() => window.scrollBy(0, -380));
   }
   await page.waitForTimeout(300);
-  const png = await page.screenshot({ clip: { x: 0, y: 0, width: 400, height: 600 } });
+  const image = await capture(page, { x: 0, y: 0, width: 400, height: 600 }, format);
   await page.close();
-  return png;
+  return image;
 }
 
-async function optionsShot(ctx, sw, extId) {
+async function optionsShot(ctx, sw, extId, { format = 'png' } = {}) {
   await sw.evaluate(() => {
     // A few remembered sites, so the site memory section shows a real count.
     const sites = {};
@@ -200,9 +221,9 @@ async function optionsShot(ctx, sw, extId) {
   await page.waitForSelector('.endpoint');
   await page.waitForFunction(() => document.getElementById('memory-count').textContent !== '');
   await page.evaluate(() => document.querySelector('.page').style.setProperty('padding-top', '28px'));
-  const png = await page.screenshot({ clip: { x: 0, y: 0, width: 640, height: 900 } });
+  const image = await capture(page, { x: 0, y: 0, width: 640, height: 900 }, format);
   await page.close();
-  return png;
+  return image;
 }
 
 const dataUri = (buf, type) => `data:${type};base64,${Buffer.from(buf).toString('base64')}`;
@@ -251,30 +272,66 @@ async function render(browserPage, html, file, width, height) {
   await browserPage.screenshot({ path: file, clip: { x: 0, y: 0, width, height } });
 }
 
+/** Chromium with the staged extension, in the given language and color scheme. */
+async function openExtension(ext, lang, colorScheme = 'light') {
+  const profile = mkdtempSync(path.join(os.tmpdir(), 'sslc-store-profile-'));
+  const ctx = await chromium.launchPersistentContext(profile, {
+    // Playwright's headless shell cannot load extensions: use the full Chromium.
+    ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : { channel: 'chromium' }),
+    headless: true,
+    deviceScaleFactor: 2,
+    colorScheme,
+    args: [
+      `--disable-extensions-except=${ext}`,
+      `--load-extension=${ext}`,
+      '--headless=new',
+      `--lang=${lang}`,
+      '--no-proxy-server',
+    ],
+  });
+  let [sw] = ctx.serviceWorkers();
+  if (!sw) {
+    sw = await ctx.waitForEvent('serviceworker');
+  }
+  const close = async () => {
+    await ctx.close();
+    rmSync(profile, { recursive: true, force: true });
+  };
+  return { ctx, sw, extId: new URL(sw.url()).host, close };
+}
+
+/** The website's images: the bare popup and Options page, at twice their size. */
+async function siteImages(results, ext, dir) {
+  for (const lang of ['en', 'ro']) {
+    mkdirSync(path.join(dir, lang), { recursive: true });
+    for (const scheme of ['light', 'dark']) {
+      const { ctx, sw, extId, close } = await openExtension(ext, lang, scheme);
+      const format = 'webp';
+      const images = {
+        confirmed: await popupShot(ctx, sw, extId, results.confirmed, 101, { format }),
+        intercepted: await popupShot(ctx, sw, extId, results.intercepted, 102, { format }),
+        details: await popupShot(ctx, sw, extId, results.confirmed, 103, { expand: true, format }),
+        options: await optionsShot(ctx, sw, extId, { format }),
+      };
+      for (const [key, image] of Object.entries(images)) {
+        writeFileSync(path.join(dir, lang, `${key}-${scheme}.webp`), image);
+      }
+      await close();
+    }
+    console.log(`${lang}: 8 images in ${path.join(dir, lang)}`);
+  }
+}
+
 async function main() {
   const results = await buildResults();
   const ext = stageVariant('full', mkdtempSync(path.join(os.tmpdir(), 'sslc-store-')));
+  if (process.env.SITE_IMAGES) {
+    await siteImages(results, ext, path.resolve(process.env.SITE_IMAGES));
+    return;
+  }
   const icon = dataUri(readFileSync(path.join(ROOT, 'extension/icons/ssl128.png')), 'image/png');
   for (const lang of ['en', 'ro']) {
-    const profile = mkdtempSync(path.join(os.tmpdir(), 'sslc-store-profile-'));
-    const ctx = await chromium.launchPersistentContext(profile, {
-      // Playwright's headless shell cannot load extensions: use the full Chromium.
-      ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : { channel: 'chromium' }),
-      headless: true,
-      deviceScaleFactor: 2,
-      args: [
-        `--disable-extensions-except=${ext}`,
-        `--load-extension=${ext}`,
-        '--headless=new',
-        `--lang=${lang}`,
-        '--no-proxy-server',
-      ],
-    });
-    let [sw] = ctx.serviceWorkers();
-    if (!sw) {
-      sw = await ctx.waitForEvent('serviceworker');
-    }
-    const extId = new URL(sw.url()).host;
+    const { ctx, sw, extId, close } = await openExtension(ext, lang);
     const shots = {
       confirmed: await popupShot(ctx, sw, extId, results.confirmed, 101),
       intercepted: await popupShot(ctx, sw, extId, results.intercepted, 102),
@@ -307,8 +364,7 @@ async function main() {
     }
     await render(composer, promoHtml(COPY[lang].tagline, icon), path.join(dir, 'promo-440x280.png'), 440, 280);
     await plain.close();
-    await ctx.close();
-    rmSync(profile, { recursive: true, force: true });
+    await close();
     console.log(`${lang}: ${order.length} screenshots + promo tile in ${path.relative(ROOT, dir)}`);
   }
 }
