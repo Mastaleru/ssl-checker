@@ -10,7 +10,7 @@ export const DEFAULT_NOTARY = Object.freeze({
   id: 'plusprivacy',
   name: 'PlusPrivacy',
   url: 'https://notary.plusprivacy.com/v1/cert',
-  keys: Object.freeze([]),
+  keys: Object.freeze(['ed25519:dE6Tyexy2N1NbVBgdhAQQCaFRKHqVE9WzeQMQOvUeaE']),
   requireSignature: true,
 });
 
