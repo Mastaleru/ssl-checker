@@ -48,7 +48,13 @@ Why "Web history": Google counts any transfer of data off the device as collecti
 
 ## Test instructions (for the reviewer)
 
-> 1. Open https://www.google.com and click the SSL Checker icon. Before the first check, the popup explains what it reads and sends and asks for agreement; click "Agree and check".
-> 2. Chrome shows the "SSL Checker started debugging this browser" bar for about one second while the certificate is read. The popup then shows "Confirmed by 1 external source" (the PlusPrivacy notary) and the certificate details.
-> 3. Options → External sources → turn off "PlusPrivacy", then click the icon again: the popup shows only what the browser received ("Publicly logged certificate").
-> 4. Options → Reading from your browser → Never: the popup no longer attaches the debugger.
+Test instructions tab: leave the user name and password empty, and paste this into **Additional instructions**:
+
+> No account or setup is needed: the PlusPrivacy notary (notary.plusprivacy.com) is live and answers this item.
+>
+> 1. Open https://www.google.com and click the SSL Checker icon. The popup first explains what it reads and sends; click "Agree and check".
+> 2. Chrome shows the "started debugging this browser" bar for about a second while the certificate is read; this is expected. The popup then shows "Confirmed by 1 external source".
+> 3. Options → "Reading from your browser" → "Never", then click the icon again: no debugger, and the popup shows "Seen by 1 external source". Set it back to "Every time".
+> 4. Options → "External sources" → turn off PlusPrivacy, then click the icon again: nothing leaves the device, and the popup shows "Publicly logged certificate".
+>
+> Behind TLS inspection (a company proxy or an antivirus), the popup warns in red and names the inspecting authority: that is its purpose, not an error. Source code, including the notary: https://github.com/Mastaleru/ssl-checker
