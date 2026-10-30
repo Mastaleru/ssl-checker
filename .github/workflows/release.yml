@@ -1,0 +1,83 @@
+# Releases the extension when a version tag is pushed:
+#   git tag v2.0.1 && git push origin v2.0.1
+# First every CI job (lint, unit, notary and end-to-end tests); only when all pass:
+# the release check, the build of both packages, their checksums, a signed build
+# provenance attestation, and a GitHub Release with the packages attached.
+# Nothing is uploaded to the Chrome Web Store: that stays manual (store/PUBLISHING.md).
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
+  release:
+    name: GitHub Release
+    needs: ci
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write # create the release
+      id-token: write # sign the attestation (Sigstore)
+      attestations: write # store the attestation
+    env:
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      # The tag must match the version in manifest.json and package.json, and the
+      # PlusPrivacy notary's key must be built in. Nothing else needs packages.
+      - name: Check the version and the PlusPrivacy key
+        run: node scripts/release-check.mjs "$TAG"
+
+      - name: Build both packages
+        run: node scripts/build.mjs
+
+      - name: Checksums
+        working-directory: dist
+        run: |
+          version="${TAG#v}"
+          sha256sum "ssl-checker-${version}.zip" "ssl-checker-lite-${version}.zip" > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Attest the build provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: dist/ssl-checker-*.zip
+
+      - name: Publish the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          version="${TAG#v}"
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          cat > notes.md <<EOF
+          Built by GitHub Actions from ${GITHUB_SHA} ([run](${run_url})), after lint and every test suite passed.
+
+          - \`ssl-checker-${version}.zip\`: the full extension, for the Chrome Web Store.
+          - \`ssl-checker-lite-${version}.zip\`: the variant without the \`debugger\` permission.
+
+          To check a package: \`gh attestation verify ssl-checker-${version}.zip --repo ${GITHUB_REPOSITORY}\`
+          and \`sha256sum -c --ignore-missing SHA256SUMS.txt\`. The build is reproducible: \`node scripts/build.mjs\`
+          at this tag gives the same bytes.
+          EOF
+          gh release create "$TAG" --verify-tag --title "SSL Checker ${version}" --notes-file notes.md --generate-notes \
+            "dist/ssl-checker-${version}.zip" "dist/ssl-checker-lite-${version}.zip" dist/SHA256SUMS.txt

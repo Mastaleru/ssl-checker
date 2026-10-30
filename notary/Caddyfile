@@ -1,0 +1,10 @@
+# Caddy terminates HTTPS for the notary. It gets a Let's Encrypt certificate for
+# NOTARY_DOMAIN and renews it by itself; ports 80 and 443 must reach this server.
+# Caddy writes no access log, so no record of the sites people check is kept here.
+{$NOTARY_DOMAIN} {
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+	reverse_proxy notary:8080
+}

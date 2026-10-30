@@ -1,0 +1,9 @@
+node_modules
+test
+secrets
+.env
+*.md
+Caddyfile
+compose.yaml
+Dockerfile
+.dockerignore

@@ -1,0 +1,8 @@
+# Text files use LF in the repository and in every checkout, Windows included,
+# because Prettier writes and checks LF line endings.
+* text=auto eol=lf
+# Windows batch files only run reliably with CRLF line endings.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.png binary
+*.woff2 binary
