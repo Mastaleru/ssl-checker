@@ -364,6 +364,8 @@
     "message": "Each source is a notary server that connects to the site from elsewhere on the internet and reports the certificate it receives. Only the site's host name and port are sent to it."
   },
   "optAddSourceTitle": { "message": "Add a source" },
+  "optOwnNotary": { "message": "Want a notary of your own? It is open source and runs on any server with Docker." },
+  "optOwnNotaryLink": { "message": "How to install it" },
   "fieldName": { "message": "Name" },
   "fieldNamePlaceholder": { "message": "Frankfurt server" },
   "fieldUrl": { "message": "Address" },

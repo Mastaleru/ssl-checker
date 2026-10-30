@@ -372,6 +372,8 @@
     "message": "Fiecare sursă e un server notar care se conectează la site din alt punct al internetului și raportează certificatul primit. I se trimit doar numele site-ului și portul."
   },
   "optAddSourceTitle": { "message": "Adaugă o sursă" },
+  "optOwnNotary": { "message": "Vrei un notar al tău? E open source și rulează pe orice server cu Docker." },
+  "optOwnNotaryLink": { "message": "Cum îl instalezi" },
   "fieldName": { "message": "Nume" },
   "fieldNamePlaceholder": { "message": "Serverul din Frankfurt" },
   "fieldUrl": { "message": "Adresă" },
