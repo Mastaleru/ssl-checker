@@ -23,45 +23,96 @@ The smallest plan of most providers is enough: 1 vCPU, 1 GB of RAM, Ubuntu 24.04
 
 1. **DNS.** Point `notary.plusprivacy.com` at the server: an A record, plus AAAA if it has IPv6.
 
-2. **A user with your SSH key.** Logged in as root:
+2. **Two users.** Logged in as root, bring the system up to date, then create them:
 
    ```bash
+   apt update && apt full-upgrade -y
+   [ -f /var/run/reboot-required ] && reboot   # then log in again as root
+
+   getent passwd 1000; getent group 1000       # must print nothing
+   groupadd --gid 1000 notary
+   useradd --uid 1000 --gid notary --no-create-home --home-dir /nonexistent \
+     --shell /usr/sbin/nologin --comment "SSL Checker notary" notary
    adduser rafael && usermod -aG sudo rafael
-   mkdir -p /home/rafael/.ssh && cp ~/.ssh/authorized_keys /home/rafael/.ssh/
-   chown -R rafael:rafael /home/rafael/.ssh
    ```
 
-3. **SSH with keys only.** Create `/etc/ssh/sshd_config.d/90-hardening.conf`:
+   The notary runs as uid 1000 inside its container, so on the server that uid gets a name of its own: `notary` cannot log in and owns only the signing key. Create it before your own user, or `adduser` gives uid 1000 to you: you would own the key, and a process that ever escaped the container would be you, with sudo and your `~/.ssh`. If `getent` prints a user, such as the `ubuntu` user of cloud images, and you do not use it, remove it first with `deluser --remove-home ubuntu`. Your user (uid 1001) logs in with your key and uses `sudo`.
 
-   ```
-   PasswordAuthentication no
-   KbdInteractiveAuthentication no
-   PermitRootLogin no
-   ```
-
-   Run `sudo systemctl reload ssh`, then open a second session as your user before closing the first one.
-
-4. **Firewall.**
+   Then your SSH key. If root already has it (`/root/.ssh/authorized_keys`, which the provider's panel can fill in), check that the file holds only your keys and copy it:
 
    ```bash
-   sudo ufw default deny incoming && sudo ufw default allow outgoing
-   sudo ufw allow OpenSSH && sudo ufw allow 80/tcp && sudo ufw allow 443/tcp && sudo ufw allow 443/udp
-   sudo ufw enable
+   install -d -m 700 -o rafael -g rafael /home/rafael/.ssh
+   install -m 600 -o rafael -g rafael /root/.ssh/authorized_keys /home/rafael/.ssh/
+   ```
+
+   Otherwise send it from your computer: `ssh-copy-id rafael@notary.plusprivacy.com` on Linux and macOS, or from PowerShell on Windows (run `ssh-keygen -t ed25519` first if you have no key):
+
+   ```powershell
+   Get-Content "$env:USERPROFILE\.ssh\id_ed25519.pub" | ssh rafael@notary.plusprivacy.com "umask 077; mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+   ```
+
+   Until DNS answers, use the server's IP address instead of its name. On the first connection, compare the fingerprint that ssh shows with `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` on the server. Then, from a second window, `ssh rafael@notary.plusprivacy.com` must log in without asking for your account's password, and `sudo -v` must accept it. Keep the root session open until step 5 is done.
+
+3. **Firewall.** Pick the port that SSH moves to in step 4: between 1024 and 32767 (higher ones are Linux's ephemeral ports), and not 2222, which scanners try almost as often as 22. A port of its own does not make SSH safer, but it keeps most scans out of the logs. With port 22 still open:
+
+   ```bash
+   SSH_PORT=27183   # an example: pick your own
+   ufw default deny incoming && ufw default allow outgoing
+   ufw allow OpenSSH && ufw allow "$SSH_PORT"/tcp
+   ufw allow 80/tcp && ufw allow 443/tcp && ufw allow 443/udp
+   ufw enable       # answer y: the open session stays
    ```
 
    Ports published by Docker bypass ufw. That is why only Caddy publishes ports (80 and 443) and the notary publishes none.
 
-5. **fail2ban for SSH.** Even with keys only, it stops scans from filling the logs:
+4. **SSH on that port, with keys only and without root.** In the same root session:
 
    ```bash
-   sudo apt install -y fail2ban
-   printf '[sshd]\nenabled = true\nmaxretry = 5\nbantime = 1h\n' | sudo tee /etc/fail2ban/jail.d/sshd.local
-   sudo systemctl restart fail2ban
+   cat > /etc/ssh/sshd_config.d/00-hardening.conf <<EOF
+   Port $SSH_PORT
+   PasswordAuthentication no
+   KbdInteractiveAuthentication no
+   PermitRootLogin no
+   AllowUsers rafael
+   EOF
+   sshd -t && sshd -T | grep -E '^(port|permitrootlogin|passwordauthentication|kbdinteractiveauthentication|allowusers) '
    ```
+
+   The last command must show your port, `allowusers rafael`, and `no` for the other three. The `00-` prefix matters: sshd keeps the first value it reads, and it reads `sshd_config.d` in alphabetical order before the main file, so no later file can turn passwords back on (some providers add a `50-cloud-init.conf` that does). If `port 22` shows up too, comment out the `Port 22` line in `/etc/ssh/sshd_config`.
+
+   Ubuntu 24.04 starts SSH from `ssh.socket`: systemd listens on the port, so a new port needs the socket restarted, not only `reload ssh`. The open session stays:
+
+   ```bash
+   systemctl daemon-reload
+   systemctl is-active --quiet ssh.socket && systemctl restart ssh.socket
+   systemctl restart ssh
+   ss -tlnp | grep -E ":(22|$SSH_PORT) "     # your port only
+   ```
+
+   On your computer, add the server to `~/.ssh/config` (`%USERPROFILE%\.ssh\config` on Windows, a file without an extension), with the port from step 3:
+
+   ```
+   Host notary
+       HostName notary.plusprivacy.com
+       User rafael
+       Port 27183
+   ```
+
+   From new windows, `ssh notary` must log in, while `ssh root@notary` and `ssh -o PubkeyAuthentication=no notary` must end in `Permission denied (publickey)`. Only then close port 22 on the server: `ufw delete allow OpenSSH`. If you ever lock yourself out, the provider's web console still logs in with a password, since it does not go through SSH.
+
+5. **fail2ban for SSH.** Even with keys only, it stops scans from filling the logs. It bans on the port it is given:
+
+   ```bash
+   apt install -y fail2ban
+   printf '[sshd]\nenabled = true\nport = %s\nmaxretry = 5\nbantime = 1h\n' "$SSH_PORT" > /etc/fail2ban/jail.d/sshd.local
+   systemctl restart fail2ban && fail2ban-client status sshd
+   ```
+
+   Now close the root session: from here on, log in with `ssh notary` and use `sudo`. Reboot once (`sudo reboot`) and check that `ssh notary` still logs in, since step 6 lets the server reboot by itself.
 
 6. **Automatic security updates.** `sudo apt install -y unattended-upgrades && sudo dpkg-reconfigure -plow unattended-upgrades`. In `/etc/apt/apt.conf.d/50unattended-upgrades`, set `Unattended-Upgrade::Automatic-Reboot "true";` and `Unattended-Upgrade::Automatic-Reboot-Time "04:00";`.
 
-7. **Docker.** Install Docker Engine and the compose plugin from Docker's apt repository, as described in [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/).
+7. **Docker.** Install Docker Engine and the compose plugin from Docker's apt repository, as described in [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/). Skip the post-installation step that adds your user to the `docker` group: that group amounts to root without a password, so the commands below run `docker` through `sudo`, which asks for yours.
 
 8. **The notary and its signing key.**
 
@@ -71,33 +122,33 @@ The smallest plan of most providers is enough: 1 vCPU, 1 GB of RAM, Ubuntu 24.04
    cp .env.example .env        # check NOTARY_DOMAIN, NOTARY_NAME and ALLOWED_ORIGINS
    mkdir -m 700 secrets
    openssl genpkey -algorithm ed25519 -out secrets/signing-key.pem
-   sudo chown 1000:1000 secrets/signing-key.pem && sudo chmod 400 secrets/signing-key.pem
-   docker compose up -d --build
-   docker compose logs -f      # Caddy reports the certificate it obtained
+   sudo chown notary:notary secrets/signing-key.pem && sudo chmod 400 secrets/signing-key.pem
+   sudo docker compose up -d --build
+   sudo docker compose logs -f # Caddy reports the certificate it obtained
    ```
 
-   The key never leaves the server and is not in git (`notary/secrets/` is ignored). The notary runs as user 1000 inside its container, so the file must belong to that user; the `secrets` folder keeps everyone else out. Compose mounts the file read-only, and the notary refuses to start if it is missing or unreadable.
+   The key never leaves the server and is not in git (`notary/secrets/` is ignored). The notary runs as uid 1000 inside its container, the `notary` user of step 2, so the file must belong to that user; the `secrets` folder keeps everyone else out. Compose mounts the file read-only, and the notary refuses to start if it is missing or unreadable.
 
    **Or build the image on your own computer** and upload it, so that the server builds nothing. With Docker Desktop running, from the project folder:
 
    ```bash
    npm run notary:image                                # for an ARM server: npm run notary:image -- --platform linux/arm64
-   scp dist/ssl-checker-notary-1.0.0-linux-amd64.tar.gz dist/ssl-checker-notary-1.0.0-linux-amd64.tar.gz.sha256 rafael@<server>:
+   scp dist/ssl-checker-notary-1.0.0-linux-amd64.tar.gz dist/ssl-checker-notary-1.0.0-linux-amd64.tar.gz.sha256 notary:
    ```
 
-   Then, on the server, instead of `docker compose up -d --build`:
+   Then, on the server, instead of `sudo docker compose up -d --build`:
 
    ```bash
-   sha256sum -c ssl-checker-notary-1.0.0-linux-amd64.tar.gz.sha256 && docker load -i ssl-checker-notary-1.0.0-linux-amd64.tar.gz
-   cd ssl-checker/notary && docker compose up -d
+   sha256sum -c ssl-checker-notary-1.0.0-linux-amd64.tar.gz.sha256 && sudo docker load -i ssl-checker-notary-1.0.0-linux-amd64.tar.gz
+   cd ssl-checker/notary && sudo docker compose up -d
    ```
 
-   The script tags the image `ssl-checker-notary:local`, the name `compose.yaml` runs, and `docker compose up -d` without `--build` uses the loaded image. It labels the image with the commit it was built from (`docker inspect ssl-checker-notary:local`), and prints these commands with the exact file names. The server still needs the repository for `compose.yaml`, the `Caddyfile` and `.env`, and it pulls Caddy's image itself. The signing key is never in the image: `.dockerignore` leaves `secrets/` out.
+   The script tags the image `ssl-checker-notary:local`, the name `compose.yaml` runs, and `docker compose up -d` without `--build` uses the loaded image. It labels the image with the commit it was built from (`sudo docker inspect ssl-checker-notary:local`), and prints these commands with the exact file names. The server still needs the repository for `compose.yaml`, the `Caddyfile` and `.env`, and it pulls Caddy's image itself. The signing key is never in the image: `.dockerignore` leaves `secrets/` out.
 
 9. **The key for the extension.** Print the notary's public key on the server:
 
    ```bash
-   docker compose exec notary node src/keygen.js /run/secrets/signing_key
+   sudo docker compose exec notary node src/keygen.js /run/secrets/signing_key
    ```
 
    Put the `ed25519:…` line it prints into `extension/lib/default-notary.js` (`keys`), commit it, and build the extension from that commit. Until its key is there, the extension does not ask the notary at all. The startup line in `docker compose logs notary` and `/v1/health` show the same key, but read it on the server: a key copied over a network you do not trust is exactly what signing is meant to protect against.
@@ -113,8 +164,8 @@ The smallest plan of most providers is enough: 1 vCPU, 1 GB of RAM, Ubuntu 24.04
     Then use the **Test** button next to PlusPrivacy in the extension's Options: it reports whether the answer is signed with the expected key.
 
 11. **Keep it running.**
-    - **Updates:** `git pull && docker compose up -d --build`. With an image built on your computer: `git pull`, upload and `docker load` the new image, then `docker compose up -d`.
-    - **Base images:** once a month, run `docker compose build --pull && docker compose up -d` to pick up their security fixes.
+    - **Updates:** `git pull && sudo docker compose up -d --build`. With an image built on your computer: `git pull`, upload and `sudo docker load` the new image, then `sudo docker compose up -d`.
+    - **Base images:** once a month, run `sudo docker compose build --pull && sudo docker compose up -d` to pick up their security fixes.
     - **Backups:** back up `.env`, and `secrets/signing-key.pem` somewhere safe and offline, such as a password manager (`sudo cat secrets/signing-key.pem`). If the key is lost, every installed extension rejects the answers of a new one until it is updated. Caddy's certificates live in the `caddy-data` volume and are renewed automatically.
     - **Monitoring:** an external uptime check on `/v1/health` tells you when the notary goes down.
 
@@ -126,14 +177,14 @@ The extension accepts any key listed in `DEFAULT_NOTARY.keys`, so a key can be r
 
    ```bash
    openssl genpkey -algorithm ed25519 -out secrets/signing-key-new.pem
-   sudo chown 1000:1000 secrets/signing-key-new.pem && sudo chmod 400 secrets/signing-key-new.pem
-   docker compose run --rm --no-deps -v "$PWD/secrets/signing-key-new.pem:/new.pem:ro" notary node src/keygen.js /new.pem
+   sudo chown notary:notary secrets/signing-key-new.pem && sudo chmod 400 secrets/signing-key-new.pem
+   sudo docker compose run --rm --no-deps -v "$PWD/secrets/signing-key-new.pem:/new.pem:ro" notary node src/keygen.js /new.pem
    ```
 
    Add that key to `keys`, next to the old one.
 
 2. Publish that version of the extension and wait until most users have it (the dashboard shows the versions in use).
-3. Replace `secrets/signing-key.pem` with the new file (`sudo mv secrets/signing-key-new.pem secrets/signing-key.pem`) and run `docker compose up -d --force-recreate notary`: the notary reads its key only when it starts, and a plain `up -d` sees no change to recreate.
+3. Replace `secrets/signing-key.pem` with the new file (`sudo mv secrets/signing-key-new.pem secrets/signing-key.pem`) and run `sudo docker compose up -d --force-recreate notary`: the notary reads its key only when it starts, and a plain `up -d` sees no change to recreate.
 4. In the next version of the extension, remove the old key.
 
 If the key may have leaked, skip the wait: switch the notary to a new key the same way and publish an extension with only the new key at once. Until users update, they see "signed with a key this extension does not know" instead of a confirmation, which is the safe failure.

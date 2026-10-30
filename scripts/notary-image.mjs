@@ -140,9 +140,9 @@ const local = (path) => relative(ROOT, path).split('\\').join('/');
 console.log(`
 Done: ${local(file)} (${megabytes} MB) and ${local(`${file}.sha256`)}.
 
-Upload both, then load the image on the server and start it:
-  scp ${local(file)} ${local(`${file}.sha256`)} <user>@<server>:
-  sha256sum -c ${name}.sha256 && docker load -i ${name}
-  cd ssl-checker/notary && docker compose up -d
+Upload both (notary is the Host from step 4 of notary/README.md), then load the image on the server and start it:
+  scp ${local(file)} ${local(`${file}.sha256`)} notary:
+  sha256sum -c ${name}.sha256 && sudo docker load -i ${name}
+  cd ssl-checker/notary && sudo docker compose up -d
 
 Without --build, compose runs the image you loaded instead of building one.`);
