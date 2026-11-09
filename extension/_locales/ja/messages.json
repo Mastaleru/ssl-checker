@@ -1,0 +1,441 @@
+{
+  "localeCode": { "message": "ja", "description": "BCP 47 tag used to format dates and plurals in this language." },
+  "extName": { "message": "SSL Checker" },
+  "extNameLite": { "message": "SSL Checker Lite" },
+  "extDescription": {
+    "message": "現在のサイトの実際の TLS 証明書を表示し、独立した公証サーバーと比較して傍受を検出します。"
+  },
+  "extDescriptionLite": {
+    "message": "現在のサイトの TLS 証明書を、独立した公証サーバーが受け取ったとおりに表示します。"
+  },
+  "actionTitle": { "message": "このサイトの証明書を確認" },
+
+  "schemeHttps": { "message": "HTTPS 接続" },
+  "schemeHttp": { "message": "暗号化なしの HTTP ページ" },
+  "actionRecheck": { "message": "再確認" },
+  "actionSettings": { "message": "オプション" },
+  "unsupportedTitle": { "message": "確認できる対象がありません" },
+  "unsupportedBody": {
+    "message": "証明書を確認するには、ウェブサイト（http または https）を開いてから、もう一度アイコンをクリックしてください。"
+  },
+  "loadingTitle": { "message": "証明書を確認しています…" },
+  "loadingReload": { "message": "証明書を読み取るため、ページを再読み込みしています…" },
+  "loadingDebuggerBar": {
+    "message": "証明書の読み取り中は、SSL Checker がブラウザをデバッグしていることを示すバーが Chrome に数秒間表示されます。"
+  },
+  "checkFailedTitle": { "message": "確認を実行できませんでした" },
+  "checkFailedBody": { "message": "エラー: $1" },
+  "consentTitle": { "message": "初めて確認する前に" },
+  "consentIntro": {
+    "message": "SSL Checker は、アイコンをクリックしたときにだけ、現在のタブのサイトを確認します。お使いのブラウザが受け取った証明書を読み取り、同意した場合は次のことも行います:"
+  },
+  "consentIntroLite": {
+    "message": "SSL Checker は、アイコンをクリックしたときにだけ、現在のタブのサイトを確認します。同意した場合は次のことを行います:"
+  },
+  "consentNotaryName": { "message": "PlusPrivacy 公証サーバーに問い合わせます。" },
+  "consentNotaryBody": {
+    "message": "サイトのホスト名とポート番号が $1 に送信されます。このサーバーは自身のネットワークからサイトに接続し、そこで見える証明書を返します。公証サーバーはサイトの記録を残しません。"
+  },
+  "consentMemoryName": { "message": "各サイトの認証局を記憶します。" },
+  "consentMemoryBody": {
+    "message": "記憶はこのデバイスにのみ保存され、既知のサイトで突然別の認証局が使われたときの警告に使用されます。"
+  },
+  "consentLater": {
+    "message": "どちらもオプション ページでいつでも変更できます。同意するまで、何も読み取らず、何も送信しません。"
+  },
+  "consentAgree": { "message": "同意して確認" },
+  "checkedAt": { "message": "最終確認: $1" },
+
+  "sectionWitnesses": { "message": "取得元" },
+  "witnessBrowser": { "message": "お使いのブラウザ" },
+  "witnessViaReload": { "message": "ページの再読み込み後に読み取り" },
+  "witnessLocalNotRead": { "message": "まだ読み取っていません。" },
+  "witnessIssuedBy": { "message": "発行元: $1" },
+  "witnessSigned": { "message": "署名付きの応答" },
+  "durationMs": { "message": "$1 ms" },
+  "fingerprintLabel": { "message": "SHA-256 フィンガープリント $1" },
+  "externalSkippedInternal": {
+    "message": "内部サイトです。外部ソースからはアクセスできないため、問い合わせませんでした。"
+  },
+  "noSourcesNote": {
+    "message": "お使いのブラウザが受け取る証明書と他から見える証明書を比較するには、オプション ページで PlusPrivacy 公証サーバーをオンにするか、別のソースを追加してください。"
+  },
+  "noSourcesNoteLite": {
+    "message": "このバージョンは外部ソース経由でのみ証明書を読み取ります。オプション ページで PlusPrivacy 公証サーバーをオンにするか、ソースを追加してください。"
+  },
+  "askLocalText": {
+    "message": "ブラウザからの読み取りは、必要なときのみ行う設定になっています。Chrome にデバッグ通知バーが数秒間表示されます。"
+  },
+  "probeBlockedText": {
+    "message": "このページは、証明書の読み取りに使用する小さなリクエストをブロックしています（Content Security Policy）。ページを再読み込みすると確実に読み取れます。"
+  },
+
+  "actionAddSource": { "message": "ソースを追加" },
+  "actionReadLocal": { "message": "ブラウザから読み取る" },
+  "actionReloadAndRead": { "message": "再読み込みして読み取る" },
+  "actionCopyPem": { "message": "PEM をコピー" },
+  "actionDownloadChain": { "message": "チェーンをダウンロード" },
+  "actionTest": { "message": "テスト" },
+  "actionRemove": { "message": "削除" },
+  "copied": { "message": "コピーしました" },
+  "copyFailed": { "message": "コピーに失敗しました" },
+
+  "relationSameCertificate": { "message": "同一" },
+  "relationSameKey": { "message": "同じ鍵" },
+  "relationSameIssuer": { "message": "発行元が同じ別の証明書" },
+  "relationSameCa": { "message": "CA が同じ別の証明書" },
+  "relationDifferent": { "message": "異なる証明書" },
+
+  "verdictConfirmedTitleOne": { "message": "$1 件の外部ソースで確認済み" },
+  "verdictConfirmedTitleFew": { "message": "$1 件の外部ソースで確認済み" },
+  "verdictConfirmedTitleOther": { "message": "$1 件の外部ソースで確認済み" },
+  "verdictConfirmedBody": {
+    "message": "お使いのブラウザは、外部ソースから見えるものと同じ証明書を受け取っています。途中で証明書は置き換えられていません。"
+  },
+  "verdictSameCaTitle": { "message": "同じ発行元の別の証明書" },
+  "verdictSameCaBody": {
+    "message": "外部ソースは、同じ認証局（$1）が発行した別の証明書を受け取っています。これは CDN を使用している場合や、証明書の切り替え中には正常なことです。"
+  },
+  "verdictSameCaUnloggedTitle": { "message": "同じ発行元名（未確認）" },
+  "verdictSameCaUnloggedBody": {
+    "message": "外部ソースは、お使いの証明書と同じ名前の認証局（$1）が発行した別の証明書を受け取っています。また、お使いの証明書が公開ログに記録されていることを Chrome は確認していません。CDN は複数の証明書を提供することがありますが、傍受する側が認証局の名前をコピーすることもできるため、この結果はお使いの証明書の確認にはなりません。"
+  },
+  "verdictPublicTitle": { "message": "公開ログに記録された証明書" },
+  "verdictPublicBody": {
+    "message": "この証明書が公開の Certificate Transparency ログに記録されていることを Chrome が確認しました。そのため、ローカルのプロキシやウイルス対策ソフトが作成した証明書ではありません。照合するには、オプション ページで外部ソースをオンにしてください。"
+  },
+  "verdictPublicBodyNoAnswer": {
+    "message": "この証明書が公開の Certificate Transparency ログに記録されていることを Chrome が確認しました。そのため、ローカルのプロキシやウイルス対策ソフトが作成した証明書ではありません。外部ソースからの応答はありませんでした。"
+  },
+  "verdictPrivateCaTitle": { "message": "公開証明書として確認されていません" },
+  "verdictPrivateCaBody": {
+    "message": "$1 が発行したこの証明書が公開の Certificate Transparency ログに記録されていることを、Chrome は確認していません。これは、ローカルにインストールされた認証局（企業ネットワーク、ウイルス対策ソフト、内部サーバー）が発行した証明書の場合や、ブラウザの CT ログのリストが古い場合に起こります。接続が傍受されているかどうかを調べるには、外部ソースを追加してください。"
+  },
+  "verdictInterceptedTitle": { "message": "接続が傍受されている可能性が高いです" },
+  "verdictInterceptedByTitle": { "message": "$1 による傍受" },
+  "verdictInterceptedBody": {
+    "message": "お使いのブラウザは $1 が発行した証明書を受け取っていますが、外部ソースからは $2 が発行した証明書が見えています。また、お使いの証明書が公開ログに記録されていることを Chrome は確認していません。おそらく、ブラウザとサイトの間にある何か（企業のプロキシ、ウイルス対策ソフトなど）が通信を復号して再署名しています。"
+  },
+  "verdictSplitTitle": { "message": "ソース間で結果が一致しません" },
+  "verdictSplitBody": {
+    "message": "お使いの証明書と同じ: $1。$2 が発行した別の証明書: $3。お使いの接続が傍受されていて一致したソースも同じネットワークを使っているか、もう一方のソースのネットワークが傍受されているかのどちらかです。"
+  },
+  "verdictInterceptorBody": {
+    "message": "この証明書は $1 が発行したもので、公開の Certificate Transparency ログに記録されていません。これは HTTPS インスペクション製品の動作と一致します。"
+  },
+  "interceptorIdentified": { "message": "$1 は、$2です。" },
+  "verdictConflictTitle": { "message": "ソースによって見える証明書が異なります" },
+  "verdictConflictBody": {
+    "message": "お使いのブラウザと外部ソースでは、見えている公開証明書が異なります（お使いの証明書の発行元は $1、外部ソースの証明書の発行元は $2）。複数の CDN を利用するサイトではこうなることがありますが、念のため確認することをおすすめします。"
+  },
+  "verdictExternalTitleOne": { "message": "$1 件の外部ソースから見た証明書" },
+  "verdictExternalTitleFew": { "message": "$1 件の外部ソースから見た証明書" },
+  "verdictExternalTitleOther": { "message": "$1 件の外部ソースから見た証明書" },
+  "verdictExternalBody": {
+    "message": "ブラウザからの読み取りがオフのため、お使いのネットワークでの傍受は検出できません。以下は、ソースから見える証明書です。"
+  },
+  "verdictExternalBodyAsk": {
+    "message": "ソースから見える証明書と比較するには、ブラウザから証明書を読み取ってください。"
+  },
+  "verdictExternalBodyLocalFailed": {
+    "message": "ブラウザから証明書を読み取れなかったため、お使いのネットワークでの傍受の可能性を排除できません。以下は、ソースから見える証明書です。"
+  },
+  "verdictExternalBodyLite": {
+    "message": "このバージョンはブラウザから証明書を読み取れないため、お使いのネットワークでの傍受は検出できません。以下は、ソースから見える証明書です。"
+  },
+  "verdictExternalDisagreeTitle": { "message": "外部ソース間で結果が一致しません" },
+  "verdictExternalDisagreeBody": { "message": "外部ソースごとに異なる証明書が見えています。" },
+  "verdictTamperedTitle": { "message": "応答が途中で書き換えられました" },
+  "verdictTamperedBody": {
+    "message": "$1 からの署名付きの応答は、そのソースとお使いのブラウザの間で書き換えられたため、使用しませんでした。このようなことができるのは、このブラウザの保護された接続を傍受しているものだけです。"
+  },
+  "verdictUnsignedTitle": { "message": "署名のない応答でのみ確認" },
+  "verdictUnsignedBody": {
+    "message": "お使いのブラウザは $1 からの応答と同じ証明書を受け取っていますが、これらの応答には署名がありません。また、お使いの証明書が公開ログに記録されていることを Chrome は確認していません。お使いの接続を傍受しているものが、これらの応答を作成した可能性があります。PlusPrivacy 公証サーバーの応答のように既知の鍵で署名された応答は、偽造できません。"
+  },
+  "verdictHttpTitle": { "message": "暗号化されていないページ" },
+  "verdictHttpBody": {
+    "message": "このページは暗号化なしの HTTP で読み込まれたため、ネットワーク上の誰もが内容を読み取ったり変更したりできます。このページを保護する証明書はありません。"
+  },
+  "verdictHttpBodyWithCert": {
+    "message": "このページは暗号化なしの HTTP で読み込まれたため、ネットワーク上の誰もが内容を読み取ったり変更したりできます。以下は、サーバーが HTTPS（ポート 443）で提示している証明書です。"
+  },
+  "verdictNoSourcesTitle": { "message": "表示できる証明書がありません" },
+  "verdictNoSourcesBody": {
+    "message": "オプション ページで、ブラウザからの読み取り、PlusPrivacy 公証サーバー、または別のソースをオンにしてください。"
+  },
+  "verdictNoSourcesLite": {
+    "message": "このサイトの証明書を表示するには、オプション ページで PlusPrivacy 公証サーバーをオンにするか、ソースを追加してください。"
+  },
+  "verdictNoSourcesLocalFailed": {
+    "message": "ブラウザから証明書を読み取れず、外部ソースからの応答もありませんでした。"
+  },
+  "verdictInternalBody": {
+    "message": "外部ソースは内部サイトにアクセスできず、ブラウザからも証明書を読み取っていません。"
+  },
+  "verdictAllSourcesFailed": {
+    "message": "どの外部ソースからも応答がありませんでした。オプション ページで確認してください。"
+  },
+  "verdictAskTitle": { "message": "証明書を読み取る準備ができました" },
+  "verdictAskBody": { "message": "ブラウザからの読み取りは、必要なときのみ行う設定になっています。" },
+
+  "kind_corporateProxy": { "message": "企業のプロキシまたはファイアウォール" },
+  "kind_cloudProxy": { "message": "クラウド型のセキュリティ ゲートウェイ" },
+  "kind_antivirus": { "message": "HTTPS スキャン機能のあるウイルス対策ソフト" },
+  "kind_contentFilter": { "message": "コンテンツ フィルタ" },
+  "kind_debugProxy": { "message": "デバッグ用のプロキシ" },
+  "kind_adware": { "message": "アドウェア" },
+
+  "warnExpired": { "message": "証明書の有効期限が切れています。" },
+  "warnNotYetValid": { "message": "証明書はまだ有効になっていません。" },
+  "warnExpiresSoon": { "message": "証明書の有効期限まであと $1です。" },
+  "warnHostMismatch": { "message": "証明書の対象に $1 が含まれていません。" },
+  "warnWeakSignature": { "message": "証明書チェーンで脆弱な署名（SHA-1 または MD5）が使用されています。" },
+  "warnWeakKey": { "message": "RSA 鍵の長さが $1 ビットしかありません。" },
+  "warnObsoleteProtocol": { "message": "古いプロトコル: $1。" },
+  "warnNotaryUntrusted": { "message": "$1 は、取得した証明書を信頼していません: $2。" },
+  "warnNotPubliclyLogged": { "message": "この証明書が公開ログに記録されていることを、Chrome は確認していません。" },
+  "warnSomeSourcesDiffer": {
+    "message": "$1 からは別の証明書（発行元: $2）が見えています。お使いの証明書は公開ログに記録されているため、相違の原因はおそらくそのソース側にあります。"
+  },
+
+  "sectionCertificate": { "message": "証明書" },
+  "sectionCertificateExternal": { "message": "$1 から見た証明書" },
+  "certIssuedTo": { "message": "発行先" },
+  "andMore": { "message": "他 $1 件" },
+  "certOrganization": { "message": "組織" },
+  "certIssuedBy": { "message": "発行元" },
+  "certValidity": { "message": "有効期間" },
+  "certType": { "message": "種類" },
+  "validityRemaining": { "message": "残り $1" },
+  "validityExpired": { "message": "$1前に期限切れ" },
+  "validityFuture": { "message": "まだ有効ではありません" },
+  "daysOne": { "message": "$1 日" },
+  "daysFew": { "message": "$1 日" },
+  "daysOther": { "message": "$1 日" },
+  "level_DV": { "message": "ドメイン認証（DV）" },
+  "level_OV": { "message": "組織認証（OV）" },
+  "level_EV": { "message": "拡張認証（EV）" },
+  "level_IV": { "message": "個人認証（IV）" },
+
+  "sectionConnection": { "message": "接続" },
+  "connProtocol": { "message": "プロトコル" },
+  "connKeyExchange": { "message": "鍵交換" },
+  "connCipher": { "message": "暗号方式" },
+  "connCT": { "message": "透明性" },
+  "connECH": { "message": "Encrypted Client Hello" },
+  "ctCompliant": { "message": "公開ログに記録済み" },
+  "ctNotCompliant": { "message": "未記録" },
+  "ctUnknown": { "message": "不明" },
+  "sctsOne": { "message": "有効な SCT $1 件" },
+  "sctsFew": { "message": "有効な SCT $1 件" },
+  "sctsOther": { "message": "有効な SCT $1 件" },
+  "yes": { "message": "はい" },
+  "no": { "message": "いいえ" },
+
+  "sectionChain": { "message": "証明書チェーン（$1）" },
+  "chainLeaf": { "message": "サイト" },
+  "chainIntermediate": { "message": "中間" },
+  "chainRoot": { "message": "ルート" },
+  "chainIssuedBy": { "message": "発行元: $1" },
+
+  "sectionDetails": { "message": "技術的な詳細" },
+  "detailSpkiPin": { "message": "公開鍵ピン" },
+  "detailSerial": { "message": "シリアル番号" },
+  "detailSignature": { "message": "署名" },
+  "detailPublicKey": { "message": "公開鍵" },
+  "detailServerSignature": { "message": "TLS 署名" },
+  "detailNamesOne": { "message": "名前" },
+  "detailNamesFew": { "message": "名前（$1）" },
+  "detailNamesOther": { "message": "名前（$1）" },
+  "detailKeyUsage": { "message": "鍵用途" },
+  "detailExtKeyUsage": { "message": "拡張鍵用途" },
+  "detailPolicies": { "message": "ポリシー" },
+  "detailCaIssuers": { "message": "CA 発行者" },
+  "detailScts": { "message": "SCT" },
+  "detailMustStaple": { "message": "OCSP must-staple" },
+  "detailExtensions": { "message": "拡張領域" },
+  "critical": { "message": "クリティカル" },
+
+  "localErr_restrictedPage": {
+    "message": "Chrome では、このページを読み取ることはできません（内部ページ、エラー ページ、または他の拡張機能のページ）。"
+  },
+  "localErr_blockedByPolicy": {
+    "message": "組織のポリシーにより、ブラウザからの証明書の読み取りがブロックされています。"
+  },
+  "localErr_probeBlocked": { "message": "証明書の読み取りに使用するリクエストが、ページによってブロックされました。" },
+  "localErr_reloadFailed": { "message": "ページの読み込みが時間内に完了しませんでした。" },
+  "localErr_canceledByUser": { "message": "Chrome のデバッグ通知バーで読み取りがキャンセルされました。" },
+  "localErr_detached": { "message": "Chrome が読み取りセッションを終了しました。" },
+  "localErr_navigated": { "message": "タブが別のサイトに移動しました。もう一度確認してください。" },
+  "localErr_noCertificate": { "message": "Chrome からこのページの証明書が返されませんでした。" },
+  "localErr_notHttps": { "message": "このページは HTTPS で配信されていません。" },
+  "localErr_tabGone": { "message": "タブが閉じられました。" },
+  "localErr_alreadyAttached": { "message": "このタブには別のデバッガがアタッチされています。" },
+  "localErr_generic": { "message": "読み取りに失敗しました: $1" },
+
+  "notaryErr_timeout": { "message": "$1 秒以内に応答がありませんでした。" },
+  "notaryErr_http": { "message": "ソースが HTTP $1 を返しました。" },
+  "notaryErr_network": {
+    "message": "ソースに接続できませんでした（ネットワーク エラー、または CORS ヘッダーがありません）。"
+  },
+  "notaryErr_unauthorized": { "message": "ソースがトークンを拒否しました。" },
+  "notaryErr_rateLimited": { "message": "リクエストが多すぎます。ソースから頻度を下げるよう求められています。" },
+  "notaryErr_badResponse": { "message": "ソースから無効な応答が返されました。" },
+  "notaryErr_badCertificate": { "message": "ソースから読み取れない証明書が返されました。" },
+  "notaryErr_badEndpoint": { "message": "ソースのアドレスが無効です。" },
+  "notaryErr_forbiddenTarget": { "message": "このアドレス（プライベートまたは予約済み）はソースで拒否されます。" },
+  "notaryErr_forbiddenPort": { "message": "このポートはソースの確認対象外です。" },
+  "notaryErr_dnsFailed": { "message": "ソースでサイトの名前を解決できませんでした。" },
+  "notaryErr_connectFailed": { "message": "ソースからサイトに接続できませんでした。" },
+  "notaryErr_tlsFailed": { "message": "ソースで TLS ハンドシェイクに失敗しました。" },
+  "notaryErr_busy": { "message": "ソースが混み合っています。しばらくしてからもう一度お試しください。" },
+  "notaryErr_badRequest": { "message": "ソースがリクエストを理解できませんでした。" },
+  "notaryErr_forbiddenOrigin": { "message": "ソースは、この拡張機能のコピーからのリクエストを受け付けていません。" },
+  "notaryErr_noKey": {
+    "message": "このバージョンには、このソースの応答を検証する鍵がないため、問い合わせませんでした。"
+  },
+  "notaryErr_unsigned": { "message": "応答に署名がなかったため、使用しませんでした。" },
+  "notaryErr_unknownKey": {
+    "message": "応答がこの拡張機能の知らない鍵で署名されていたため、使用しませんでした。ソースの鍵が新しくなった可能性があります。拡張機能か、ソースの鍵を更新してください。"
+  },
+  "notaryErr_tampered": { "message": "応答が途中で書き換えられたため、使用しませんでした。" },
+  "notaryErr_internal": { "message": "ソースで内部エラーが発生しました。" },
+  "notaryErr_cannotVerify": { "message": "このブラウザでは応答の署名を検証できなかったため、使用しませんでした。" },
+  "notaryErr_other": { "message": "エラー $1 $2" },
+
+  "sectionHistory": { "message": "履歴" },
+  "historyFirst": {
+    "message": "このサイトの初めての確認です。今後、SSL Checker はこのサイトの証明書の発行元が $1 であることを記憶します。"
+  },
+  "historyKnown": { "message": "以前の確認と同じ認証局です: $1（$3 以降、$2）。" },
+  "historyLearned": { "message": "今後、SSL Checker はこのサイトについて $1 も記憶します。" },
+  "historyChangedBefore": { "message": "これまで: $1（$2、最終確認 $3）。" },
+  "historyChangedNow": { "message": "現在: $1。" },
+  "historySameName": {
+    "message": "認証局の名前は以前と同じですが、このサイトでこれまでに見たことのない鍵で署名しています。"
+  },
+  "historyTrusted": { "message": "このサイトでは今後 $1 を信頼します。" },
+  "historyForgotten": { "message": "このサイトを記憶から削除しました。次回の確認から履歴を新たに記録します。" },
+  "historyIncognito": { "message": "シークレット ウィンドウではサイトの記憶はオフです。記録も比較も行いません。" },
+  "checksOne": { "message": "確認 $1 回" },
+  "checksFew": { "message": "確認 $1 回" },
+  "checksOther": { "message": "確認 $1 回" },
+  "actionTrustCa": { "message": "このサイトで信頼する" },
+  "actionForgetSite": { "message": "このサイトを記憶から削除" },
+  "verdictCaChangedTitle": { "message": "認証局が変わりました" },
+  "verdictCaChangedBody": {
+    "message": "以前の確認では、このサイトは常に $1 の公開証明書を使用していました。現在、お使いのブラウザは $2 の証明書を受け取っており、この証明書は公開ログに記録されていません。おそらく、ブラウザとサイトの間にある何かが接続を傍受しています。"
+  },
+  "verdictCaChangedSameNameBody": {
+    "message": "この証明書は以前と同じく $1 の発行を名乗っていますが、このサイトでこれまでに見たことのない鍵で署名されており、公開ログにも記録されていません。おそらく、ブラウザとサイトの間にある何かが接続を傍受しています。"
+  },
+  "warnCaChanged": { "message": "このサイトの認証局が変わりました: 以前は $1、現在は $2。" },
+  "warnCaChangedSameName": {
+    "message": "この証明書は以前と同じく $1 の発行を名乗っていますが、このサイトでこれまでに見たことのない鍵で署名されています。"
+  },
+  "warnCaChangedPublic": {
+    "message": "このサイトの認証局は $1 から $2 に切り替わりました。新しい証明書は公開ログに記録されています。"
+  },
+  "warnCaChangedNowPublic": {
+    "message": "このサイトの以前の確認は、$1 を経由していました。これは、このパソコンまたはネットワークにインストールされた認証局（企業のプロキシなど）です。現在の証明書は公開証明書です。"
+  },
+  "warnNotaryTampered": {
+    "message": "$1 からの署名付きの応答が途中で書き換えられたため、使用しませんでした。何かがこのブラウザの保護された接続を傍受しています。"
+  },
+
+  "optMemoryTitle": { "message": "サイトの記憶" },
+  "optMemoryIntro": {
+    "message": "ブラウザから証明書を読み取ると、SSL Checker は確認した各サイトについて証明書を発行した認証局を記憶し、既知のサイトで突然別の認証局が使われたときに警告します。データはすべてこのデバイス上に保存され、シークレット ウィンドウでは何も記録されません。"
+  },
+  "fieldMemoryEnabled": { "message": "確認したサイトの認証局を記憶する" },
+  "optMemoryHelp": {
+    "message": "オフにすると記録が停止します。保存済みのデータを削除するには、すべてのサイトを記憶から削除してください。"
+  },
+  "memoryCountOne": { "message": "記憶しているサイト: $1 件" },
+  "memoryCountFew": { "message": "記憶しているサイト: $1 件" },
+  "memoryCountOther": { "message": "記憶しているサイト: $1 件" },
+  "actionForgetAll": { "message": "すべてのサイトを記憶から削除" },
+  "forgotAll": { "message": "すべてのサイトを記憶から削除しました" },
+
+  "optionsTitle": { "message": "SSL Checker のオプション" },
+  "optionsIntro": { "message": "証明書の読み取り方法と、比較に使う外部ソースを選択します。" },
+  "optLocalTitle": { "message": "ブラウザからの読み取り" },
+  "optLocalIntro": {
+    "message": "お使いのブラウザが受け取った証明書そのものが表示されるため、お使いのネットワークでの傍受を検出できます。Chrome にはこのための専用 API がないため、拡張機能はデバッガを約 1 秒間タブにアタッチします。その間、SSL Checker がブラウザをデバッグしていることを示すバーが Chrome に表示されます。"
+  },
+  "optLocalUnavailable": {
+    "message": "このバージョンの SSL Checker にはデバッガの権限がないため、証明書は外部ソース経由でのみ読み取られます。"
+  },
+  "modeAlways": { "message": "毎回" },
+  "modeAlwaysHelp": { "message": "SSL Checker を開くたびに証明書を読み取ります。" },
+  "modeAsk": { "message": "必要なときのみ" },
+  "modeAskHelp": { "message": "まず外部ソースの結果を表示し、クリックしたときだけブラウザから読み取ります。" },
+  "modeNever": { "message": "読み取らない" },
+  "modeNeverHelp": { "message": "外部ソースのみを使用します。デバッグ通知バーは表示されません。" },
+  "optSourcesTitle": { "message": "外部ソース" },
+  "optSourcesIntro": {
+    "message": "各ソースは、インターネット上の別の場所からサイトに接続し、受け取った証明書を報告する公証サーバーです。ソースに送信されるのは、サイトのホスト名とポート番号だけです。"
+  },
+  "optAddSourceTitle": { "message": "ソースを追加" },
+  "optOwnNotary": {
+    "message": "独自の公証サーバーが必要ですか？オープンソースで、Docker があればどのサーバーでも動作します。"
+  },
+  "optOwnNotaryLink": { "message": "インストール方法" },
+  "fieldName": { "message": "名前" },
+  "fieldNamePlaceholder": { "message": "Frankfurt のサーバー" },
+  "fieldUrl": { "message": "アドレス" },
+  "fieldUrlHelp": {
+    "message": "公証サーバーの HTTPS アドレスです。SSL Checker は確認するサイトを POST リクエストの本文で送信し、アドレスには含めません。"
+  },
+  "fieldToken": { "message": "アクセス トークン（省略可）" },
+  "fieldTokenHelp": { "message": "Authorization: Bearer として送信され、このデバイスにのみ保存されます。" },
+  "fieldKey": { "message": "公開鍵（省略可）" },
+  "fieldKeyHelp": {
+    "message": "鍵を指定すると、この公証サーバーが署名した応答だけが有効になるため、途中で誰も応答を書き換えることはできません。公証サーバーは起動時に鍵を出力します。複数の鍵はスペースで区切ります。"
+  },
+  "endpointEnabled": { "message": "$1 を使用" },
+  "tokenSet": { "message": "トークン保存済み" },
+  "keySet": { "message": "署名付きの応答のみ" },
+  "defaultSource": {
+    "message": "PlusPrivacy が運用するデフォルトのソースです。応答には署名が付いており、確認したサイトの記録は残しません。"
+  },
+  "testRunning": { "message": "example.com についてソースに問い合わせています…" },
+  "testOk": { "message": "動作しています: $2 から example.com の証明書（発行元: $1）を $3 ms で取得しました。" },
+  "testSigned": { "message": "応答は想定どおりの鍵で署名されています。" },
+  "testSelfSigned": {
+    "message": "応答には鍵 $1 による署名が付いています。この鍵を追加する前に、公証サーバーが自身のサーバー上で出力した鍵と同じであることを確認してください。傍受する側が独自の鍵を送ってきた可能性もあります。"
+  },
+  "testUnsigned": { "message": "応答に署名がありません。" },
+  "testFailed": { "message": "失敗しました: $1" },
+  "endpointErrorInvalidUrl": { "message": "有効なアドレスを入力してください。" },
+  "endpointErrorCredentialsInUrl": {
+    "message": "アドレスにユーザー名やパスワードを含めないでください。トークンの欄を使用してください。"
+  },
+  "endpointErrorFragment": { "message": "アドレスから # 以降を削除してください。" },
+  "endpointErrorTemplate": {
+    "message": "公証サーバーのアドレスは {host} や {port} を含めずに入力してください。SSL Checker は確認するサイトをリクエストの本文で送信します。"
+  },
+  "endpointErrorHttps": {
+    "message": "アドレスには HTTPS を使用してください（暗号化なしの HTTP は localhost でのみ使用できます）。"
+  },
+  "endpointErrorDuplicate": { "message": "このソースはすでにリストにあります。" },
+  "endpointErrorToken": { "message": "トークンに使用できるのは、表示可能な ASCII 文字だけです。" },
+  "endpointErrorKey": {
+    "message": "公証サーバーが出力したとおりに鍵を入力してください: ed25519: の後に 43 文字が続きます。"
+  },
+  "optAdvancedTitle": { "message": "詳細設定" },
+  "fieldTimeout": { "message": "各ソースの待ち時間（秒）" },
+  "optProtocolTitle": { "message": "公証サーバーのプロトコル" },
+  "optProtocolIntro": {
+    "message": "このリクエストに応答するサーバーであれば、どれでもソースとして使用できます。リファレンス実装は SSL Checker プロジェクトの公証サーバーで、Docker 用にパッケージ化された小さな Node.js サービスです。"
+  },
+  "optProtocolSigning": {
+    "message": "署名鍵を持つ公証サーバーは、リクエストの nonce をそのまま返し、自身の公開鍵を追加して応答に署名します。Notary-Signature には、「SSL Checker notary answer v1」という行の後に本文をそのまま続けたものに対する Ed25519 署名が入ります。ソースに鍵を指定すると、拡張機能は、問い合わせたホスト、ポート、nonce に対してその鍵で署名された応答だけを使用します。"
+  },
+  "optProtocolErrors": {
+    "message": "エラー時は、4xx または 5xx のステータスと {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}} を返してください。拡張機能はホスト権限を持たないため、サーバーは CORS ヘッダーを送信し、Content-Type 付きの POST のプリフライトに応答する必要があります。"
+  },
+  "saved": { "message": "保存しました" },
+  "versionLabel": { "message": "バージョン $1" }
+}

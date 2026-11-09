@@ -72,10 +72,50 @@ function usedKeys() {
   return keys;
 }
 
+// <base>Many exists only in languages that have that plural form (Polish, Ukrainian).
+const withoutMany = (keys) => keys.filter((key) => !key.endsWith('Many')).sort();
+const pluralBases = () =>
+  Object.keys(messages.en)
+    .filter((key) => key.endsWith('Other'))
+    .map((key) => key.slice(0, -5));
+const placeholders = (text) => [...new Set(text.match(/\$[1-9]/g) || [])].sort();
+
 test('all locales define the same keys', () => {
-  const [first, ...rest] = locales;
-  for (const l of rest) {
-    assert.deepEqual(Object.keys(messages[l]).sort(), Object.keys(messages[first]).sort(), l);
+  for (const l of locales) {
+    assert.deepEqual(withoutMany(Object.keys(messages[l])), withoutMany(Object.keys(messages.en)), l);
+  }
+});
+
+test('each locale names its own language, for dates and plurals', () => {
+  for (const l of locales) {
+    assert.equal(messages[l].localeCode.message, l.replace('_', '-'), l);
+  }
+});
+
+test('languages where 5 is "many" have that form for every plural, the others none', () => {
+  for (const l of locales) {
+    const hasMany = new Intl.PluralRules(messages[l].localeCode.message).select(5) === 'many';
+    for (const base of pluralBases()) {
+      assert.equal(Boolean(messages[l][`${base}Many`]), hasMany, `${l}.${base}Many`);
+    }
+  }
+});
+
+test('translations keep the placeholders of the English messages', () => {
+  for (const l of locales) {
+    for (const [key, { message }] of Object.entries(messages[l])) {
+      const english = messages.en[key] || messages.en[key.replace(/Many$/, 'Other')];
+      const expected = placeholders(english.message);
+      // "One" forms may spell the number out ("Name" for one name).
+      if (key.endsWith('One')) {
+        assert.ok(
+          placeholders(message).every((p) => expected.includes(p)),
+          `${l}.${key}`,
+        );
+      } else {
+        assert.deepEqual(placeholders(message), expected, `${l}.${key}`);
+      }
+    }
   }
 });
 

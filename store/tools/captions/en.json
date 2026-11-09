@@ -1,0 +1,19 @@
+{
+  "confirmed": [
+    "See the certificate your browser really received",
+    "Chain, TLS version, key exchange and Certificate Transparency, read straight from Chrome and confirmed by independent notaries."
+  ],
+  "intercepted": [
+    "Catch HTTPS interception",
+    "Notaries show what the rest of the internet sees. A different, unlogged certificate means something on your path is re-signing your traffic."
+  ],
+  "details": [
+    "Every detail, one click away",
+    "Names, validity, chain, fingerprints, key pin, OCSP and CRL, SCTs and extensions. Copy the PEM or download the chain."
+  ],
+  "options": [
+    "You decide when the debugger runs",
+    "Read the certificate every time, on demand or never, and choose whether SSL Checker remembers the sites you check."
+  ],
+  "tagline": "See the real certificate. Catch interception."
+}

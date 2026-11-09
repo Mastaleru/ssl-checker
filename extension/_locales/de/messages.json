@@ -1,0 +1,461 @@
+{
+  "localeCode": { "message": "de", "description": "BCP 47 tag used to format dates and plurals in this language." },
+  "extName": { "message": "SSL Checker" },
+  "extNameLite": { "message": "SSL Checker Lite" },
+  "extDescription": {
+    "message": "Zeigt das echte TLS-Zertifikat der aktuellen Website und erkennt abgefangene Verbindungen durch Vergleich mit unabhängigen Notaren."
+  },
+  "extDescriptionLite": {
+    "message": "Zeigt das TLS-Zertifikat der aktuellen Website so, wie unabhängige Notarserver es erhalten."
+  },
+  "actionTitle": { "message": "Zertifikat dieser Website prüfen" },
+
+  "schemeHttps": { "message": "HTTPS-Verbindung" },
+  "schemeHttp": { "message": "Unverschlüsselte HTTP-Seite" },
+  "actionRecheck": { "message": "Erneut prüfen" },
+  "actionSettings": { "message": "Optionen" },
+  "unsupportedTitle": { "message": "Hier gibt es nichts zu prüfen" },
+  "unsupportedBody": {
+    "message": "Öffnen Sie eine Website (http oder https) und klicken Sie noch einmal auf das Symbol, um ihr Zertifikat zu sehen."
+  },
+  "loadingTitle": { "message": "Zertifikat wird geprüft…" },
+  "loadingReload": { "message": "Seite wird neu geladen, um das Zertifikat auszulesen…" },
+  "loadingDebuggerBar": {
+    "message": "Beim Auslesen zeigt Chrome einige Sekunden lang eine Leiste mit dem Hinweis, dass SSL Checker die Fehlerbehebung für diesen Browser gestartet hat."
+  },
+  "checkFailedTitle": { "message": "Prüfung nicht möglich" },
+  "checkFailedBody": { "message": "Fehler: $1" },
+  "consentTitle": { "message": "Vor der ersten Prüfung" },
+  "consentIntro": {
+    "message": "SSL Checker sieht sich die Website im aktuellen Tab nur an, wenn Sie auf sein Symbol klicken. Dabei wird das Zertifikat ausgelesen, das Ihr Browser erhalten hat. Mit Ihrer Zustimmung außerdem:"
+  },
+  "consentIntroLite": {
+    "message": "SSL Checker sieht sich die Website im aktuellen Tab nur an, wenn Sie auf sein Symbol klicken. Mit Ihrer Zustimmung:"
+  },
+  "consentNotaryName": { "message": "Den PlusPrivacy-Notar fragen." },
+  "consentNotaryBody": {
+    "message": "Name und Port der Website gehen an $1. Der Notar verbindet sich aus seinem eigenen Netzwerk mit der Website, gibt das Zertifikat zurück, das er sieht, und führt keine Aufzeichnungen über die Websites."
+  },
+  "consentMemoryName": { "message": "Die Zertifizierungsstelle jeder Website merken." },
+  "consentMemoryBody": {
+    "message": "Nur auf diesem Gerät, um Sie zu warnen, wenn eine bekannte Website plötzlich eine andere verwendet."
+  },
+  "consentLater": {
+    "message": "Sie können beides jederzeit in den Optionen ändern. Vor Ihrer Zustimmung wird nichts ausgelesen oder gesendet."
+  },
+  "consentAgree": { "message": "Zustimmen und prüfen" },
+  "checkedAt": { "message": "Geprüft: $1" },
+
+  "sectionWitnesses": { "message": "Gesehen von" },
+  "witnessBrowser": { "message": "Ihr Browser" },
+  "witnessViaReload": { "message": "nach Neuladen der Seite ausgelesen" },
+  "witnessLocalNotRead": { "message": "Noch nicht ausgelesen." },
+  "witnessIssuedBy": { "message": "ausgestellt von $1" },
+  "witnessSigned": { "message": "signierte Antwort" },
+  "durationMs": { "message": "$1 ms" },
+  "fingerprintLabel": { "message": "SHA-256-Fingerabdruck $1" },
+  "externalSkippedInternal": {
+    "message": "Interne Website: Externe Quellen können sie nicht erreichen und wurden daher nicht gefragt."
+  },
+  "noSourcesNote": {
+    "message": "Aktivieren Sie den PlusPrivacy-Notar oder fügen Sie in den Optionen eine weitere Quelle hinzu, um zu vergleichen, was Ihr Browser erhält und was andere sehen."
+  },
+  "noSourcesNoteLite": {
+    "message": "Diese Version bezieht Zertifikate nur über externe Quellen. Aktivieren Sie den PlusPrivacy-Notar oder fügen Sie in den Optionen eine Quelle hinzu."
+  },
+  "askLocalText": {
+    "message": "Das Auslesen aus Ihrem Browser erfolgt nur bei Bedarf. Chrome zeigt dabei einige Sekunden lang seine Fehlerbehebungsleiste an."
+  },
+  "probeBlockedText": {
+    "message": "Diese Seite blockiert die kleine Anfrage, mit der das Zertifikat ausgelesen wird (Content Security Policy). Wenn Sie die Seite neu laden, lässt es sich zuverlässig auslesen."
+  },
+
+  "actionAddSource": { "message": "Quelle hinzufügen" },
+  "actionReadLocal": { "message": "Aus Browser auslesen" },
+  "actionReloadAndRead": { "message": "Neu laden und auslesen" },
+  "actionCopyPem": { "message": "PEM kopieren" },
+  "actionDownloadChain": { "message": "Kette herunterladen" },
+  "actionTest": { "message": "Testen" },
+  "actionRemove": { "message": "Entfernen" },
+  "copied": { "message": "Kopiert" },
+  "copyFailed": { "message": "Kopieren fehlgeschlagen" },
+
+  "relationSameCertificate": { "message": "Identisch" },
+  "relationSameKey": { "message": "Gleicher Schlüssel" },
+  "relationSameIssuer": { "message": "Anderes Zertifikat, gleicher Aussteller" },
+  "relationSameCa": { "message": "Anderes Zertifikat, gleiche CA" },
+  "relationDifferent": { "message": "Abweichendes Zertifikat" },
+
+  "verdictConfirmedTitleOne": { "message": "Bestätigt durch $1 externe Quelle" },
+  "verdictConfirmedTitleFew": { "message": "Bestätigt durch $1 externe Quellen" },
+  "verdictConfirmedTitleOther": { "message": "Bestätigt durch $1 externe Quellen" },
+  "verdictConfirmedBody": {
+    "message": "Ihr Browser erhält dasselbe Zertifikat, das auch die externen Quellen sehen. Niemand ersetzt es unterwegs."
+  },
+  "verdictSameCaTitle": { "message": "Gleicher Aussteller, anderes Zertifikat" },
+  "verdictSameCaBody": {
+    "message": "Die externen Quellen erhalten ein anderes Zertifikat derselben Zertifizierungsstelle ($1). Das ist bei CDNs und während eines Zertifikatswechsels normal."
+  },
+  "verdictSameCaUnloggedTitle": { "message": "Gleicher Ausstellername, nicht bestätigt" },
+  "verdictSameCaUnloggedBody": {
+    "message": "Die externen Quellen erhalten ein anderes Zertifikat von einer Zertifizierungsstelle mit demselben Namen wie Ihre ($1), und Chrome hat nicht bestätigt, dass Ihres öffentlich protokolliert ist. CDNs können mehrere Zertifikate ausliefern, aber auch wer Verbindungen abfängt, kann den Namen einer Zertifizierungsstelle kopieren. Das bestätigt Ihr Zertifikat also nicht."
+  },
+  "verdictPublicTitle": { "message": "Öffentlich protokolliertes Zertifikat" },
+  "verdictPublicBody": {
+    "message": "Chrome hat bestätigt, dass das Zertifikat in den öffentlichen Certificate-Transparency-Logs steht. Es stammt also weder von einem lokalen Proxy noch von einer Antivirensoftware. Aktivieren Sie in den Optionen eine externe Quelle, um es gegenzuprüfen."
+  },
+  "verdictPublicBodyNoAnswer": {
+    "message": "Chrome hat bestätigt, dass das Zertifikat in den öffentlichen Certificate-Transparency-Logs steht. Es stammt also weder von einem lokalen Proxy noch von einer Antivirensoftware. Die externen Quellen haben nicht geantwortet."
+  },
+  "verdictPrivateCaTitle": { "message": "Nicht als öffentliches Zertifikat bestätigt" },
+  "verdictPrivateCaBody": {
+    "message": "Chrome hat nicht bestätigt, dass dieses von $1 ausgestellte Zertifikat in den öffentlichen Certificate-Transparency-Logs steht. Das passiert, wenn es von einer lokal installierten Zertifizierungsstelle stammt (Firmennetzwerk, Antivirensoftware, interner Server) oder wenn die Liste der CT-Logs im Browser veraltet ist. Fügen Sie externe Quellen hinzu, um herauszufinden, ob die Verbindung abgefangen wird."
+  },
+  "verdictInterceptedTitle": { "message": "Verbindung wahrscheinlich abgefangen" },
+  "verdictInterceptedByTitle": { "message": "Abgefangen von $1" },
+  "verdictInterceptedBody": {
+    "message": "Ihr Browser erhält ein von $1 ausgestelltes Zertifikat, externe Quellen sehen aber eines von $2, und Chrome hat nicht bestätigt, dass Ihres öffentlich protokolliert ist. Höchstwahrscheinlich entschlüsselt etwas zwischen Ihnen und der Website (Firmen-Proxy, Antivirensoftware oder etwas anderes) den Datenverkehr und signiert ihn neu."
+  },
+  "verdictSplitTitle": { "message": "Quellen widersprechen sich" },
+  "verdictSplitBody": {
+    "message": "Gleiches Zertifikat wie Ihres: $1. Ein anderes, ausgestellt von $2: $3. Entweder wird Ihre Verbindung abgefangen und die übereinstimmenden Quellen nutzen dasselbe Netzwerk wie Sie, oder die Verbindungen der anderen Quellen werden in deren Netzwerk abgefangen."
+  },
+  "verdictInterceptorBody": {
+    "message": "Das Zertifikat wurde von $1 ausgestellt und steht nicht in den öffentlichen Certificate-Transparency-Logs. So arbeiten Produkte zur HTTPS-Inspektion."
+  },
+  "interceptorIdentified": { "message": "$1 ist $2." },
+  "verdictConflictTitle": { "message": "Quellen sehen verschiedene Zertifikate" },
+  "verdictConflictBody": {
+    "message": "Ihr Browser und die externen Quellen sehen verschiedene öffentliche Zertifikate (Ihres ausgestellt von $1, das der Quellen von $2). Bei Websites hinter mehreren CDNs kommt das vor, ein genauerer Blick lohnt sich aber."
+  },
+  "verdictExternalTitleOne": { "message": "Gesehen von $1 externen Quelle" },
+  "verdictExternalTitleFew": { "message": "Gesehen von $1 externen Quellen" },
+  "verdictExternalTitleOther": { "message": "Gesehen von $1 externen Quellen" },
+  "verdictExternalBody": {
+    "message": "Das Auslesen aus Ihrem Browser ist deaktiviert, daher lässt sich ein Abfangen in Ihrem Netzwerk nicht erkennen. Die Quellen sehen Folgendes."
+  },
+  "verdictExternalBodyAsk": {
+    "message": "Lesen Sie das Zertifikat aus Ihrem Browser aus, um es mit dem zu vergleichen, was die Quellen sehen."
+  },
+  "verdictExternalBodyLocalFailed": {
+    "message": "Das Zertifikat konnte nicht aus Ihrem Browser ausgelesen werden, daher lässt sich ein Abfangen in Ihrem Netzwerk nicht ausschließen. Die Quellen sehen Folgendes."
+  },
+  "verdictExternalBodyLite": {
+    "message": "Diese Version kann das Zertifikat nicht aus Ihrem Browser auslesen, daher lässt sich ein Abfangen in Ihrem Netzwerk nicht erkennen. Die Quellen sehen Folgendes."
+  },
+  "verdictExternalDisagreeTitle": { "message": "Externe Quellen widersprechen sich" },
+  "verdictExternalDisagreeBody": { "message": "Die externen Quellen sehen untereinander verschiedene Zertifikate." },
+  "verdictTamperedTitle": { "message": "Eine Antwort wurde unterwegs verändert" },
+  "verdictTamperedBody": {
+    "message": "Die signierte Antwort von $1 wurde zwischen dieser Quelle und Ihrem Browser verändert und daher nicht verwendet. Das kann nur etwas, das die sicheren Verbindungen dieses Browsers abfängt."
+  },
+  "verdictUnsignedTitle": { "message": "Nur durch unsignierte Antworten bestätigt" },
+  "verdictUnsignedBody": {
+    "message": "Ihr Browser erhält dasselbe Zertifikat wie in den Antworten von $1, aber diese Antworten sind nicht signiert, und Chrome hat nicht bestätigt, dass Ihr Zertifikat öffentlich protokolliert ist. Etwas, das Ihre Verbindung abfängt, könnte diese Antworten erzeugt haben. Antworten, die mit einem bekannten Schlüssel signiert sind, wie die des PlusPrivacy-Notars, lassen sich nicht fälschen."
+  },
+  "verdictHttpTitle": { "message": "Unverschlüsselte Seite" },
+  "verdictHttpBody": {
+    "message": "Diese Seite wurde über unverschlüsseltes HTTP geladen, daher kann jeder im Netzwerk sie lesen oder verändern. Kein Zertifikat schützt sie."
+  },
+  "verdictHttpBodyWithCert": {
+    "message": "Diese Seite wurde über unverschlüsseltes HTTP geladen, daher kann jeder im Netzwerk sie lesen oder verändern. Unten sehen Sie das Zertifikat, das der Server über HTTPS (Port 443) anbietet."
+  },
+  "verdictNoSourcesTitle": { "message": "Kein Zertifikat zum Anzeigen" },
+  "verdictNoSourcesBody": {
+    "message": "Aktivieren Sie in den Optionen das Auslesen aus dem Browser, den PlusPrivacy-Notar oder eine andere Quelle."
+  },
+  "verdictNoSourcesLite": {
+    "message": "Aktivieren Sie den PlusPrivacy-Notar oder fügen Sie in den Optionen eine Quelle hinzu, um das Zertifikat dieser Website zu sehen."
+  },
+  "verdictNoSourcesLocalFailed": {
+    "message": "Das Zertifikat konnte nicht aus Ihrem Browser ausgelesen werden, und keine externe Quelle hat geantwortet."
+  },
+  "verdictInternalBody": {
+    "message": "Externe Quellen können interne Websites nicht erreichen, und das Zertifikat wurde nicht aus Ihrem Browser ausgelesen."
+  },
+  "verdictAllSourcesFailed": {
+    "message": "Keine externe Quelle hat geantwortet. Prüfen Sie die Quellen in den Optionen."
+  },
+  "verdictAskTitle": { "message": "Bereit zum Auslesen des Zertifikats" },
+  "verdictAskBody": { "message": "Das Auslesen aus dem Browser erfolgt nur bei Bedarf." },
+
+  "kind_corporateProxy": { "message": "ein Firmen-Proxy oder eine Firewall" },
+  "kind_cloudProxy": { "message": "ein Cloud-Sicherheitsgateway" },
+  "kind_antivirus": { "message": "eine Antivirensoftware mit HTTPS-Scan" },
+  "kind_contentFilter": { "message": "ein Inhaltsfilter" },
+  "kind_debugProxy": { "message": "ein Debugging-Proxy" },
+  "kind_adware": { "message": "Adware" },
+
+  "warnExpired": { "message": "Das Zertifikat ist abgelaufen." },
+  "warnNotYetValid": { "message": "Das Zertifikat ist noch nicht gültig." },
+  "warnExpiresSoon": { "message": "Das Zertifikat läuft in $1 ab." },
+  "warnHostMismatch": { "message": "Das Zertifikat gilt nicht für $1." },
+  "warnWeakSignature": { "message": "Die Kette verwendet eine schwache Signatur (SHA-1 oder MD5)." },
+  "warnWeakKey": { "message": "Der RSA-Schlüssel hat nur $1 Bit." },
+  "warnObsoleteProtocol": { "message": "Veraltetes Protokoll: $1." },
+  "warnNotaryUntrusted": { "message": "$1 hält das gesehene Zertifikat nicht für vertrauenswürdig: $2." },
+  "warnNotPubliclyLogged": {
+    "message": "Chrome hat nicht bestätigt, dass dieses Zertifikat öffentlich protokolliert ist."
+  },
+  "warnSomeSourcesDiffer": {
+    "message": "Anderes Zertifikat bei $1 (ausgestellt von $2). Ihres ist öffentlich protokolliert, die Abweichung liegt also wahrscheinlich auf der anderen Seite."
+  },
+
+  "sectionCertificate": { "message": "Zertifikat" },
+  "sectionCertificateExternal": { "message": "Zertifikat, gesehen von $1" },
+  "certIssuedTo": { "message": "Ausgestellt für" },
+  "andMore": { "message": "+$1 weitere" },
+  "certOrganization": { "message": "Organisation" },
+  "certIssuedBy": { "message": "Ausgestellt von" },
+  "certValidity": { "message": "Gültigkeit" },
+  "certType": { "message": "Typ" },
+  "validityRemaining": { "message": "läuft in $1 ab" },
+  "validityExpired": { "message": "vor $1 abgelaufen" },
+  "validityFuture": { "message": "noch nicht gültig" },
+  "daysOne": { "message": "$1 Tag" },
+  "daysFew": { "message": "$1 Tagen" },
+  "daysOther": { "message": "$1 Tagen" },
+  "level_DV": { "message": "Domainvalidiert (DV)" },
+  "level_OV": { "message": "Organisationsvalidiert (OV)" },
+  "level_EV": { "message": "Erweiterte Validierung (EV)" },
+  "level_IV": { "message": "Personenvalidiert (IV)" },
+
+  "sectionConnection": { "message": "Verbindung" },
+  "connProtocol": { "message": "Protokoll" },
+  "connKeyExchange": { "message": "Schlüsselaustausch" },
+  "connCipher": { "message": "Chiffre" },
+  "connCT": { "message": "Transparenz" },
+  "connECH": { "message": "Encrypted Client Hello" },
+  "ctCompliant": { "message": "Öffentlich protokolliert" },
+  "ctNotCompliant": { "message": "Nicht protokolliert" },
+  "ctUnknown": { "message": "Unbekannt" },
+  "sctsOne": { "message": "$1 gültiger SCT" },
+  "sctsFew": { "message": "$1 gültige SCTs" },
+  "sctsOther": { "message": "$1 gültige SCTs" },
+  "yes": { "message": "Ja" },
+  "no": { "message": "Nein" },
+
+  "sectionChain": { "message": "Zertifikatskette ($1)" },
+  "chainLeaf": { "message": "Website" },
+  "chainIntermediate": { "message": "Zwischen-CA" },
+  "chainRoot": { "message": "Stamm-CA" },
+  "chainIssuedBy": { "message": "Ausgestellt von $1" },
+
+  "sectionDetails": { "message": "Technische Details" },
+  "detailSpkiPin": { "message": "Schlüssel-Pin" },
+  "detailSerial": { "message": "Seriennummer" },
+  "detailSignature": { "message": "Signatur" },
+  "detailPublicKey": { "message": "Öffentlicher Schlüssel" },
+  "detailServerSignature": { "message": "TLS-Signatur" },
+  "detailNamesOne": { "message": "Name" },
+  "detailNamesFew": { "message": "Namen ($1)" },
+  "detailNamesOther": { "message": "Namen ($1)" },
+  "detailKeyUsage": { "message": "Schlüsselverwendung" },
+  "detailExtKeyUsage": { "message": "Erweiterte Schlüsselverwendung" },
+  "detailPolicies": { "message": "Richtlinien" },
+  "detailCaIssuers": { "message": "CA-Aussteller" },
+  "detailScts": { "message": "SCTs" },
+  "detailMustStaple": { "message": "OCSP Must-Staple" },
+  "detailExtensions": { "message": "Erweiterungen" },
+  "critical": { "message": "kritisch" },
+
+  "localErr_restrictedPage": {
+    "message": "Chrome erlaubt das Auslesen dieser Seite nicht (interne Seite, Fehlerseite oder Seite einer anderen Erweiterung)."
+  },
+  "localErr_blockedByPolicy": {
+    "message": "Eine Richtlinie Ihrer Organisation blockiert das Auslesen von Zertifikaten aus dem Browser."
+  },
+  "localErr_probeBlocked": {
+    "message": "Die Seite hat die Anfrage blockiert, mit der das Zertifikat ausgelesen wird."
+  },
+  "localErr_reloadFailed": { "message": "Die Seite wurde nicht rechtzeitig fertig geladen." },
+  "localErr_canceledByUser": { "message": "Das Auslesen wurde über die Fehlerbehebungsleiste von Chrome abgebrochen." },
+  "localErr_detached": { "message": "Chrome hat das Auslesen beendet." },
+  "localErr_navigated": { "message": "Im Tab wurde eine andere Website geöffnet. Prüfen Sie erneut." },
+  "localErr_noCertificate": { "message": "Chrome hat für diese Seite kein Zertifikat zurückgegeben." },
+  "localErr_notHttps": { "message": "Die Seite wird nicht über HTTPS bereitgestellt." },
+  "localErr_tabGone": { "message": "Der Tab wurde geschlossen." },
+  "localErr_alreadyAttached": { "message": "Mit diesem Tab ist bereits ein anderer Debugger verbunden." },
+  "localErr_generic": { "message": "Auslesen fehlgeschlagen: $1" },
+
+  "notaryErr_timeout": { "message": "Keine Antwort nach $1 s." },
+  "notaryErr_http": { "message": "Die Quelle hat mit HTTP $1 geantwortet." },
+  "notaryErr_network": {
+    "message": "Die Quelle ist nicht erreichbar (Netzwerkfehler oder fehlende CORS-Header)."
+  },
+  "notaryErr_unauthorized": { "message": "Die Quelle hat das Token abgelehnt." },
+  "notaryErr_rateLimited": { "message": "Zu viele Anfragen; die Quelle bittet, seltener anzufragen." },
+  "notaryErr_badResponse": { "message": "Die Quelle hat eine ungültige Antwort gesendet." },
+  "notaryErr_badCertificate": { "message": "Die Quelle hat ein unlesbares Zertifikat gesendet." },
+  "notaryErr_badEndpoint": { "message": "Die Adresse der Quelle ist ungültig." },
+  "notaryErr_forbiddenTarget": { "message": "Die Quelle lehnt diese Adresse ab (privat oder reserviert)." },
+  "notaryErr_forbiddenPort": { "message": "Die Quelle prüft diesen Port nicht." },
+  "notaryErr_dnsFailed": { "message": "Die Quelle konnte den Namen der Website nicht auflösen." },
+  "notaryErr_connectFailed": { "message": "Die Quelle konnte keine Verbindung zur Website herstellen." },
+  "notaryErr_tlsFailed": { "message": "Der TLS-Handshake ist bei der Quelle fehlgeschlagen." },
+  "notaryErr_busy": { "message": "Die Quelle ist ausgelastet; versuchen Sie es gleich erneut." },
+  "notaryErr_badRequest": { "message": "Die Quelle hat die Anfrage nicht verstanden." },
+  "notaryErr_forbiddenOrigin": {
+    "message": "Die Quelle akzeptiert keine Anfragen von dieser Kopie der Erweiterung."
+  },
+  "notaryErr_noKey": {
+    "message": "Diese Version hat keinen Schlüssel zum Prüfen der Antworten dieser Quelle, daher wurde die Quelle nicht gefragt."
+  },
+  "notaryErr_unsigned": { "message": "Die Antwort war nicht signiert und wurde daher nicht verwendet." },
+  "notaryErr_unknownKey": {
+    "message": "Die Antwort ist mit einem dieser Erweiterung unbekannten Schlüssel signiert und wurde daher nicht verwendet. Vielleicht hat die Quelle einen neuen Schlüssel: Aktualisieren Sie die Erweiterung oder den Schlüssel der Quelle."
+  },
+  "notaryErr_tampered": { "message": "Die Antwort wurde unterwegs verändert und daher nicht verwendet." },
+  "notaryErr_internal": { "message": "Interner Fehler bei der Quelle." },
+  "notaryErr_cannotVerify": {
+    "message": "Dieser Browser konnte die Signatur nicht prüfen, daher wurde die Antwort nicht verwendet."
+  },
+  "notaryErr_other": { "message": "Fehler $1 $2" },
+
+  "sectionHistory": { "message": "Verlauf" },
+  "historyFirst": {
+    "message": "Erste Prüfung dieser Website. Ab jetzt merkt sich SSL Checker, dass ihr Zertifikat von $1 stammt."
+  },
+  "historyKnown": {
+    "message": "Dieselbe Zertifizierungsstelle wie bei Ihren früheren Prüfungen: $1, $2 seit dem $3."
+  },
+  "historyLearned": { "message": "Ab jetzt merkt sich SSL Checker für diese Website auch $1." },
+  "historyChangedBefore": { "message": "Bisher: $1, $2, die letzte am $3." },
+  "historyChangedNow": { "message": "Jetzt: $1." },
+  "historySameName": {
+    "message": "Die Zertifizierungsstelle heißt wie bisher, signiert aber mit einem für diese Website noch nie gesehenen Schlüssel."
+  },
+  "historyTrusted": { "message": "$1 gilt für diese Website jetzt als vertrauenswürdig." },
+  "historyForgotten": {
+    "message": "Diese Website wurde vergessen. Mit der nächsten Prüfung beginnt ihr Verlauf von vorn."
+  },
+  "historyIncognito": {
+    "message": "Das Website-Gedächtnis ist in Inkognitofenstern deaktiviert: Es wird nichts gespeichert oder verglichen."
+  },
+  "checksOne": { "message": "$1 Prüfung" },
+  "checksFew": { "message": "$1 Prüfungen" },
+  "checksOther": { "message": "$1 Prüfungen" },
+  "actionTrustCa": { "message": "Für diese Website vertrauen" },
+  "actionForgetSite": { "message": "Website vergessen" },
+  "verdictCaChangedTitle": { "message": "Zertifizierungsstelle geändert" },
+  "verdictCaChangedBody": {
+    "message": "Bei Ihren früheren Prüfungen hatte diese Website immer ein öffentliches Zertifikat von $1. Jetzt erhält Ihr Browser eines von $2, das nicht öffentlich protokolliert ist. Höchstwahrscheinlich fängt etwas zwischen Ihnen und der Website die Verbindung ab."
+  },
+  "verdictCaChangedSameNameBody": {
+    "message": "Das Zertifikat gibt wie bisher an, von $1 zu stammen, ist aber mit einem für diese Website noch nie gesehenen Schlüssel signiert und nicht öffentlich protokolliert. Höchstwahrscheinlich fängt etwas zwischen Ihnen und der Website die Verbindung ab."
+  },
+  "warnCaChanged": { "message": "Die Zertifizierungsstelle dieser Website hat sich geändert: vorher $1, jetzt $2." },
+  "warnCaChangedSameName": {
+    "message": "Das Zertifikat gibt wie bisher an, von $1 zu stammen, ist aber mit einem für diese Website noch nie gesehenen Schlüssel signiert."
+  },
+  "warnCaChangedPublic": {
+    "message": "Diese Website ist von $1 zu $2 gewechselt. Das neue Zertifikat ist öffentlich protokolliert."
+  },
+  "warnCaChangedNowPublic": {
+    "message": "Frühere Prüfungen dieser Website liefen über $1, eine auf diesem Computer oder im Netzwerk installierte Zertifizierungsstelle (zum Beispiel ein Firmen-Proxy). Jetzt ist das Zertifikat öffentlich."
+  },
+  "warnNotaryTampered": {
+    "message": "Die signierte Antwort von $1 wurde unterwegs verändert und nicht verwendet: Etwas fängt die sicheren Verbindungen dieses Browsers ab."
+  },
+
+  "optMemoryTitle": { "message": "Website-Gedächtnis" },
+  "optMemoryIntro": {
+    "message": "Wenn das Zertifikat aus Ihrem Browser ausgelesen wird, merkt sich SSL Checker für jede geprüfte Website, welche Zertifizierungsstelle es ausgestellt hat, und warnt Sie, wenn eine bekannte Website plötzlich eine andere verwendet. Alles bleibt auf diesem Gerät, und in Inkognitofenstern wird nichts gespeichert."
+  },
+  "fieldMemoryEnabled": { "message": "Zertifizierungsstelle der von mir geprüften Websites merken" },
+  "optMemoryHelp": {
+    "message": "Ohne diese Option wird nichts mehr gespeichert. Bereits Gespeichertes löschen Sie mit der Schaltfläche Alle Websites vergessen."
+  },
+  "memoryCountOne": { "message": "$1 Website gespeichert" },
+  "memoryCountFew": { "message": "$1 Websites gespeichert" },
+  "memoryCountOther": { "message": "$1 Websites gespeichert" },
+  "actionForgetAll": { "message": "Alle Websites vergessen" },
+  "forgotAll": { "message": "Alle Websites wurden vergessen" },
+
+  "optionsTitle": { "message": "Optionen für SSL Checker" },
+  "optionsIntro": {
+    "message": "Legen Sie fest, wie das Zertifikat ausgelesen wird und mit welchen externen Quellen es verglichen wird."
+  },
+  "optLocalTitle": { "message": "Auslesen aus Ihrem Browser" },
+  "optLocalIntro": {
+    "message": "So sehen Sie genau das Zertifikat, das Ihr Browser erhalten hat, und ein Abfangen in Ihrem Netzwerk lässt sich erkennen. Chrome bietet dafür keine eigene API, daher verbindet die Erweiterung ihren Debugger für etwa eine Sekunde mit dem Tab. Währenddessen zeigt Chrome eine Leiste mit dem Hinweis, dass SSL Checker die Fehlerbehebung für diesen Browser gestartet hat."
+  },
+  "optLocalUnavailable": {
+    "message": "Diese Version von SSL Checker enthält die Debugger-Berechtigung nicht, daher werden Zertifikate nur über externe Quellen bezogen."
+  },
+  "modeAlways": { "message": "Jedes Mal" },
+  "modeAlwaysHelp": { "message": "Das Zertifikat bei jedem Öffnen von SSL Checker auslesen." },
+  "modeAsk": { "message": "Bei Bedarf" },
+  "modeAskHelp": {
+    "message": "Zuerst die externen Ergebnisse anzeigen; nur nach einem Klick aus dem Browser auslesen."
+  },
+  "modeNever": { "message": "Nie" },
+  "modeNeverHelp": { "message": "Nur externe Quellen verwenden. Die Fehlerbehebungsleiste erscheint nie." },
+  "optSourcesTitle": { "message": "Externe Quellen" },
+  "optSourcesIntro": {
+    "message": "Jede Quelle ist ein Notarserver, der sich von einem anderen Ort im Internet aus mit der Website verbindet und das Zertifikat meldet, das er erhält. Gesendet werden ihm nur der Hostname und der Port der Website."
+  },
+  "optAddSourceTitle": { "message": "Quelle hinzufügen" },
+  "optOwnNotary": {
+    "message": "Sie möchten einen eigenen Notar? Er ist Open Source und läuft auf jedem Server mit Docker."
+  },
+  "optOwnNotaryLink": { "message": "So installieren Sie ihn" },
+  "fieldName": { "message": "Name" },
+  "fieldNamePlaceholder": { "message": "Server in Frankfurt" },
+  "fieldUrl": { "message": "Adresse" },
+  "fieldUrlHelp": {
+    "message": "HTTPS-Adresse des Notars. SSL Checker sendet ihm die Website im Body einer POST-Anfrage, nie in der Adresse."
+  },
+  "fieldToken": { "message": "Zugriffstoken (optional)" },
+  "fieldTokenHelp": { "message": "Wird als Authorization: Bearer gesendet. Nur auf diesem Gerät gespeichert." },
+  "fieldKey": { "message": "Öffentlicher Schlüssel (optional)" },
+  "fieldKeyHelp": {
+    "message": "Mit einem Schlüssel zählt eine Antwort nur, wenn dieser Notar sie signiert hat, sodass niemand sie unterwegs verändern kann. Der Notar gibt seinen Schlüssel beim Start aus. Trennen Sie mehrere Schlüssel durch Leerzeichen."
+  },
+  "endpointEnabled": { "message": "$1 verwenden" },
+  "tokenSet": { "message": "Token gespeichert" },
+  "keySet": { "message": "Nur signierte Antworten" },
+  "defaultSource": {
+    "message": "Standardquelle, betrieben von PlusPrivacy. Die Antworten sind signiert, und die Quelle führt keine Aufzeichnungen über die Websites, die Sie prüfen."
+  },
+  "testRunning": { "message": "Quelle wird zu example.com befragt…" },
+  "testOk": {
+    "message": "Funktioniert: Die Quelle ($2) sieht das Zertifikat von example.com, ausgestellt von $1, in $3 ms."
+  },
+  "testSigned": { "message": "Die Antwort ist mit dem erwarteten Schlüssel signiert." },
+  "testSelfSigned": {
+    "message": "Die Antworten tragen eine Signatur mit dem Schlüssel $1. Prüfen Sie vor dem Hinzufügen, ob es der Schlüssel ist, den der Notar auf seinem Server ausgegeben hat: Wer die Verbindung abfängt, könnte einen eigenen gesendet haben."
+  },
+  "testUnsigned": { "message": "Die Antworten sind nicht signiert." },
+  "testFailed": { "message": "Fehlgeschlagen: $1" },
+  "endpointErrorInvalidUrl": { "message": "Geben Sie eine gültige Adresse ein." },
+  "endpointErrorCredentialsInUrl": {
+    "message": "Geben Sie keinen Nutzernamen und kein Passwort in der Adresse an; verwenden Sie das Token-Feld."
+  },
+  "endpointErrorFragment": { "message": "Entfernen Sie den Teil mit # aus der Adresse." },
+  "endpointErrorTemplate": {
+    "message": "Geben Sie die Adresse des Notars ohne {host} oder {port} an: SSL Checker sendet die Website im Body der Anfrage."
+  },
+  "endpointErrorHttps": {
+    "message": "Die Adresse muss HTTPS verwenden (unverschlüsseltes HTTP ist nur für localhost erlaubt)."
+  },
+  "endpointErrorDuplicate": { "message": "Diese Quelle ist bereits in der Liste." },
+  "endpointErrorToken": { "message": "Das Token darf nur sichtbare ASCII-Zeichen enthalten." },
+  "endpointErrorKey": {
+    "message": "Geben Sie den Schlüssel so ein, wie der Notar ihn ausgibt: ed25519: gefolgt von 43 Zeichen."
+  },
+  "optAdvancedTitle": { "message": "Erweitert" },
+  "fieldTimeout": { "message": "Wartezeit pro Quelle (Sekunden)" },
+  "optProtocolTitle": { "message": "Notarprotokoll" },
+  "optProtocolIntro": {
+    "message": "Jeder Server, der diese Anfrage beantwortet, kann eine Quelle sein. Die Referenzimplementierung ist der Notar des Projekts SSL Checker, ein kleiner, für Docker paketierter Node.js-Dienst."
+  },
+  "optProtocolSigning": {
+    "message": "Ein Notar mit Signaturschlüssel gibt die Nonce der Anfrage zurück, fügt seinen öffentlichen Schlüssel hinzu und signiert die Antwort: Notary-Signature enthält die Ed25519-Signatur der Zeile „SSL Checker notary answer v1“ gefolgt vom exakten Body. Wenn Sie einer Quelle ihren Schlüssel geben, verwendet die Erweiterung nur Antworten, die damit für Host, Port und Nonce ihrer Anfrage signiert sind."
+  },
+  "optProtocolErrors": {
+    "message": "Antworten Sie bei Fehlern mit einem Status 4xx oder 5xx und {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}}. Die Erweiterung hat keine Host-Berechtigungen, daher muss der Server CORS-Header senden und den Preflight eines POST mit Content-Type beantworten."
+  },
+  "saved": { "message": "Gespeichert" },
+  "versionLabel": { "message": "Version $1" }
+}

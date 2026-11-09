@@ -1,0 +1,448 @@
+{
+  "localeCode": { "message": "uk", "description": "BCP 47 tag used to format dates and plurals in this language." },
+  "extName": { "message": "SSL Checker" },
+  "extNameLite": { "message": "SSL Checker Lite" },
+  "extDescription": {
+    "message": "Переглядайте справжній TLS-сертифікат поточного сайту й виявляйте перехоплення, звіряючи його з незалежними нотаріусами."
+  },
+  "extDescriptionLite": {
+    "message": "Переглядайте TLS-сертифікат поточного сайту таким, яким його отримують незалежні сервери-нотаріуси."
+  },
+  "actionTitle": { "message": "Перевірити сертифікат цього сайту" },
+
+  "schemeHttps": { "message": "HTTPS-з’єднання" },
+  "schemeHttp": { "message": "Незашифрована HTTP-сторінка" },
+  "actionRecheck": { "message": "Перевірити ще раз" },
+  "actionSettings": { "message": "Параметри" },
+  "unsupportedTitle": { "message": "Тут нічого перевіряти" },
+  "unsupportedBody": {
+    "message": "Відкрийте сайт (http або https) і знову натисніть значок, щоб побачити його сертифікат."
+  },
+  "loadingTitle": { "message": "Перевірка сертифіката…" },
+  "loadingReload": { "message": "Оновлення сторінки для зчитування сертифіката…" },
+  "loadingDebuggerBar": {
+    "message": "Поки сертифікат зчитується, Chrome кілька секунд показує панель із повідомленням, що SSL Checker налагоджує браузер."
+  },
+  "checkFailedTitle": { "message": "Не вдалося виконати перевірку" },
+  "checkFailedBody": { "message": "Помилка: $1" },
+  "consentTitle": { "message": "Перед першою перевіркою" },
+  "consentIntro": {
+    "message": "SSL Checker перевіряє сайт у поточній вкладці, лише коли ви натискаєте його значок. Він зчитує сертифікат, який отримав ваш браузер, і, якщо ви погоджуєтеся:"
+  },
+  "consentIntroLite": {
+    "message": "SSL Checker перевіряє сайт у поточній вкладці, лише коли ви натискаєте його значок. Якщо ви погоджуєтеся:"
+  },
+  "consentNotaryName": { "message": "Запитує нотаріуса PlusPrivacy." },
+  "consentNotaryBody": {
+    "message": "Ім’я та порт сайту надсилаються на $1, який підключається до сайту зі своєї мережі й повертає сертифікат, що його бачить. Нотаріус не веде записів про сайти."
+  },
+  "consentMemoryName": { "message": "Запам’ятовує центр сертифікації кожного сайту." },
+  "consentMemoryBody": {
+    "message": "Лише на цьому пристрої, щоб попередити вас, коли відомий сайт раптом відкриється із сертифікатом іншого центру."
+  },
+  "consentLater": {
+    "message": "Обидва пункти можна будь-коли змінити в параметрах. Нічого не зчитується й не надсилається, доки ви не погодитеся."
+  },
+  "consentAgree": { "message": "Погодитися й перевірити" },
+  "checkedAt": { "message": "Перевірено $1" },
+
+  "sectionWitnesses": { "message": "Хто бачить сертифікат" },
+  "witnessBrowser": { "message": "Ваш браузер" },
+  "witnessViaReload": { "message": "зчитано після оновлення сторінки" },
+  "witnessLocalNotRead": { "message": "Ще не зчитано." },
+  "witnessIssuedBy": { "message": "видавець: $1" },
+  "witnessSigned": { "message": "підписана відповідь" },
+  "durationMs": { "message": "$1 мс" },
+  "fingerprintLabel": { "message": "Відбиток SHA-256 $1" },
+  "externalSkippedInternal": {
+    "message": "Внутрішній сайт: зовнішні джерела не мають до нього доступу, тому їх не запитували."
+  },
+  "noSourcesNote": {
+    "message": "Увімкніть нотаріуса PlusPrivacy або додайте інше джерело в параметрах, щоб порівняти те, що отримує ваш браузер, із тим, що бачать інші."
+  },
+  "noSourcesNoteLite": {
+    "message": "Ця версія зчитує сертифікати лише через зовнішні джерела. Увімкніть нотаріуса PlusPrivacy або додайте джерело в параметрах."
+  },
+  "askLocalText": {
+    "message": "Зчитування з браузера виконується на вимогу. Chrome на кілька секунд покаже панель налагодження."
+  },
+  "probeBlockedText": {
+    "message": "Ця сторінка блокує невеликий запит, за допомогою якого зчитується сертифікат (Content Security Policy). Якщо оновити сторінку, сертифікат буде зчитано надійно."
+  },
+
+  "actionAddSource": { "message": "Додати джерело" },
+  "actionReadLocal": { "message": "Зчитати з браузера" },
+  "actionReloadAndRead": { "message": "Оновити сторінку й зчитати" },
+  "actionCopyPem": { "message": "Копіювати PEM" },
+  "actionDownloadChain": { "message": "Завантажити ланцюжок" },
+  "actionTest": { "message": "Перевірити" },
+  "actionRemove": { "message": "Видалити" },
+  "copied": { "message": "Скопійовано" },
+  "copyFailed": { "message": "Помилка копіювання" },
+
+  "relationSameCertificate": { "message": "Ідентичний" },
+  "relationSameKey": { "message": "Той самий ключ" },
+  "relationSameIssuer": { "message": "Інший сертифікат того ж видавця" },
+  "relationSameCa": { "message": "Інший сертифікат того ж ЦС" },
+  "relationDifferent": { "message": "Інший сертифікат" },
+
+  "verdictConfirmedTitleOne": { "message": "Підтверджено $1 зовнішнім джерелом" },
+  "verdictConfirmedTitleFew": { "message": "Підтверджено $1 зовнішніми джерелами" },
+  "verdictConfirmedTitleMany": { "message": "Підтверджено $1 зовнішніми джерелами" },
+  "verdictConfirmedTitleOther": { "message": "Підтверджено $1 зовнішнього джерела" },
+  "verdictConfirmedBody": {
+    "message": "Ваш браузер отримує той самий сертифікат, який бачать зовнішні джерела. Ніхто не підміняє його на шляху до вас."
+  },
+  "verdictSameCaTitle": { "message": "Той самий видавець, інший сертифікат" },
+  "verdictSameCaBody": {
+    "message": "Зовнішні джерела отримують інший сертифікат від того самого центру сертифікації ($1). Це нормально для CDN і під час заміни сертифікатів."
+  },
+  "verdictSameCaUnloggedTitle": { "message": "Та сама назва видавця, не підтверджено" },
+  "verdictSameCaUnloggedBody": {
+    "message": "Зовнішні джерела отримують інший сертифікат від центру сертифікації з такою самою назвою, як у вашого ($1), а Chrome не підтвердив, що ваш сертифікат є в публічних журналах. CDN можуть віддавати кілька сертифікатів, але й засіб перехоплення може скопіювати назву центру сертифікації, тож це не підтверджує ваш сертифікат."
+  },
+  "verdictPublicTitle": { "message": "Сертифікат є в публічних журналах" },
+  "verdictPublicBody": {
+    "message": "Chrome підтвердив, що сертифікат є в публічних журналах Certificate Transparency, тож його не створив локальний проксі-сервер чи антивірус. Для перехресної перевірки ввімкніть зовнішнє джерело в параметрах."
+  },
+  "verdictPublicBodyNoAnswer": {
+    "message": "Chrome підтвердив, що сертифікат є в публічних журналах Certificate Transparency, тож його не створив локальний проксі-сервер чи антивірус. Зовнішні джерела не відповіли."
+  },
+  "verdictPrivateCaTitle": { "message": "Не підтверджено як публічний сертифікат" },
+  "verdictPrivateCaBody": {
+    "message": "Chrome не підтвердив, що цей сертифікат, виданий $1, є в публічних журналах Certificate Transparency. Так буває, коли його видав локально встановлений центр сертифікації (корпоративна мережа, антивірус, внутрішній сервер) або коли список журналів CT у браузері застарів. Додайте зовнішні джерела, щоб з’ясувати, чи перехоплено з’єднання."
+  },
+  "verdictInterceptedTitle": { "message": "З’єднання, імовірно, перехоплено" },
+  "verdictInterceptedByTitle": { "message": "З’єднання перехоплює $1" },
+  "verdictInterceptedBody": {
+    "message": "Ваш браузер отримує сертифікат, виданий $1, але зовнішні джерела бачать сертифікат, виданий $2, а Chrome не підтвердив, що ваш є в публічних журналах. Найімовірніше, щось між вами й сайтом (корпоративний проксі-сервер, антивірус чи щось інше) розшифровує трафік і повторно його підписує."
+  },
+  "verdictSplitTitle": { "message": "Дані джерел розходяться" },
+  "verdictSplitBody": {
+    "message": "Той самий сертифікат, що й у вас: $1. Інший, виданий $2: $3. Або перехоплено ваше з’єднання, а джерела з тим самим сертифікатом перебувають у вашій мережі, або перехоплено мережу інших джерел."
+  },
+  "verdictInterceptorBody": {
+    "message": "Сертифікат видав $1, і його немає в публічних журналах Certificate Transparency. Саме так працюють продукти для інспектування HTTPS."
+  },
+  "interceptorIdentified": { "message": "$1 — це $2." },
+  "verdictConflictTitle": { "message": "Джерела бачать різні сертифікати" },
+  "verdictConflictBody": {
+    "message": "Ваш браузер і зовнішні джерела бачать різні публічні сертифікати (ваш видав $1, їхній — $2). Так буває із сайтами за кількома CDN, але на це варто звернути увагу."
+  },
+  "verdictExternalTitleOne": { "message": "За даними $1 зовнішнього джерела" },
+  "verdictExternalTitleFew": { "message": "За даними $1 зовнішніх джерел" },
+  "verdictExternalTitleMany": { "message": "За даними $1 зовнішніх джерел" },
+  "verdictExternalTitleOther": { "message": "За даними $1 зовнішнього джерела" },
+  "verdictExternalBody": {
+    "message": "Зчитування з браузера вимкнено, тож перехоплення у вашій мережі виявити неможливо. Ось що бачать джерела."
+  },
+  "verdictExternalBodyAsk": {
+    "message": "Зчитайте сертифікат із браузера, щоб порівняти його з тим, що бачать джерела."
+  },
+  "verdictExternalBodyLocalFailed": {
+    "message": "Не вдалося зчитати сертифікат із браузера, тож перехоплення у вашій мережі не можна виключити. Ось що бачать джерела."
+  },
+  "verdictExternalBodyLite": {
+    "message": "Ця версія не може зчитати сертифікат із браузера, тож перехоплення у вашій мережі виявити неможливо. Ось що бачать джерела."
+  },
+  "verdictExternalDisagreeTitle": { "message": "Дані зовнішніх джерел розходяться" },
+  "verdictExternalDisagreeBody": { "message": "Зовнішні джерела бачать сертифікати, які відрізняються між собою." },
+  "verdictTamperedTitle": { "message": "Відповідь змінено на шляху" },
+  "verdictTamperedBody": {
+    "message": "Підписану відповідь від $1 змінено між цим джерелом і вашим браузером, тому її не використано. Таке може зробити лише щось, що перехоплює захищені з’єднання цього браузера."
+  },
+  "verdictUnsignedTitle": { "message": "Підтверджено лише непідписаними відповідями" },
+  "verdictUnsignedBody": {
+    "message": "Ваш браузер отримує той самий сертифікат, що й у відповідях від $1, але ці відповіді не підписані, а Chrome не підтвердив, що ваш сертифікат є в публічних журналах. Їх могло написати щось, що перехоплює ваше з’єднання. Відповіді, підписані відомим ключем, як у нотаріуса PlusPrivacy, підробити неможливо."
+  },
+  "verdictHttpTitle": { "message": "Незашифрована сторінка" },
+  "verdictHttpBody": {
+    "message": "Цю сторінку завантажено через звичайний HTTP, тож будь-хто в мережі може її прочитати або змінити. Її не захищає жоден сертифікат."
+  },
+  "verdictHttpBodyWithCert": {
+    "message": "Цю сторінку завантажено через звичайний HTTP, тож будь-хто в мережі може її прочитати або змінити. Нижче показано сертифікат, який сервер пропонує через HTTPS (порт 443)."
+  },
+  "verdictNoSourcesTitle": { "message": "Немає сертифіката для показу" },
+  "verdictNoSourcesBody": {
+    "message": "Увімкніть у параметрах зчитування з браузера, нотаріуса PlusPrivacy або інше джерело."
+  },
+  "verdictNoSourcesLite": {
+    "message": "Щоб побачити сертифікат цього сайту, увімкніть нотаріуса PlusPrivacy або додайте джерело в параметрах."
+  },
+  "verdictNoSourcesLocalFailed": {
+    "message": "Не вдалося зчитати сертифікат із браузера, і жодне зовнішнє джерело не відповіло."
+  },
+  "verdictInternalBody": {
+    "message": "Зовнішні джерела не мають доступу до внутрішніх сайтів, а сертифікат не було зчитано з браузера."
+  },
+  "verdictAllSourcesFailed": { "message": "Жодне із зовнішніх джерел не відповіло. Перевірте їх у параметрах." },
+  "verdictAskTitle": { "message": "Готово до зчитування сертифіката" },
+  "verdictAskBody": { "message": "Зчитування з браузера виконується на вимогу." },
+
+  "kind_corporateProxy": { "message": "корпоративний проксі-сервер або брандмауер" },
+  "kind_cloudProxy": { "message": "хмарний шлюз безпеки" },
+  "kind_antivirus": { "message": "антивірус зі скануванням HTTPS" },
+  "kind_contentFilter": { "message": "фільтр вмісту" },
+  "kind_debugProxy": { "message": "проксі-сервер для налагодження" },
+  "kind_adware": { "message": "рекламне ПЗ" },
+
+  "warnExpired": { "message": "Термін дії сертифіката закінчився." },
+  "warnNotYetValid": { "message": "Сертифікат ще не дійсний." },
+  "warnExpiresSoon": { "message": "Термін дії сертифіката закінчується через $1." },
+  "warnHostMismatch": { "message": "Сертифікат не охоплює $1." },
+  "warnWeakSignature": { "message": "У ланцюжку використовується слабкий підпис (SHA-1 або MD5)." },
+  "warnWeakKey": { "message": "Довжина ключа RSA — лише $1 біт." },
+  "warnObsoleteProtocol": { "message": "Застарілий протокол: $1." },
+  "warnNotaryUntrusted": { "message": "$1 не довіряє сертифікату, який бачить: $2." },
+  "warnNotPubliclyLogged": { "message": "Chrome не підтвердив, що цей сертифікат є в публічних журналах." },
+  "warnSomeSourcesDiffer": {
+    "message": "Інший сертифікат у $1 (видавець: $2). Ваш є в публічних журналах, тож різниця, імовірно, на їхньому боці."
+  },
+
+  "sectionCertificate": { "message": "Сертифікат" },
+  "sectionCertificateExternal": { "message": "Сертифікат, який бачить $1" },
+  "certIssuedTo": { "message": "Кому видано" },
+  "andMore": { "message": "і ще $1" },
+  "certOrganization": { "message": "Організація" },
+  "certIssuedBy": { "message": "Ким видано" },
+  "certValidity": { "message": "Термін дії" },
+  "certType": { "message": "Тип" },
+  "validityRemaining": { "message": "ще $1" },
+  "validityExpired": { "message": "закінчився $1 тому" },
+  "validityFuture": { "message": "ще не дійсний" },
+  "daysOne": { "message": "$1 день" },
+  "daysFew": { "message": "$1 дні" },
+  "daysMany": { "message": "$1 днів" },
+  "daysOther": { "message": "$1 дня" },
+  "level_DV": { "message": "Перевірка домену (DV)" },
+  "level_OV": { "message": "Перевірка організації (OV)" },
+  "level_EV": { "message": "Розширена перевірка (EV)" },
+  "level_IV": { "message": "Перевірка особи (IV)" },
+
+  "sectionConnection": { "message": "З’єднання" },
+  "connProtocol": { "message": "Протокол" },
+  "connKeyExchange": { "message": "Обмін ключами" },
+  "connCipher": { "message": "Шифр" },
+  "connCT": { "message": "Прозорість" },
+  "connECH": { "message": "Encrypted Client Hello" },
+  "ctCompliant": { "message": "У публічних журналах" },
+  "ctNotCompliant": { "message": "Немає в журналах" },
+  "ctUnknown": { "message": "Невідомо" },
+  "sctsOne": { "message": "$1 дійсна SCT" },
+  "sctsFew": { "message": "$1 дійсні SCT" },
+  "sctsMany": { "message": "$1 дійсних SCT" },
+  "sctsOther": { "message": "$1 дійсної SCT" },
+  "yes": { "message": "Так" },
+  "no": { "message": "Ні" },
+
+  "sectionChain": { "message": "Ланцюжок сертифікатів ($1)" },
+  "chainLeaf": { "message": "Сайт" },
+  "chainIntermediate": { "message": "Проміжний" },
+  "chainRoot": { "message": "Кореневий" },
+  "chainIssuedBy": { "message": "Видавець: $1" },
+
+  "sectionDetails": { "message": "Технічні відомості" },
+  "detailSpkiPin": { "message": "Пін відкритого ключа" },
+  "detailSerial": { "message": "Серійний номер" },
+  "detailSignature": { "message": "Підпис" },
+  "detailPublicKey": { "message": "Відкритий ключ" },
+  "detailServerSignature": { "message": "Підпис TLS" },
+  "detailNamesOne": { "message": "Імена" },
+  "detailNamesFew": { "message": "Імена ($1)" },
+  "detailNamesMany": { "message": "Імена ($1)" },
+  "detailNamesOther": { "message": "Імена ($1)" },
+  "detailKeyUsage": { "message": "Використання ключа" },
+  "detailExtKeyUsage": { "message": "Розширене використання ключа" },
+  "detailPolicies": { "message": "Політики" },
+  "detailCaIssuers": { "message": "Видавці ЦС" },
+  "detailScts": { "message": "SCT" },
+  "detailMustStaple": { "message": "OCSP must-staple" },
+  "detailExtensions": { "message": "Розширення" },
+  "critical": { "message": "критичне" },
+
+  "localErr_restrictedPage": {
+    "message": "Chrome не дозволяє зчитувати цю сторінку (внутрішня сторінка, сторінка помилки або сторінка іншого розширення)."
+  },
+  "localErr_blockedByPolicy": { "message": "Правила вашої організації блокують зчитування сертифікатів із браузера." },
+  "localErr_probeBlocked": { "message": "Сторінка заблокувала запит, за допомогою якого зчитується сертифікат." },
+  "localErr_reloadFailed": { "message": "Сторінка не завантажилася вчасно." },
+  "localErr_canceledByUser": { "message": "Зчитування скасовано на панелі налагодження Chrome." },
+  "localErr_detached": { "message": "Chrome завершив сеанс зчитування." },
+  "localErr_navigated": { "message": "Вкладка перейшла на інший сайт. Перевірте ще раз." },
+  "localErr_noCertificate": { "message": "Chrome не повернув сертифікат для цієї сторінки." },
+  "localErr_notHttps": { "message": "Сторінка не використовує HTTPS." },
+  "localErr_tabGone": { "message": "Вкладку закрито." },
+  "localErr_alreadyAttached": { "message": "До цієї вкладки вже під’єднано інший налагоджувач." },
+  "localErr_generic": { "message": "Не вдалося зчитати: $1" },
+
+  "notaryErr_timeout": { "message": "Немає відповіді протягом $1 с." },
+  "notaryErr_http": { "message": "Джерело відповіло з кодом HTTP $1." },
+  "notaryErr_network": {
+    "message": "Не вдалося зв’язатися з джерелом (помилка мережі або немає заголовків CORS)."
+  },
+  "notaryErr_unauthorized": { "message": "Джерело відхилило токен." },
+  "notaryErr_rateLimited": { "message": "Забагато запитів; джерело просить надсилати їх рідше." },
+  "notaryErr_badResponse": { "message": "Джерело надіслало некоректну відповідь." },
+  "notaryErr_badCertificate": { "message": "Джерело надіслало сертифікат, який неможливо прочитати." },
+  "notaryErr_badEndpoint": { "message": "Адреса джерела некоректна." },
+  "notaryErr_forbiddenTarget": { "message": "Джерело відхиляє цю адресу (приватна або зарезервована)." },
+  "notaryErr_forbiddenPort": { "message": "Джерело не перевіряє цей порт." },
+  "notaryErr_dnsFailed": { "message": "Джерелу не вдалося розпізнати ім’я сайту." },
+  "notaryErr_connectFailed": { "message": "Джерелу не вдалося підключитися до сайту." },
+  "notaryErr_tlsFailed": { "message": "Рукостискання TLS на стороні джерела завершилося помилкою." },
+  "notaryErr_busy": { "message": "Джерело зайняте; спробуйте ще раз трохи згодом." },
+  "notaryErr_badRequest": { "message": "Джерело не зрозуміло запит." },
+  "notaryErr_forbiddenOrigin": { "message": "Джерело не приймає запити від цієї копії розширення." },
+  "notaryErr_noKey": {
+    "message": "У цій версії немає ключа для перевірки відповідей цього джерела, тому його не запитували."
+  },
+  "notaryErr_unsigned": { "message": "Відповідь не підписано, тому її не використано." },
+  "notaryErr_unknownKey": {
+    "message": "Відповідь підписано ключем, якого це розширення не знає, тому її не використано. Можливо, у джерела новий ключ: оновіть розширення або ключ джерела."
+  },
+  "notaryErr_tampered": { "message": "Відповідь змінено на шляху, тому її не використано." },
+  "notaryErr_internal": { "message": "У джерелі сталася внутрішня помилка." },
+  "notaryErr_cannotVerify": {
+    "message": "Цей браузер не зміг перевірити підпис відповіді, тому її не використано."
+  },
+  "notaryErr_other": { "message": "Помилка $1 $2" },
+
+  "sectionHistory": { "message": "Історія" },
+  "historyFirst": {
+    "message": "Перша перевірка цього сайту. Відтепер SSL Checker пам’ятає, що його сертифікат видає $1."
+  },
+  "historyKnown": {
+    "message": "Той самий центр сертифікації, що й під час ваших попередніх перевірок: $1 ($2 з $3)."
+  },
+  "historyLearned": { "message": "Відтепер SSL Checker також пам’ятає $1 для цього сайту." },
+  "historyChangedBefore": { "message": "Досі: $1 ($2, остання — $3)." },
+  "historyChangedNow": { "message": "Тепер: $1." },
+  "historySameName": {
+    "message": "Центр сертифікації має ту саму назву, що й раніше, але підписує ключем, якого для цього сайту ще не траплялося."
+  },
+  "historyTrusted": { "message": "Для цього сайту $1 тепер вважається довіреним." },
+  "historyForgotten": { "message": "Цей сайт забуто. Наступна перевірка почне його історію заново." },
+  "historyIncognito": {
+    "message": "У режимі анонімного перегляду пам’ять сайтів вимкнено: нічого не записується й не порівнюється."
+  },
+  "checksOne": { "message": "$1 перевірка" },
+  "checksFew": { "message": "$1 перевірки" },
+  "checksMany": { "message": "$1 перевірок" },
+  "checksOther": { "message": "$1 перевірки" },
+  "actionTrustCa": { "message": "Довіряти для цього сайту" },
+  "actionForgetSite": { "message": "Забути цей сайт" },
+  "verdictCaChangedTitle": { "message": "Центр сертифікації змінився" },
+  "verdictCaChangedBody": {
+    "message": "Під час ваших попередніх перевірок цей сайт завжди мав публічний сертифікат від $1. Тепер ваш браузер отримує сертифікат від $2, якого немає в публічних журналах. Найімовірніше, щось між вами й сайтом перехоплює з’єднання."
+  },
+  "verdictCaChangedSameNameBody": {
+    "message": "Сертифікат стверджує, що його видав $1, як і раніше, але його підписано ключем, якого для цього сайту ще не траплялося, і його немає в публічних журналах. Найімовірніше, щось між вами й сайтом перехоплює з’єднання."
+  },
+  "warnCaChanged": { "message": "Центр сертифікації цього сайту змінився: раніше $1, тепер $2." },
+  "warnCaChangedSameName": {
+    "message": "Сертифікат стверджує, що його видав $1, як і раніше, але його підписано ключем, якого для цього сайту ще не траплялося."
+  },
+  "warnCaChangedPublic": { "message": "Цей сайт перейшов із $1 на $2. Новий сертифікат є в публічних журналах." },
+  "warnCaChangedNowPublic": {
+    "message": "Попередні перевірки цього сайту проходили через $1 — центр сертифікації, встановлений на цьому комп’ютері або в мережі (наприклад, корпоративний проксі-сервер). Тепер сертифікат публічний."
+  },
+  "warnNotaryTampered": {
+    "message": "Підписану відповідь від $1 змінено на шляху, і її не використано: щось перехоплює захищені з’єднання цього браузера."
+  },
+
+  "optMemoryTitle": { "message": "Пам’ять сайтів" },
+  "optMemoryIntro": {
+    "message": "Коли сертифікат зчитується з браузера, SSL Checker запам’ятовує, який центр сертифікації видав його для кожного сайту, що ви перевіряєте, і попереджає вас, коли відомий вам сайт раптом відкривається із сертифікатом іншого центру. Усі дані залишаються на цьому пристрої, а в режимі анонімного перегляду нічого не записується."
+  },
+  "fieldMemoryEnabled": { "message": "Запам’ятовувати центр сертифікації сайтів, які я перевіряю" },
+  "optMemoryHelp": {
+    "message": "Якщо вимкнути цю функцію, записування припиниться. Щоб видалити вже збережене, скористайтеся кнопкою Забути всі сайти."
+  },
+  "memoryCountOne": { "message": "$1 сайт у пам’яті" },
+  "memoryCountFew": { "message": "$1 сайти в пам’яті" },
+  "memoryCountMany": { "message": "$1 сайтів у пам’яті" },
+  "memoryCountOther": { "message": "$1 сайту в пам’яті" },
+  "actionForgetAll": { "message": "Забути всі сайти" },
+  "forgotAll": { "message": "Усі сайти забуто" },
+
+  "optionsTitle": { "message": "Параметри SSL Checker" },
+  "optionsIntro": { "message": "Виберіть, як зчитувати сертифікат і з якими зовнішніми джерелами його порівнювати." },
+  "optLocalTitle": { "message": "Зчитування з браузера" },
+  "optLocalIntro": {
+    "message": "Так ви бачите саме той сертифікат, який отримав ваш браузер, тож можна виявити перехоплення у вашій мережі. У Chrome немає окремого API для цього, тому розширення приблизно на секунду під’єднує свій налагоджувач до вкладки; тим часом Chrome показує панель із повідомленням, що SSL Checker налагоджує браузер."
+  },
+  "optLocalUnavailable": {
+    "message": "Ця версія SSL Checker не має дозволу на використання налагоджувача, тому сертифікати зчитуються лише через зовнішні джерела."
+  },
+  "modeAlways": { "message": "Щоразу" },
+  "modeAlwaysHelp": { "message": "Зчитувати сертифікат щоразу, коли ви відкриваєте SSL Checker." },
+  "modeAsk": { "message": "На вимогу" },
+  "modeAskHelp": {
+    "message": "Спершу показувати зовнішні результати; зчитувати з браузера лише після натискання кнопки."
+  },
+  "modeNever": { "message": "Ніколи" },
+  "modeNeverHelp": { "message": "Використовувати лише зовнішні джерела. Панель налагодження ніколи не з’являється." },
+  "optSourcesTitle": { "message": "Зовнішні джерела" },
+  "optSourcesIntro": {
+    "message": "Кожне джерело — це сервер-нотаріус, який підключається до сайту з іншого місця в інтернеті й повідомляє, який сертифікат отримує. Йому надсилаються лише ім’я хоста й порт сайту."
+  },
+  "optAddSourceTitle": { "message": "Додати джерело" },
+  "optOwnNotary": {
+    "message": "Потрібен власний нотаріус? Він має відкритий вихідний код і працює на будь-якому сервері з Docker."
+  },
+  "optOwnNotaryLink": { "message": "Як його встановити" },
+  "fieldName": { "message": "Назва" },
+  "fieldNamePlaceholder": { "message": "Сервер у Франкфурті" },
+  "fieldUrl": { "message": "Адреса" },
+  "fieldUrlHelp": {
+    "message": "HTTPS-адреса нотаріуса. SSL Checker надсилає йому сайт у тілі запиту POST, ніколи не в адресі."
+  },
+  "fieldToken": { "message": "Токен доступу (необов’язково)" },
+  "fieldTokenHelp": { "message": "Надсилається як Authorization: Bearer. Зберігається лише на цьому пристрої." },
+  "fieldKey": { "message": "Відкритий ключ (необов’язково)" },
+  "fieldKeyHelp": {
+    "message": "Якщо вказано ключ, відповідь враховується, лише коли її підписав цей нотаріус, тож ніхто на шляху не зможе її змінити. Нотаріус виводить свій ключ під час запуску. Кілька ключів розділяйте пробілами."
+  },
+  "endpointEnabled": { "message": "Використовувати $1" },
+  "tokenSet": { "message": "Токен збережено" },
+  "keySet": { "message": "Лише підписані відповіді" },
+  "defaultSource": {
+    "message": "Джерело за умовчанням, яким керує PlusPrivacy. Його відповіді підписані, і воно не веде записів про сайти, які ви перевіряєте."
+  },
+  "testRunning": { "message": "Запит до джерела щодо example.com…" },
+  "testOk": { "message": "Працює: бачить сертифікат example.com, виданий $1, з $2, за $3 мс." },
+  "testSigned": { "message": "Його відповідь підписано очікуваним ключем." },
+  "testSelfSigned": {
+    "message": "Його відповіді підписано ключем $1. Перш ніж додати цей ключ, переконайтеся, що саме його нотаріус вивів на своєму сервері: засіб перехоплення міг надіслати власний."
+  },
+  "testUnsigned": { "message": "Його відповіді не підписано." },
+  "testFailed": { "message": "Не вдалося: $1" },
+  "endpointErrorInvalidUrl": { "message": "Введіть дійсну адресу." },
+  "endpointErrorCredentialsInUrl": {
+    "message": "Не вказуйте ім’я користувача чи пароль в адресі; використовуйте поле для токена."
+  },
+  "endpointErrorFragment": { "message": "Видаліть з адреси частину, що починається з #." },
+  "endpointErrorTemplate": {
+    "message": "Вкажіть адресу нотаріуса без {host} чи {port}: SSL Checker надсилає сайт у тілі запиту."
+  },
+  "endpointErrorHttps": {
+    "message": "Адреса має використовувати HTTPS (звичайний HTTP дозволено лише для localhost)."
+  },
+  "endpointErrorDuplicate": { "message": "Це джерело вже є в списку." },
+  "endpointErrorToken": { "message": "Токен може містити лише видимі символи ASCII." },
+  "endpointErrorKey": { "message": "Введіть ключ так, як його виводить нотаріус: ed25519: і 43 символи після нього." },
+  "optAdvancedTitle": { "message": "Додатково" },
+  "fieldTimeout": { "message": "Час очікування кожного джерела (с)" },
+  "optProtocolTitle": { "message": "Протокол нотаріусів" },
+  "optProtocolIntro": {
+    "message": "Джерелом може бути будь-який сервер, що відповідає на такий запит. Еталонна реалізація — нотаріус проєкту SSL Checker, невеликий сервіс на Node.js, упакований для Docker."
+  },
+  "optProtocolSigning": {
+    "message": "Нотаріус із ключем підпису повертає nonce із запиту, додає свій відкритий ключ і підписує відповідь: Notary-Signature містить підпис Ed25519 рядка «SSL Checker notary answer v1», після якого йде точне тіло відповіді. Якщо вказати для джерела його ключ, розширення використовуватиме лише відповіді, підписані цим ключем, для того хоста, порту й nonce, про які воно запитувало."
+  },
+  "optProtocolErrors": {
+    "message": "У разі помилки відповідайте зі статусом 4xx або 5xx і тілом {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}}. Розширення не має дозволів на доступ до хостів, тому сервер має надсилати заголовки CORS і відповідати на попередній запит (preflight) для POST із Content-Type."
+  },
+  "saved": { "message": "Збережено" },
+  "versionLabel": { "message": "Версія $1" }
+}

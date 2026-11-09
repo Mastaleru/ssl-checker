@@ -6,7 +6,7 @@
 // extensions (Chromium or Chrome for Testing; branded Google Chrome ignores
 // --load-extension since 137).
 //   npm ci && npx playwright install chromium && npm ci --prefix notary
-//   node tests/e2e/run.mjs                 (E2E_LANG=ro for the Romanian UI)
+//   node tests/e2e/run.mjs                 (E2E_LANG=ro, or any other _locales folder, for that language)
 // Optional: CHROME_PATH=<chrome binary>, PLAYWRIGHT_MODULE=<path to playwright>,
 //           E2E_OUT=<folder for screenshots>, E2E_ONLY=<scenario name substring>
 // Without CHROME_PATH, Playwright's full Chromium runs in its new headless mode
@@ -39,6 +39,12 @@ const BROWSER = process.env.CHROME_PATH ? { executablePath: process.env.CHROME_P
 const HOST = 'www.example.com';
 const messages = JSON.parse(readFileSync(path.join(ROOT, 'extension/_locales', LANG, 'messages.json'), 'utf8'));
 const msg = (key, ...subs) => subs.reduce((m, s, i) => m.replace(`$${i + 1}`, s), messages[key].message);
+/** The key plural() picks for n: the language's plural category if it has that form, otherwise Other. */
+const pluralKey = (base, n) => {
+  const category = new Intl.PluralRules(messages.localeCode.message).select(n);
+  const key = base + category[0].toUpperCase() + category.slice(1);
+  return category !== 'other' && messages[key] ? key : `${base}Other`;
+};
 
 const read = (f) => readFileSync(path.join(TLS, f));
 const spkiPin = (pem) =>
@@ -205,7 +211,7 @@ class Harness {
 
   async start() {
     this.profile = mkdtempSync(path.join(os.tmpdir(), 'sslc-profile-'));
-    const common = ['--headless=new', `--lang=${LANG}`, '--no-proxy-server', ...this.args];
+    const common = ['--headless=new', `--lang=${LANG.replace('_', '-')}`, '--no-proxy-server', ...this.args];
     if (!this.incognito) {
       this.ctx = await chromium.launchPersistentContext(this.profile, {
         ...BROWSER,
@@ -504,7 +510,7 @@ async function main() {
           'identical notary row',
           ui.witnesses,
         );
-        assert(ui.title === msg('verdictConfirmedTitleOne', '1'), 'title', ui.title);
+        assert(ui.title === msg(pluralKey('verdictConfirmedTitle', 1), '1'), 'title', ui.title);
         assert((await v.badge()) === '✓', 'green badge on the icon', await v.badge());
         for (const summary of await v.popup.$$('details > summary')) {
           await summary.click();
@@ -1052,10 +1058,6 @@ async function main() {
         assert(r.memory.status === 'first' && r.memory.current.label === otherCa, 'history starts again', r.memory);
         await v.close();
 
-        const pluralKey = (base, n) => {
-          const category = new Intl.PluralRules(LANG).select(n);
-          return `${base}${category === 'one' ? 'One' : category === 'few' ? 'Few' : 'Other'}`;
-        };
         const page = await full.ctx.newPage();
         full.watch(page, 'options (memory)');
         await page.goto(`chrome-extension://${full.extId}/options/options.html`);

@@ -1,0 +1,453 @@
+{
+  "localeCode": { "message": "tr", "description": "BCP 47 tag used to format dates and plurals in this language." },
+  "extName": { "message": "SSL Checker" },
+  "extNameLite": { "message": "SSL Checker Lite" },
+  "extDescription": {
+    "message": "Bulunduğunuz sitenin gerçek TLS sertifikasını görün ve bağımsız noterlerle karşılaştırarak bağlantıya müdahaleyi tespit edin."
+  },
+  "extDescriptionLite": {
+    "message": "Bulunduğunuz sitenin TLS sertifikasını, bağımsız noter sunucularının aldığı şekliyle görün."
+  },
+  "actionTitle": { "message": "Bu sitenin sertifikasını kontrol et" },
+
+  "schemeHttps": { "message": "HTTPS bağlantısı" },
+  "schemeHttp": { "message": "Şifresiz HTTP sayfası" },
+  "actionRecheck": { "message": "Tekrar kontrol et" },
+  "actionSettings": { "message": "Seçenekler" },
+  "unsupportedTitle": { "message": "Burada kontrol edilecek bir şey yok" },
+  "unsupportedBody": {
+    "message": "Sertifikasını görmek için bir web sitesi (http veya https) açın ve simgeyi tekrar tıklayın."
+  },
+  "loadingTitle": { "message": "Sertifika kontrol ediliyor…" },
+  "loadingReload": { "message": "Sertifikayı okumak için sayfa yeniden yükleniyor…" },
+  "loadingDebuggerBar": {
+    "message": "Sertifika okunurken Chrome, birkaç saniye boyunca SSL Checker uzantısının bu tarayıcıda hata ayıklamaya başladığını bildiren bir çubuk gösterir."
+  },
+  "checkFailedTitle": { "message": "Kontrol çalıştırılamadı" },
+  "checkFailedBody": { "message": "Hata: $1" },
+  "consentTitle": { "message": "İlk kontrolden önce" },
+  "consentIntro": {
+    "message": "SSL Checker, mevcut sekmedeki siteye yalnızca simgesini tıkladığınızda bakar. Tarayıcınızın aldığı sertifikayı okur ve kabul ederseniz:"
+  },
+  "consentIntroLite": {
+    "message": "SSL Checker, mevcut sekmedeki siteye yalnızca simgesini tıkladığınızda bakar. Kabul ederseniz:"
+  },
+  "consentNotaryName": { "message": "PlusPrivacy noterine sorar." },
+  "consentNotaryBody": {
+    "message": "Sitenin adı ve bağlantı noktası $1 adresine gönderilir. Bu sunucu siteye kendi ağından bağlanır ve gördüğü sertifikayı döndürür. Noter, sitelerin hiçbir kaydını tutmaz."
+  },
+  "consentMemoryName": { "message": "Her sitenin sertifika yetkilisini hatırlar." },
+  "consentMemoryBody": {
+    "message": "Yalnızca bu cihazda; bilinen bir site aniden başka bir sertifika yetkilisiyle gelirse sizi uyarmak için."
+  },
+  "consentLater": {
+    "message": "İkisini de istediğiniz zaman Seçenekler'de değiştirebilirsiniz. Siz kabul etmeden hiçbir şey okunmaz veya gönderilmez."
+  },
+  "consentAgree": { "message": "Kabul et ve kontrol et" },
+  "checkedAt": { "message": "Son kontrol: $1" },
+
+  "sectionWitnesses": { "message": "Sertifikayı görenler" },
+  "witnessBrowser": { "message": "Tarayıcınız" },
+  "witnessViaReload": { "message": "sayfa yeniden yüklendikten sonra okundu" },
+  "witnessLocalNotRead": { "message": "Henüz okunmadı." },
+  "witnessIssuedBy": { "message": "veren: $1" },
+  "witnessSigned": { "message": "imzalı yanıt" },
+  "durationMs": { "message": "$1 ms" },
+  "fingerprintLabel": { "message": "SHA-256 parmak izi $1" },
+  "externalSkippedInternal": {
+    "message": "Dahili site: Dış kaynaklar bu siteye erişemediği için onlara sorulmadı."
+  },
+  "noSourcesNote": {
+    "message": "Tarayıcınızın aldığını başkalarının gördüğüyle karşılaştırmak için Seçenekler'de PlusPrivacy noterini açın veya başka bir kaynak ekleyin."
+  },
+  "noSourcesNoteLite": {
+    "message": "Bu sürüm sertifikaları yalnızca dış kaynaklar aracılığıyla okur. Seçenekler'de PlusPrivacy noterini açın veya bir kaynak ekleyin."
+  },
+  "askLocalText": {
+    "message": "Tarayıcınızdan okuma, istek üzerine yapılacak şekilde ayarlı. Chrome birkaç saniye boyunca hata ayıklama çubuğunu gösterecek."
+  },
+  "probeBlockedText": {
+    "message": "Bu sayfa, sertifikayı okumak için kullanılan küçük isteği engelliyor (Content Security Policy). Sayfa yeniden yüklenirse sertifika güvenilir şekilde okunur."
+  },
+
+  "actionAddSource": { "message": "Kaynak ekle" },
+  "actionReadLocal": { "message": "Tarayıcıdan oku" },
+  "actionReloadAndRead": { "message": "Yeniden yükle ve oku" },
+  "actionCopyPem": { "message": "PEM'i kopyala" },
+  "actionDownloadChain": { "message": "Zinciri indir" },
+  "actionTest": { "message": "Test et" },
+  "actionRemove": { "message": "Kaldır" },
+  "copied": { "message": "Kopyalandı" },
+  "copyFailed": { "message": "Kopyalanamadı" },
+
+  "relationSameCertificate": { "message": "Birebir aynı" },
+  "relationSameKey": { "message": "Aynı anahtar" },
+  "relationSameIssuer": { "message": "Başka sertifika, aynı veren" },
+  "relationSameCa": { "message": "Başka sertifika, aynı CA" },
+  "relationDifferent": { "message": "Farklı sertifika" },
+
+  "verdictConfirmedTitleOne": { "message": "$1 dış kaynak tarafından doğrulandı" },
+  "verdictConfirmedTitleFew": { "message": "$1 dış kaynak tarafından doğrulandı" },
+  "verdictConfirmedTitleOther": { "message": "$1 dış kaynak tarafından doğrulandı" },
+  "verdictConfirmedBody": {
+    "message": "Tarayıcınız, dış kaynakların gördüğü sertifikanın aynısını alıyor. Yolda kimse onu değiştirmiyor."
+  },
+  "verdictSameCaTitle": { "message": "Aynı veren, farklı sertifika" },
+  "verdictSameCaBody": {
+    "message": "Dış kaynaklar aynı sertifika yetkilisinden ($1) başka bir sertifika alıyor. Bu, CDN'lerde ve sertifikalar yenilenirken normaldir."
+  },
+  "verdictSameCaUnloggedTitle": { "message": "Aynı veren adı, doğrulanmadı" },
+  "verdictSameCaUnloggedBody": {
+    "message": "Dış kaynaklar, sizinkiyle aynı adı taşıyan bir sertifika yetkilisinden ($1) başka bir sertifika alıyor ve Chrome sizinkinin herkese açık günlüklerde kayıtlı olduğunu doğrulamadı. CDN'ler birden fazla sertifika sunabilir, ancak bağlantıya müdahale eden bir taraf da bir sertifika yetkilisinin adını kopyalayabilir; bu nedenle bu durum sertifikanızı doğrulamaz."
+  },
+  "verdictPublicTitle": { "message": "Herkese açık kayıtlı sertifika" },
+  "verdictPublicBody": {
+    "message": "Chrome, sertifikanın herkese açık Certificate Transparency günlüklerinde bulunduğunu doğruladı; yani sertifikayı yerel bir proxy veya antivirüs oluşturmadı. Çapraz kontrol için Seçenekler'de bir dış kaynağı açın."
+  },
+  "verdictPublicBodyNoAnswer": {
+    "message": "Chrome, sertifikanın herkese açık Certificate Transparency günlüklerinde bulunduğunu doğruladı; yani sertifikayı yerel bir proxy veya antivirüs oluşturmadı. Dış kaynaklar yanıt vermedi."
+  },
+  "verdictPrivateCaTitle": { "message": "Herkese açık sertifika olduğu doğrulanmadı" },
+  "verdictPrivateCaBody": {
+    "message": "Chrome, $1 tarafından verilen bu sertifikanın herkese açık Certificate Transparency günlüklerinde bulunduğunu doğrulamadı. Bu durum, sertifika yerel olarak yüklenmiş bir sertifika yetkilisinden geldiğinde (şirket ağı, antivirüs, dahili sunucu) veya tarayıcının CT günlükleri listesi güncel olmadığında görülür. Bağlantıya müdahale edilip edilmediğini öğrenmek için dış kaynak ekleyin."
+  },
+  "verdictInterceptedTitle": { "message": "Bağlantıya muhtemelen müdahale ediliyor" },
+  "verdictInterceptedByTitle": { "message": "$1 bağlantıya müdahale ediyor" },
+  "verdictInterceptedBody": {
+    "message": "Tarayıcınız $1 tarafından verilmiş bir sertifika alıyor, ancak dış kaynaklar $2 tarafından verilmiş bir sertifika görüyor ve Chrome sizinkinin herkese açık günlüklerde kayıtlı olduğunu doğrulamadı. Büyük olasılıkla sizinle site arasındaki bir şey (şirket proxy'si, antivirüs veya başka bir şey) trafiğin şifresini çözüp yeniden imzalıyor."
+  },
+  "verdictSplitTitle": { "message": "Kaynaklar uyuşmuyor" },
+  "verdictSplitBody": {
+    "message": "Sizinkiyle aynı sertifika: $1. $2 tarafından verilmiş farklı bir sertifika: $3. Ya bağlantınıza müdahale ediliyor ve eşleşen kaynaklar sizinle aynı ağı paylaşıyor ya da diğer kaynakların ağına müdahale ediliyor."
+  },
+  "verdictInterceptorBody": {
+    "message": "Sertifika $1 tarafından verilmiş ve herkese açık Certificate Transparency günlüklerinde yer almıyor; HTTPS denetimi yapan ürünler de tam olarak böyle çalışır."
+  },
+  "interceptorIdentified": { "message": "$1, $2." },
+  "verdictConflictTitle": { "message": "Kaynaklar farklı sertifikalar görüyor" },
+  "verdictConflictBody": {
+    "message": "Tarayıcınız ve dış kaynaklar herkese açık farklı sertifikalar görüyor (sizinkini $1, onlarınkini $2 vermiş). Birden fazla CDN arkasındaki siteler böyle davranır, ancak yine de göz atmaya değer."
+  },
+  "verdictExternalTitleOne": { "message": "$1 dış kaynak tarafından görüldü" },
+  "verdictExternalTitleFew": { "message": "$1 dış kaynak tarafından görüldü" },
+  "verdictExternalTitleOther": { "message": "$1 dış kaynak tarafından görüldü" },
+  "verdictExternalBody": {
+    "message": "Tarayıcınızdan okuma kapalı, bu nedenle ağınızdaki bir müdahale tespit edilemez. Kaynakların gördüğü budur."
+  },
+  "verdictExternalBodyAsk": {
+    "message": "Kaynakların gördüğüyle karşılaştırmak için sertifikayı tarayıcınızdan okuyun."
+  },
+  "verdictExternalBodyLocalFailed": {
+    "message": "Sertifika tarayıcınızdan okunamadı, bu nedenle ağınızda bir müdahale olasılığı dışlanamaz. Kaynakların gördüğü budur."
+  },
+  "verdictExternalBodyLite": {
+    "message": "Bu sürüm sertifikayı tarayıcınızdan okuyamaz, bu nedenle ağınızdaki bir müdahale tespit edilemez. Kaynakların gördüğü budur."
+  },
+  "verdictExternalDisagreeTitle": { "message": "Dış kaynaklar uyuşmuyor" },
+  "verdictExternalDisagreeBody": { "message": "Dış kaynaklar birbirinden farklı sertifikalar görüyor." },
+  "verdictTamperedTitle": { "message": "Bir yanıt yolda değiştirildi" },
+  "verdictTamperedBody": {
+    "message": "$1 tarafından gönderilen imzalı yanıt, o kaynak ile tarayıcınız arasında değiştirildiği için kullanılmadı. Bunu ancak bu tarayıcının güvenli bağlantılarına müdahale eden bir şey yapabilir."
+  },
+  "verdictUnsignedTitle": { "message": "Yalnızca imzasız yanıtlarla doğrulandı" },
+  "verdictUnsignedBody": {
+    "message": "Tarayıcınız, $1 tarafından gönderilen yanıtlardaki sertifikanın aynısını alıyor; ancak bu yanıtlar imzalı değil ve Chrome sertifikanızın herkese açık günlüklerde kayıtlı olduğunu doğrulamadı. Bu yanıtları bağlantınıza müdahale eden bir şey yazmış olabilir. PlusPrivacy noterinin yanıtları gibi bilinen bir anahtarla imzalanmış yanıtlar taklit edilemez."
+  },
+  "verdictHttpTitle": { "message": "Şifrelenmemiş sayfa" },
+  "verdictHttpBody": {
+    "message": "Bu sayfa şifresiz HTTP üzerinden yüklendi, bu nedenle ağdaki herkes sayfayı okuyabilir veya değiştirebilir. Sayfayı koruyan bir sertifika yok."
+  },
+  "verdictHttpBodyWithCert": {
+    "message": "Bu sayfa şifresiz HTTP üzerinden yüklendi, bu nedenle ağdaki herkes sayfayı okuyabilir veya değiştirebilir. Sunucunun HTTPS üzerinden (bağlantı noktası 443) sunduğu sertifika aşağıdadır."
+  },
+  "verdictNoSourcesTitle": { "message": "Gösterilecek sertifika yok" },
+  "verdictNoSourcesBody": {
+    "message": "Seçenekler'de tarayıcıdan okumayı, PlusPrivacy noterini veya başka bir kaynağı açın."
+  },
+  "verdictNoSourcesLite": {
+    "message": "Bu sitenin sertifikasını görmek için Seçenekler'de PlusPrivacy noterini açın veya bir kaynak ekleyin."
+  },
+  "verdictNoSourcesLocalFailed": {
+    "message": "Sertifika tarayıcınızdan okunamadı ve hiçbir dış kaynak yanıt vermedi."
+  },
+  "verdictInternalBody": {
+    "message": "Dış kaynaklar dahili sitelere erişemez ve sertifika tarayıcınızdan okunmadı."
+  },
+  "verdictAllSourcesFailed": {
+    "message": "Dış kaynakların hiçbiri yanıt vermedi. Seçenekler'de bu kaynakları kontrol edin."
+  },
+  "verdictAskTitle": { "message": "Sertifikayı okumaya hazır" },
+  "verdictAskBody": { "message": "Tarayıcıdan okuma, istek üzerine yapılacak şekilde ayarlı." },
+
+  "kind_corporateProxy": { "message": "kurumsal bir proxy veya güvenlik duvarı" },
+  "kind_cloudProxy": { "message": "bir bulut güvenlik ağ geçidi" },
+  "kind_antivirus": { "message": "HTTPS taraması yapan bir antivirüs" },
+  "kind_contentFilter": { "message": "bir içerik filtresi" },
+  "kind_debugProxy": { "message": "bir hata ayıklama proxy'si" },
+  "kind_adware": { "message": "bir reklam yazılımı" },
+
+  "warnExpired": { "message": "Sertifikanın süresi dolmuş." },
+  "warnNotYetValid": { "message": "Sertifika henüz geçerli değil." },
+  "warnExpiresSoon": { "message": "Sertifikanın süresi $1 içinde doluyor." },
+  "warnHostMismatch": { "message": "Sertifika $1 adını kapsamıyor." },
+  "warnWeakSignature": { "message": "Zincirde zayıf bir imza kullanılıyor (SHA-1 veya MD5)." },
+  "warnWeakKey": { "message": "RSA anahtarı yalnızca $1 bit uzunluğunda." },
+  "warnObsoleteProtocol": { "message": "Kullanımdan kalkmış protokol: $1." },
+  "warnNotaryUntrusted": { "message": "$1, gördüğü sertifikaya güvenmiyor: $2." },
+  "warnNotPubliclyLogged": {
+    "message": "Chrome, bu sertifikanın herkese açık günlüklerde kayıtlı olduğunu doğrulamadı."
+  },
+  "warnSomeSourcesDiffer": {
+    "message": "$1 tarafından farklı bir sertifika görüldü (veren: $2). Sizinki herkese açık günlüklerde kayıtlı, bu nedenle fark büyük olasılıkla onların tarafında."
+  },
+
+  "sectionCertificate": { "message": "Sertifika" },
+  "sectionCertificateExternal": { "message": "$1 tarafından görülen sertifika" },
+  "certIssuedTo": { "message": "Kime verildi" },
+  "andMore": { "message": "+$1 tane daha" },
+  "certOrganization": { "message": "Kuruluş" },
+  "certIssuedBy": { "message": "Veren" },
+  "certValidity": { "message": "Geçerlilik" },
+  "certType": { "message": "Tür" },
+  "validityRemaining": { "message": "$1 kaldı" },
+  "validityExpired": { "message": "süresi $1 önce doldu" },
+  "validityFuture": { "message": "henüz geçerli değil" },
+  "daysOne": { "message": "$1 gün" },
+  "daysFew": { "message": "$1 gün" },
+  "daysOther": { "message": "$1 gün" },
+  "level_DV": { "message": "Alan adı doğrulamalı (DV)" },
+  "level_OV": { "message": "Kuruluş doğrulamalı (OV)" },
+  "level_EV": { "message": "Genişletilmiş doğrulama (EV)" },
+  "level_IV": { "message": "Bireysel doğrulamalı (IV)" },
+
+  "sectionConnection": { "message": "Bağlantı" },
+  "connProtocol": { "message": "Protokol" },
+  "connKeyExchange": { "message": "Anahtar değişimi" },
+  "connCipher": { "message": "Şifreleme" },
+  "connCT": { "message": "Şeffaflık" },
+  "connECH": { "message": "Encrypted Client Hello" },
+  "ctCompliant": { "message": "Herkese açık kayıtlı" },
+  "ctNotCompliant": { "message": "Kayıtlı değil" },
+  "ctUnknown": { "message": "Bilinmiyor" },
+  "sctsOne": { "message": "$1 geçerli SCT" },
+  "sctsFew": { "message": "$1 geçerli SCT" },
+  "sctsOther": { "message": "$1 geçerli SCT" },
+  "yes": { "message": "Evet" },
+  "no": { "message": "Hayır" },
+
+  "sectionChain": { "message": "Sertifika zinciri ($1)" },
+  "chainLeaf": { "message": "Site" },
+  "chainIntermediate": { "message": "Ara sertifika" },
+  "chainRoot": { "message": "Kök sertifika" },
+  "chainIssuedBy": { "message": "Veren: $1" },
+
+  "sectionDetails": { "message": "Teknik ayrıntılar" },
+  "detailSpkiPin": { "message": "Açık anahtar pini" },
+  "detailSerial": { "message": "Seri numarası" },
+  "detailSignature": { "message": "İmza" },
+  "detailPublicKey": { "message": "Açık anahtar" },
+  "detailServerSignature": { "message": "TLS imzası" },
+  "detailNamesOne": { "message": "Ad" },
+  "detailNamesFew": { "message": "Adlar ($1)" },
+  "detailNamesOther": { "message": "Adlar ($1)" },
+  "detailKeyUsage": { "message": "Anahtar kullanımı" },
+  "detailExtKeyUsage": { "message": "Genişletilmiş anahtar kullanımı" },
+  "detailPolicies": { "message": "Politikalar" },
+  "detailCaIssuers": { "message": "CA verenleri" },
+  "detailScts": { "message": "SCT'ler" },
+  "detailMustStaple": { "message": "OCSP must-staple" },
+  "detailExtensions": { "message": "Uzantılar" },
+  "critical": { "message": "kritik" },
+
+  "localErr_restrictedPage": {
+    "message": "Chrome bu sayfanın okunmasına izin vermiyor (dahili sayfa, hata sayfası veya başka bir uzantının sayfası)."
+  },
+  "localErr_blockedByPolicy": {
+    "message": "Kuruluşunuzun politikası, sertifikaların tarayıcıdan okunmasını engelliyor."
+  },
+  "localErr_probeBlocked": { "message": "Sayfa, sertifikayı okumak için kullanılan isteği engelledi." },
+  "localErr_reloadFailed": { "message": "Sayfanın yüklenmesi zamanında tamamlanmadı." },
+  "localErr_canceledByUser": { "message": "Okuma, Chrome'un hata ayıklama çubuğundan iptal edildi." },
+  "localErr_detached": { "message": "Chrome okuma oturumunu sonlandırdı." },
+  "localErr_navigated": { "message": "Sekme başka bir siteye geçti. Tekrar kontrol edin." },
+  "localErr_noCertificate": { "message": "Chrome bu sayfa için bir sertifika döndürmedi." },
+  "localErr_notHttps": { "message": "Sayfa HTTPS üzerinden sunulmuyor." },
+  "localErr_tabGone": { "message": "Sekme kapatıldı." },
+  "localErr_alreadyAttached": { "message": "Bu sekmeye başka bir hata ayıklayıcı bağlı." },
+  "localErr_generic": { "message": "Okuma başarısız oldu: $1" },
+
+  "notaryErr_timeout": { "message": "$1 sn içinde yanıt gelmedi." },
+  "notaryErr_http": { "message": "Kaynak, HTTP $1 koduyla yanıt verdi." },
+  "notaryErr_network": { "message": "Kaynağa ulaşılamadı (ağ hatası veya eksik CORS üst bilgileri)." },
+  "notaryErr_unauthorized": { "message": "Kaynak jetonu reddetti." },
+  "notaryErr_rateLimited": { "message": "Çok fazla istek var; kaynak yavaşlamanızı istiyor." },
+  "notaryErr_badResponse": { "message": "Kaynak geçersiz bir yanıt gönderdi." },
+  "notaryErr_badCertificate": { "message": "Kaynak okunamayan bir sertifika gönderdi." },
+  "notaryErr_badEndpoint": { "message": "Kaynak adresi geçersiz." },
+  "notaryErr_forbiddenTarget": { "message": "Kaynak bu adresi reddediyor (özel veya ayrılmış adres)." },
+  "notaryErr_forbiddenPort": { "message": "Kaynak bu bağlantı noktasını kontrol etmiyor." },
+  "notaryErr_dnsFailed": { "message": "Kaynak, sitenin adını çözümleyemedi." },
+  "notaryErr_connectFailed": { "message": "Kaynak siteye bağlanamadı." },
+  "notaryErr_tlsFailed": { "message": "Kaynakta TLS el sıkışması başarısız oldu." },
+  "notaryErr_busy": { "message": "Kaynak meşgul; biraz sonra tekrar deneyin." },
+  "notaryErr_badRequest": { "message": "Kaynak isteği anlamadı." },
+  "notaryErr_forbiddenOrigin": { "message": "Kaynak, uzantının bu kopyasından gelen istekleri kabul etmiyor." },
+  "notaryErr_noKey": {
+    "message": "Bu sürümde bu kaynağın yanıtlarını doğrulayacak bir anahtar olmadığı için kaynağa sorulmadı."
+  },
+  "notaryErr_unsigned": { "message": "Yanıt imzalı olmadığı için kullanılmadı." },
+  "notaryErr_unknownKey": {
+    "message": "Yanıt, bu uzantının tanımadığı bir anahtarla imzalandığı için kullanılmadı. Kaynağın yeni bir anahtarı olabilir: Uzantıyı veya kaynağın anahtarını güncelleyin."
+  },
+  "notaryErr_tampered": { "message": "Yanıt yolda değiştirildiği için kullanılmadı." },
+  "notaryErr_internal": { "message": "Kaynakta dahili bir hata oluştu." },
+  "notaryErr_cannotVerify": {
+    "message": "Bu tarayıcı yanıtın imzasını doğrulayamadığı için yanıt kullanılmadı."
+  },
+  "notaryErr_other": { "message": "Hata $1 $2" },
+
+  "sectionHistory": { "message": "Geçmiş" },
+  "historyFirst": {
+    "message": "Bu sitenin ilk kontrolü. SSL Checker bundan sonra bu sitenin sertifikasının $1 tarafından verildiğini hatırlayacak."
+  },
+  "historyKnown": {
+    "message": "Önceki kontrollerinizle aynı sertifika yetkilisi: $1, $3 tarihinden bu yana $2."
+  },
+  "historyLearned": { "message": "SSL Checker bundan sonra bu site için şunu da hatırlayacak: $1." },
+  "historyChangedBefore": { "message": "Şimdiye kadar: $1, $2, sonuncusu $3 tarihinde." },
+  "historyChangedNow": { "message": "Şimdi: $1." },
+  "historySameName": {
+    "message": "Sertifika yetkilisinin adı öncekiyle aynı, ancak bu site için daha önce hiç görülmemiş bir anahtarla imzalıyor."
+  },
+  "historyTrusted": { "message": "$1 artık bu site için güvenilir kabul ediliyor." },
+  "historyForgotten": {
+    "message": "Bu site unutuldu. Bir sonraki kontrol, sitenin geçmişini yeniden başlatır."
+  },
+  "historyIncognito": {
+    "message": "Gizli pencerelerde site belleği kapalıdır: Hiçbir şey kaydedilmez veya karşılaştırılmaz."
+  },
+  "checksOne": { "message": "$1 kontrol" },
+  "checksFew": { "message": "$1 kontrol" },
+  "checksOther": { "message": "$1 kontrol" },
+  "actionTrustCa": { "message": "Bu site için güven" },
+  "actionForgetSite": { "message": "Bu siteyi unut" },
+  "verdictCaChangedTitle": { "message": "Sertifika yetkilisi değişti" },
+  "verdictCaChangedBody": {
+    "message": "Önceki kontrollerinizde bu sitenin hep $1 tarafından verilmiş, herkese açık bir sertifikası vardı. Şimdi tarayıcınız, $2 tarafından verilmiş ve herkese açık günlüklerde kayıtlı olmayan bir sertifika alıyor. Büyük olasılıkla sizinle site arasındaki bir şey bağlantıya müdahale ediyor."
+  },
+  "verdictCaChangedSameNameBody": {
+    "message": "Sertifika, önceden olduğu gibi $1 tarafından verildiğini iddia ediyor; ancak bu site için daha önce hiç görülmemiş bir anahtarla imzalanmış ve herkese açık günlüklerde kayıtlı değil. Büyük olasılıkla sizinle site arasındaki bir şey bağlantıya müdahale ediyor."
+  },
+  "warnCaChanged": { "message": "Bu sitenin sertifika yetkilisi değişti: önce $1, şimdi $2." },
+  "warnCaChangedSameName": {
+    "message": "Sertifika, önceden olduğu gibi $1 tarafından verildiğini iddia ediyor; ancak bu site için daha önce hiç görülmemiş bir anahtarla imzalanmış."
+  },
+  "warnCaChangedPublic": {
+    "message": "Bu site $1 yerine artık $2 kullanıyor. Yeni sertifika herkese açık günlüklerde kayıtlı."
+  },
+  "warnCaChangedNowPublic": {
+    "message": "Bu sitenin önceki kontrolleri, bu bilgisayarda veya ağda yüklü bir sertifika yetkilisi (örneğin bir şirket proxy'si) olan $1 üzerinden geçiyordu. Artık sertifika herkese açık."
+  },
+  "warnNotaryTampered": {
+    "message": "$1 tarafından gönderilen imzalı yanıt yolda değiştirildi ve kullanılmadı: Bu tarayıcının güvenli bağlantılarına bir şey müdahale ediyor."
+  },
+
+  "optMemoryTitle": { "message": "Site belleği" },
+  "optMemoryIntro": {
+    "message": "Sertifika tarayıcınızdan okunduğunda SSL Checker, kontrol ettiğiniz her site için sertifikayı hangi sertifika yetkilisinin verdiğini hatırlar ve bildiğiniz bir site aniden farklı bir yetkiliyle gelirse sizi uyarır. Her şey bu cihazda kalır ve gizli pencerelerde hiçbir şey kaydedilmez."
+  },
+  "fieldMemoryEnabled": { "message": "Kontrol ettiğim sitelerin sertifika yetkilisini hatırla" },
+  "optMemoryHelp": {
+    "message": "Kapatırsanız kayıt durur. Önceden saklananları silmek için Tüm siteleri unut düğmesini kullanın."
+  },
+  "memoryCountOne": { "message": "$1 site hatırlanıyor" },
+  "memoryCountFew": { "message": "$1 site hatırlanıyor" },
+  "memoryCountOther": { "message": "$1 site hatırlanıyor" },
+  "actionForgetAll": { "message": "Tüm siteleri unut" },
+  "forgotAll": { "message": "Tüm siteler unutuldu" },
+
+  "optionsTitle": { "message": "SSL Checker seçenekleri" },
+  "optionsIntro": {
+    "message": "Sertifikanın nasıl okunacağını ve hangi dış kaynaklarla karşılaştırılacağını seçin."
+  },
+  "optLocalTitle": { "message": "Tarayıcınızdan okuma" },
+  "optLocalIntro": {
+    "message": "Bu seçenek, tarayıcınızın aldığı sertifikanın tam olarak kendisini gösterir; böylece ağınızdaki bir müdahale tespit edilebilir. Chrome'da bunun için özel bir API olmadığından uzantı, hata ayıklayıcıyı yaklaşık bir saniyeliğine sekmeye bağlar; bu sırada Chrome, SSL Checker uzantısının bu tarayıcıda hata ayıklamaya başladığını bildiren bir çubuk gösterir."
+  },
+  "optLocalUnavailable": {
+    "message": "Bu SSL Checker sürümü hata ayıklayıcı iznini içermediğinden sertifikalar yalnızca dış kaynaklar aracılığıyla okunur."
+  },
+  "modeAlways": { "message": "Her seferinde" },
+  "modeAlwaysHelp": { "message": "SSL Checker her açıldığında sertifika okunur." },
+  "modeAsk": { "message": "İstek üzerine" },
+  "modeAskHelp": {
+    "message": "Önce dış sonuçlar gösterilir; tarayıcıdan yalnızca siz tıkladığınızda okunur."
+  },
+  "modeNever": { "message": "Hiçbir zaman" },
+  "modeNeverHelp": { "message": "Yalnızca dış kaynaklar kullanılır. Hata ayıklama çubuğu hiç görünmez." },
+  "optSourcesTitle": { "message": "Dış kaynaklar" },
+  "optSourcesIntro": {
+    "message": "Her kaynak, siteye internetin başka bir yerinden bağlanan ve aldığı sertifikayı bildiren bir noter sunucusudur. Kaynağa yalnızca sitenin ana makine adı ve bağlantı noktası gönderilir."
+  },
+  "optAddSourceTitle": { "message": "Kaynak ekle" },
+  "optOwnNotary": {
+    "message": "Kendi noterinizi mi istiyorsunuz? Noter açık kaynaklıdır ve Docker yüklü her sunucuda çalışır."
+  },
+  "optOwnNotaryLink": { "message": "Nasıl kurulur" },
+  "fieldName": { "message": "Ad" },
+  "fieldNamePlaceholder": { "message": "Frankfurt sunucusu" },
+  "fieldUrl": { "message": "Adres" },
+  "fieldUrlHelp": {
+    "message": "Noterin HTTPS adresi. SSL Checker siteyi notere hiçbir zaman adreste değil, bir POST isteğinin gövdesinde gönderir."
+  },
+  "fieldToken": { "message": "Erişim jetonu (isteğe bağlı)" },
+  "fieldTokenHelp": { "message": "Authorization: Bearer olarak gönderilir. Yalnızca bu cihazda saklanır." },
+  "fieldKey": { "message": "Açık anahtar (isteğe bağlı)" },
+  "fieldKeyHelp": {
+    "message": "Anahtar girildiğinde yalnızca bu noterin imzaladığı yanıtlar geçerli sayılır; böylece yolda kimse yanıtları değiştiremez. Noter, başlatıldığında anahtarını gösterir. Birden fazla anahtarı boşlukla ayırın."
+  },
+  "endpointEnabled": { "message": "$1 kullanılsın" },
+  "tokenSet": { "message": "Jeton kaydedildi" },
+  "keySet": { "message": "Yalnızca imzalı yanıtlar" },
+  "defaultSource": {
+    "message": "PlusPrivacy tarafından işletilen varsayılan kaynak. Yanıtları imzalıdır ve kontrol ettiğiniz sitelerin kaydını tutmaz."
+  },
+  "testRunning": { "message": "Kaynağa example.com soruluyor…" },
+  "testOk": {
+    "message": "Çalışıyor: example.com sertifikasını $2 üzerinden $3 ms içinde görüyor (veren: $1)."
+  },
+  "testSigned": { "message": "Yanıtı beklenen anahtarla imzalanmış." },
+  "testSelfSigned": {
+    "message": "Yanıtlarında $1 anahtarının imzası var. Bu anahtarı eklemeden önce, noterin kendi sunucusunda gösterdiği anahtar olduğunu kontrol edin: Bağlantıya müdahale eden bir taraf kendi anahtarını göndermiş olabilir."
+  },
+  "testUnsigned": { "message": "Yanıtları imzalı değil." },
+  "testFailed": { "message": "Başarısız: $1" },
+  "endpointErrorInvalidUrl": { "message": "Geçerli bir adres girin." },
+  "endpointErrorCredentialsInUrl": {
+    "message": "Adrese kullanıcı adı veya şifre yazmayın; jeton alanını kullanın."
+  },
+  "endpointErrorFragment": { "message": "Adresteki # bölümünü kaldırın." },
+  "endpointErrorTemplate": {
+    "message": "Noterin adresini {host} veya {port} olmadan girin: SSL Checker siteyi isteğin gövdesinde gönderir."
+  },
+  "endpointErrorHttps": {
+    "message": "Adres HTTPS kullanmalıdır (şifresiz HTTP yalnızca localhost için kullanılabilir)."
+  },
+  "endpointErrorDuplicate": { "message": "Bu kaynak zaten listede." },
+  "endpointErrorToken": { "message": "Jeton yalnızca görünür ASCII karakterleri içerebilir." },
+  "endpointErrorKey": { "message": "Anahtarı noterin gösterdiği biçimde girin: ed25519: ve ardından 43 karakter." },
+  "optAdvancedTitle": { "message": "Gelişmiş" },
+  "fieldTimeout": { "message": "Kaynak başına bekleme süresi (saniye)" },
+  "optProtocolTitle": { "message": "Noter protokolü" },
+  "optProtocolIntro": {
+    "message": "Bu isteği yanıtlayan her sunucu bir kaynak olabilir. Referans uygulama, SSL Checker projesinin noteridir: Docker için paketlenmiş küçük bir Node.js hizmeti."
+  },
+  "optProtocolSigning": {
+    "message": "İmzalama anahtarı olan bir noter, isteğin nonce değerini geri gönderir, açık anahtarını ekler ve yanıtı imzalar: Notary-Signature, \"SSL Checker notary answer v1\" satırının ve ardından gövdenin tam metninin Ed25519 imzasını içerir. Bir kaynağa anahtarını verirseniz uzantı, yalnızca bu anahtarla imzalanmış ve kendi sorduğu ana makine, bağlantı noktası ve nonce için verilmiş yanıtları kullanır."
+  },
+  "optProtocolErrors": {
+    "message": "Hata durumunda 4xx veya 5xx durum koduyla ve {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}} gövdesiyle yanıt verin. Uzantının hiçbir ana makine izni olmadığından sunucu CORS üst bilgileri göndermeli ve Content-Type içeren bir POST isteğinin ön kontrol (preflight) isteğini yanıtlamalıdır."
+  },
+  "saved": { "message": "Kaydedildi" },
+  "versionLabel": { "message": "Sürüm $1" }
+}

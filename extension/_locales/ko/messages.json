@@ -1,0 +1,429 @@
+{
+  "localeCode": { "message": "ko", "description": "BCP 47 tag used to format dates and plurals in this language." },
+  "extName": { "message": "SSL Checker" },
+  "extNameLite": { "message": "SSL Checker Lite" },
+  "extDescription": {
+    "message": "현재 사이트의 실제 TLS 인증서를 보여 주고 독립 공증 서버와 비교하여 가로채기를 감지합니다."
+  },
+  "extDescriptionLite": {
+    "message": "독립 공증 서버가 받는 그대로 현재 사이트의 TLS 인증서를 보여 줍니다."
+  },
+  "actionTitle": { "message": "이 사이트의 인증서 검사" },
+
+  "schemeHttps": { "message": "HTTPS 연결" },
+  "schemeHttp": { "message": "일반 HTTP 페이지" },
+  "actionRecheck": { "message": "다시 검사" },
+  "actionSettings": { "message": "옵션" },
+  "unsupportedTitle": { "message": "검사할 대상 없음" },
+  "unsupportedBody": { "message": "웹사이트(http 또는 https)를 열고 아이콘을 다시 클릭하면 인증서를 볼 수 있습니다." },
+  "loadingTitle": { "message": "인증서 검사 중…" },
+  "loadingReload": { "message": "인증서를 읽기 위해 페이지를 새로고침하는 중…" },
+  "loadingDebuggerBar": {
+    "message": "인증서를 읽는 동안 Chrome에서 몇 초간 SSL Checker가 브라우저를 디버깅하고 있다는 표시줄을 보여 줍니다."
+  },
+  "checkFailedTitle": { "message": "검사를 실행할 수 없음" },
+  "checkFailedBody": { "message": "오류: $1" },
+  "consentTitle": { "message": "첫 검사 전에" },
+  "consentIntro": {
+    "message": "SSL Checker는 아이콘을 클릭할 때만 현재 탭의 사이트를 살펴봅니다. 브라우저가 받은 인증서를 읽고, 동의하면 다음 작업도 수행합니다:"
+  },
+  "consentIntroLite": {
+    "message": "SSL Checker는 아이콘을 클릭할 때만 현재 탭의 사이트를 살펴봅니다. 동의하면 다음 작업을 수행합니다:"
+  },
+  "consentNotaryName": { "message": "PlusPrivacy 공증 서버에 요청합니다." },
+  "consentNotaryBody": {
+    "message": "사이트 이름과 포트가 $1에 전송되며, 이 서버는 자체 네트워크에서 사이트에 연결해 받은 인증서를 돌려줍니다. 공증 서버는 사이트에 대한 기록을 남기지 않습니다."
+  },
+  "consentMemoryName": { "message": "각 사이트의 인증 기관을 기억합니다." },
+  "consentMemoryBody": {
+    "message": "이 기기에서만 기억하며, 알고 있는 사이트의 인증 기관이 갑자기 바뀌면 경고합니다."
+  },
+  "consentLater": {
+    "message": "두 설정 모두 옵션에서 언제든지 변경할 수 있습니다. 동의하기 전에는 아무것도 읽거나 전송하지 않습니다."
+  },
+  "consentAgree": { "message": "동의 및 검사" },
+  "checkedAt": { "message": "$1 검사됨" },
+
+  "sectionWitnesses": { "message": "관측 지점" },
+  "witnessBrowser": { "message": "내 브라우저" },
+  "witnessViaReload": { "message": "페이지 새로고침 후 읽음" },
+  "witnessLocalNotRead": { "message": "아직 읽지 않았습니다." },
+  "witnessIssuedBy": { "message": "발급자: $1" },
+  "witnessSigned": { "message": "서명된 응답" },
+  "durationMs": { "message": "$1ms" },
+  "fingerprintLabel": { "message": "SHA-256 지문 $1" },
+  "externalSkippedInternal": { "message": "내부 사이트: 외부 소스에서 연결할 수 없으므로 요청하지 않았습니다." },
+  "noSourcesNote": {
+    "message": "브라우저가 받는 인증서를 다른 곳에서 보는 인증서와 비교하려면 옵션에서 PlusPrivacy 공증 서버를 사용 설정하거나 다른 소스를 추가하세요."
+  },
+  "noSourcesNoteLite": {
+    "message": "이 버전은 외부 소스를 통해서만 인증서를 읽습니다. 옵션에서 PlusPrivacy 공증 서버를 사용 설정하거나 소스를 추가하세요."
+  },
+  "askLocalText": {
+    "message": "브라우저에서 읽기 모드가 요청 시로 설정되어 있습니다. Chrome에 몇 초간 디버깅 표시줄이 나타납니다."
+  },
+  "probeBlockedText": {
+    "message": "이 페이지는 인증서를 읽는 데 사용하는 작은 요청을 차단합니다(콘텐츠 보안 정책). 페이지를 새로고침하면 확실하게 읽을 수 있습니다."
+  },
+
+  "actionAddSource": { "message": "소스 추가" },
+  "actionReadLocal": { "message": "브라우저에서 읽기" },
+  "actionReloadAndRead": { "message": "페이지 새로고침 후 읽기" },
+  "actionCopyPem": { "message": "PEM 복사" },
+  "actionDownloadChain": { "message": "체인 다운로드" },
+  "actionTest": { "message": "테스트" },
+  "actionRemove": { "message": "삭제" },
+  "copied": { "message": "복사됨" },
+  "copyFailed": { "message": "복사 실패" },
+
+  "relationSameCertificate": { "message": "동일" },
+  "relationSameKey": { "message": "같은 키" },
+  "relationSameIssuer": { "message": "다른 인증서, 같은 발급자" },
+  "relationSameCa": { "message": "다른 인증서, 같은 CA" },
+  "relationDifferent": { "message": "다른 인증서" },
+
+  "verdictConfirmedTitleOne": { "message": "외부 소스 $1곳에서 확인됨" },
+  "verdictConfirmedTitleFew": { "message": "외부 소스 $1곳에서 확인됨" },
+  "verdictConfirmedTitleOther": { "message": "외부 소스 $1곳에서 확인됨" },
+  "verdictConfirmedBody": {
+    "message": "브라우저가 외부 소스에서 보는 것과 같은 인증서를 받고 있습니다. 중간에서 누구도 인증서를 바꾸지 않고 있습니다."
+  },
+  "verdictSameCaTitle": { "message": "발급자는 같지만 인증서가 다름" },
+  "verdictSameCaBody": {
+    "message": "외부 소스는 같은 인증 기관($1)에서 발급한 다른 인증서를 받습니다. CDN을 사용하거나 인증서를 교체하는 중에는 정상적인 현상입니다."
+  },
+  "verdictSameCaUnloggedTitle": { "message": "발급자 이름은 같지만 확인되지 않음" },
+  "verdictSameCaUnloggedBody": {
+    "message": "외부 소스는 다른 인증서를 받고 있으며, 그 인증서를 발급한 인증 기관은 브라우저 인증서의 인증 기관($1)과 이름이 같습니다. 또한 Chrome에서 브라우저의 인증서가 공개 로그에 기록되었는지 확인하지 못했습니다. CDN은 여러 인증서를 제공할 수 있지만 연결을 가로채는 쪽에서 인증 기관의 이름을 복사할 수도 있으므로, 이 결과로는 브라우저의 인증서를 확인할 수 없습니다."
+  },
+  "verdictPublicTitle": { "message": "공개 로그에 기록된 인증서" },
+  "verdictPublicBody": {
+    "message": "Chrome에서 이 인증서가 공개 Certificate Transparency 로그에 있음을 확인했으므로 로컬 프록시나 바이러스 백신이 만든 인증서가 아닙니다. 교차 검증하려면 옵션에서 외부 소스를 사용 설정하세요."
+  },
+  "verdictPublicBodyNoAnswer": {
+    "message": "Chrome에서 이 인증서가 공개 Certificate Transparency 로그에 있음을 확인했으므로 로컬 프록시나 바이러스 백신이 만든 인증서가 아닙니다. 외부 소스는 응답하지 않았습니다."
+  },
+  "verdictPrivateCaTitle": { "message": "공개 인증서로 확인되지 않음" },
+  "verdictPrivateCaBody": {
+    "message": "$1에서 발급한 이 인증서가 공개 Certificate Transparency 로그에 있는지 Chrome에서 확인하지 못했습니다. 로컬에 설치된 인증 기관(회사 네트워크, 바이러스 백신, 내부 서버)에서 발급했거나 브라우저의 CT 로그 목록이 오래된 경우 이런 일이 발생합니다. 연결이 가로채졌는지 알아보려면 외부 소스를 추가하세요."
+  },
+  "verdictInterceptedTitle": { "message": "연결이 가로채졌을 가능성 높음" },
+  "verdictInterceptedByTitle": { "message": "$1에서 연결을 가로챔" },
+  "verdictInterceptedBody": {
+    "message": "브라우저는 $1에서 발급한 인증서를 받지만 외부 소스는 $2에서 발급한 인증서를 보고 있으며, Chrome에서 브라우저의 인증서가 공개 로그에 기록되었는지 확인하지 못했습니다. 사용자와 사이트 사이에 있는 무언가(회사 프록시, 바이러스 백신 또는 기타)가 트래픽을 복호화하고 다시 서명하고 있을 가능성이 높습니다."
+  },
+  "verdictSplitTitle": { "message": "소스 간 결과 불일치" },
+  "verdictSplitBody": {
+    "message": "브라우저와 같은 인증서: $1. $2에서 발급한 다른 인증서: $3. 사용자의 연결이 가로채졌고 일치하는 소스가 사용자와 같은 네트워크에 있는 경우이거나, 나머지 소스의 네트워크가 가로채진 경우입니다."
+  },
+  "verdictInterceptorBody": {
+    "message": "이 인증서는 $1에서 발급했으며 공개 Certificate Transparency 로그에 없습니다. HTTPS 검사 제품이 이런 방식으로 작동합니다."
+  },
+  "interceptorIdentified": { "message": "$1 제품은 $2입니다." },
+  "verdictConflictTitle": { "message": "소스마다 보는 인증서가 다름" },
+  "verdictConflictBody": {
+    "message": "브라우저와 외부 소스가 서로 다른 공개 인증서를 보고 있습니다(브라우저의 인증서는 $1에서, 외부 소스의 인증서는 $2에서 발급). 여러 CDN을 사용하는 사이트에서 이런 일이 있지만 살펴볼 필요가 있습니다."
+  },
+  "verdictExternalTitleOne": { "message": "외부 소스 $1곳에서 본 인증서" },
+  "verdictExternalTitleFew": { "message": "외부 소스 $1곳에서 본 인증서" },
+  "verdictExternalTitleOther": { "message": "외부 소스 $1곳에서 본 인증서" },
+  "verdictExternalBody": {
+    "message": "브라우저에서 읽기가 사용 중지되어 있으므로 네트워크에서 일어나는 가로채기를 감지할 수 없습니다. 소스에서 본 결과는 다음과 같습니다."
+  },
+  "verdictExternalBodyAsk": {
+    "message": "소스에서 본 인증서와 비교하려면 브라우저에서 인증서를 읽으세요."
+  },
+  "verdictExternalBodyLocalFailed": {
+    "message": "브라우저에서 인증서를 읽을 수 없었으므로 네트워크에서 일어나는 가로채기를 배제할 수 없습니다. 소스에서 본 결과는 다음과 같습니다."
+  },
+  "verdictExternalBodyLite": {
+    "message": "이 버전은 브라우저에서 인증서를 읽을 수 없으므로 네트워크에서 일어나는 가로채기를 감지할 수 없습니다. 소스에서 본 결과는 다음과 같습니다."
+  },
+  "verdictExternalDisagreeTitle": { "message": "외부 소스 간 결과 불일치" },
+  "verdictExternalDisagreeBody": { "message": "외부 소스마다 서로 다른 인증서를 보고 있습니다." },
+  "verdictTamperedTitle": { "message": "전송 중에 응답이 변경됨" },
+  "verdictTamperedBody": {
+    "message": "$1의 서명된 응답이 해당 소스와 브라우저 사이에서 변경되었으므로 사용하지 않았습니다. 이 브라우저의 보안 연결을 가로채는 무언가만이 이런 일을 할 수 있습니다."
+  },
+  "verdictUnsignedTitle": { "message": "서명되지 않은 응답으로만 확인됨" },
+  "verdictUnsignedBody": {
+    "message": "브라우저가 받은 인증서는 $1의 응답에 있는 인증서와 같지만, 이 응답들은 서명되지 않았고 Chrome에서 브라우저의 인증서가 공개 로그에 기록되었는지 확인하지 못했습니다. 연결을 가로채는 무언가가 이 응답을 작성했을 수도 있습니다. PlusPrivacy 공증 서버의 응답처럼 알려진 키로 서명된 응답은 위조할 수 없습니다."
+  },
+  "verdictHttpTitle": { "message": "암호화되지 않은 페이지" },
+  "verdictHttpBody": {
+    "message": "이 페이지는 일반 HTTP로 로드되었으므로 네트워크상의 누구나 내용을 읽거나 변경할 수 있습니다. 이 페이지를 보호하는 인증서가 없습니다."
+  },
+  "verdictHttpBodyWithCert": {
+    "message": "이 페이지는 일반 HTTP로 로드되었으므로 네트워크상의 누구나 내용을 읽거나 변경할 수 있습니다. 아래는 서버가 HTTPS(포트 443)에서 제공하는 인증서입니다."
+  },
+  "verdictNoSourcesTitle": { "message": "표시할 인증서 없음" },
+  "verdictNoSourcesBody": {
+    "message": "브라우저에서 읽기, PlusPrivacy 공증 서버 또는 다른 소스를 옵션에서 사용 설정하세요."
+  },
+  "verdictNoSourcesLite": {
+    "message": "이 사이트의 인증서를 보려면 옵션에서 PlusPrivacy 공증 서버를 사용 설정하거나 소스를 추가하세요."
+  },
+  "verdictNoSourcesLocalFailed": {
+    "message": "브라우저에서 인증서를 읽을 수 없었고 응답한 외부 소스도 없습니다."
+  },
+  "verdictInternalBody": {
+    "message": "외부 소스는 내부 사이트에 연결할 수 없으며, 브라우저에서도 인증서를 읽지 않았습니다."
+  },
+  "verdictAllSourcesFailed": { "message": "응답한 외부 소스가 없습니다. 옵션에서 소스를 점검하세요." },
+  "verdictAskTitle": { "message": "인증서를 읽을 준비 완료" },
+  "verdictAskBody": { "message": "브라우저에서 읽기 모드가 요청 시로 설정되어 있습니다." },
+
+  "kind_corporateProxy": { "message": "회사 프록시 또는 방화벽" },
+  "kind_cloudProxy": { "message": "클라우드 보안 게이트웨이" },
+  "kind_antivirus": { "message": "HTTPS 검사 기능이 있는 바이러스 백신" },
+  "kind_contentFilter": { "message": "콘텐츠 필터" },
+  "kind_debugProxy": { "message": "디버깅 프록시" },
+  "kind_adware": { "message": "애드웨어" },
+
+  "warnExpired": { "message": "인증서가 만료되었습니다." },
+  "warnNotYetValid": { "message": "인증서가 아직 유효하지 않습니다." },
+  "warnExpiresSoon": { "message": "인증서가 $1 후 만료됩니다." },
+  "warnHostMismatch": { "message": "인증서가 $1에 적용되지 않습니다." },
+  "warnWeakSignature": { "message": "체인에 취약한 서명(SHA-1 또는 MD5)이 사용되었습니다." },
+  "warnWeakKey": { "message": "RSA 키가 $1비트에 불과합니다." },
+  "warnObsoleteProtocol": { "message": "오래된 프로토콜: $1." },
+  "warnNotaryUntrusted": { "message": "$1에서는 받은 인증서를 신뢰하지 않습니다: $2." },
+  "warnNotPubliclyLogged": { "message": "이 인증서가 공개 로그에 기록되었는지 Chrome에서 확인하지 못했습니다." },
+  "warnSomeSourcesDiffer": {
+    "message": "$1에서는 다른 인증서($2에서 발급)를 보고 있습니다. 브라우저의 인증서는 공개 로그에 기록되어 있으므로 차이는 해당 소스 쪽에서 발생했을 가능성이 높습니다."
+  },
+
+  "sectionCertificate": { "message": "인증서" },
+  "sectionCertificateExternal": { "message": "$1에서 본 인증서" },
+  "certIssuedTo": { "message": "발급 대상" },
+  "andMore": { "message": "외 $1개" },
+  "certOrganization": { "message": "조직" },
+  "certIssuedBy": { "message": "발급자" },
+  "certValidity": { "message": "유효 기간" },
+  "certType": { "message": "유형" },
+  "validityRemaining": { "message": "$1 남음" },
+  "validityExpired": { "message": "$1 전 만료됨" },
+  "validityFuture": { "message": "아직 유효하지 않음" },
+  "daysOne": { "message": "$1일" },
+  "daysFew": { "message": "$1일" },
+  "daysOther": { "message": "$1일" },
+  "level_DV": { "message": "도메인 검증(DV)" },
+  "level_OV": { "message": "조직 검증(OV)" },
+  "level_EV": { "message": "확장 검증(EV)" },
+  "level_IV": { "message": "개인 검증(IV)" },
+
+  "sectionConnection": { "message": "연결" },
+  "connProtocol": { "message": "프로토콜" },
+  "connKeyExchange": { "message": "키 교환" },
+  "connCipher": { "message": "암호화 방식" },
+  "connCT": { "message": "투명성" },
+  "connECH": { "message": "Encrypted Client Hello" },
+  "ctCompliant": { "message": "공개 로그에 기록됨" },
+  "ctNotCompliant": { "message": "기록되지 않음" },
+  "ctUnknown": { "message": "알 수 없음" },
+  "sctsOne": { "message": "유효한 SCT $1개" },
+  "sctsFew": { "message": "유효한 SCT $1개" },
+  "sctsOther": { "message": "유효한 SCT $1개" },
+  "yes": { "message": "예" },
+  "no": { "message": "아니요" },
+
+  "sectionChain": { "message": "인증서 체인($1)" },
+  "chainLeaf": { "message": "사이트" },
+  "chainIntermediate": { "message": "중간" },
+  "chainRoot": { "message": "루트" },
+  "chainIssuedBy": { "message": "발급자: $1" },
+
+  "sectionDetails": { "message": "기술 세부정보" },
+  "detailSpkiPin": { "message": "공개 키 핀" },
+  "detailSerial": { "message": "일련번호" },
+  "detailSignature": { "message": "서명" },
+  "detailPublicKey": { "message": "공개 키" },
+  "detailServerSignature": { "message": "TLS 서명" },
+  "detailNamesOne": { "message": "이름" },
+  "detailNamesFew": { "message": "이름($1)" },
+  "detailNamesOther": { "message": "이름($1)" },
+  "detailKeyUsage": { "message": "키 사용" },
+  "detailExtKeyUsage": { "message": "확장 키 사용" },
+  "detailPolicies": { "message": "정책" },
+  "detailCaIssuers": { "message": "CA 발급자" },
+  "detailScts": { "message": "SCT" },
+  "detailMustStaple": { "message": "OCSP must-staple" },
+  "detailExtensions": { "message": "확장" },
+  "critical": { "message": "중요" },
+
+  "localErr_restrictedPage": {
+    "message": "Chrome에서 이 페이지를 읽도록 허용하지 않습니다(내부 페이지, 오류 페이지 또는 다른 확장 프로그램의 페이지)."
+  },
+  "localErr_blockedByPolicy": {
+    "message": "조직의 정책에 따라 브라우저에서 인증서를 읽을 수 없도록 차단되어 있습니다."
+  },
+  "localErr_probeBlocked": { "message": "페이지에서 인증서를 읽는 데 사용하는 요청을 차단했습니다." },
+  "localErr_reloadFailed": { "message": "제한 시간 내에 페이지 로드가 완료되지 않았습니다." },
+  "localErr_canceledByUser": { "message": "Chrome의 디버깅 표시줄에서 읽기가 취소되었습니다." },
+  "localErr_detached": { "message": "Chrome에서 읽기 세션을 종료했습니다." },
+  "localErr_navigated": { "message": "탭이 다른 사이트로 이동했습니다. 다시 검사하세요." },
+  "localErr_noCertificate": { "message": "Chrome에서 이 페이지의 인증서를 반환하지 않았습니다." },
+  "localErr_notHttps": { "message": "이 페이지는 HTTPS로 제공되지 않습니다." },
+  "localErr_tabGone": { "message": "탭이 닫혔습니다." },
+  "localErr_alreadyAttached": { "message": "이 탭에 이미 다른 디버거가 연결되어 있습니다." },
+  "localErr_generic": { "message": "읽기 실패: $1" },
+
+  "notaryErr_timeout": { "message": "$1초 안에 응답이 없습니다." },
+  "notaryErr_http": { "message": "소스에서 HTTP $1 상태 코드를 반환했습니다." },
+  "notaryErr_network": { "message": "소스에 연결할 수 없습니다(네트워크 오류 또는 CORS 헤더 누락)." },
+  "notaryErr_unauthorized": { "message": "소스에서 토큰을 거부했습니다." },
+  "notaryErr_rateLimited": { "message": "요청이 너무 많습니다. 소스에서 요청 속도를 줄여 달라고 합니다." },
+  "notaryErr_badResponse": { "message": "소스에서 잘못된 응답을 보냈습니다." },
+  "notaryErr_badCertificate": { "message": "소스에서 읽을 수 없는 인증서를 보냈습니다." },
+  "notaryErr_badEndpoint": { "message": "소스 주소가 잘못되었습니다." },
+  "notaryErr_forbiddenTarget": { "message": "소스에서 이 주소를 거부합니다(사설 또는 예약된 주소)." },
+  "notaryErr_forbiddenPort": { "message": "소스에서 이 포트는 검사하지 않습니다." },
+  "notaryErr_dnsFailed": { "message": "소스에서 사이트 이름의 IP 주소를 찾지 못했습니다." },
+  "notaryErr_connectFailed": { "message": "소스에서 사이트에 연결하지 못했습니다." },
+  "notaryErr_tlsFailed": { "message": "소스에서 TLS 핸드셰이크에 실패했습니다." },
+  "notaryErr_busy": { "message": "소스의 사용량이 많습니다. 잠시 후 다시 시도하세요." },
+  "notaryErr_badRequest": { "message": "소스에서 요청을 이해하지 못했습니다." },
+  "notaryErr_forbiddenOrigin": { "message": "소스에서 이 확장 프로그램 사본의 요청을 받지 않습니다." },
+  "notaryErr_noKey": { "message": "이 버전에는 이 소스의 응답을 검증할 키가 없으므로 소스에 요청하지 않았습니다." },
+  "notaryErr_unsigned": { "message": "응답이 서명되지 않았으므로 사용하지 않았습니다." },
+  "notaryErr_unknownKey": {
+    "message": "응답이 이 확장 프로그램에서 알지 못하는 키로 서명되었으므로 사용하지 않았습니다. 소스의 키가 바뀌었을 수 있습니다. 확장 프로그램이나 소스의 키를 업데이트하세요."
+  },
+  "notaryErr_tampered": { "message": "응답이 전송 중에 변경되었으므로 사용하지 않았습니다." },
+  "notaryErr_internal": { "message": "소스에서 내부 오류가 발생했습니다." },
+  "notaryErr_cannotVerify": { "message": "이 브라우저에서 응답의 서명을 검증할 수 없었으므로 사용하지 않았습니다." },
+  "notaryErr_other": { "message": "오류 $1 $2" },
+
+  "sectionHistory": { "message": "기록" },
+  "historyFirst": {
+    "message": "이 사이트를 처음 검사했습니다. 이제부터 SSL Checker는 이 사이트의 인증서가 $1에서 발급된다는 것을 기억합니다."
+  },
+  "historyKnown": { "message": "이전 검사와 같은 인증 기관: $1, $3부터 $2." },
+  "historyLearned": { "message": "이제부터 SSL Checker는 이 사이트에 대해 $1도 기억합니다." },
+  "historyChangedBefore": { "message": "지금까지: $1, $2, 마지막 검사 $3." },
+  "historyChangedNow": { "message": "현재: $1." },
+  "historySameName": {
+    "message": "인증 기관의 이름은 이전과 같지만, 이 사이트에서 한 번도 본 적 없는 키로 서명합니다."
+  },
+  "historyTrusted": { "message": "이제 이 사이트에서는 $1에서 발급한 인증서를 신뢰합니다." },
+  "historyForgotten": { "message": "이 사이트를 잊었습니다. 다음 검사부터 기록이 새로 시작됩니다." },
+  "historyIncognito": {
+    "message": "시크릿 창에서는 사이트 기억이 사용 중지되므로 아무것도 기록하거나 비교하지 않습니다."
+  },
+  "checksOne": { "message": "$1회 검사" },
+  "checksFew": { "message": "$1회 검사" },
+  "checksOther": { "message": "$1회 검사" },
+  "actionTrustCa": { "message": "이 사이트에서 신뢰" },
+  "actionForgetSite": { "message": "이 사이트 잊기" },
+  "verdictCaChangedTitle": { "message": "인증 기관이 변경됨" },
+  "verdictCaChangedBody": {
+    "message": "이전 검사에서 이 사이트는 항상 $1에서 발급한 공개 인증서를 사용했습니다. 지금 브라우저가 받은 인증서는 $2에서 발급했으며 공개 로그에 기록되어 있지 않습니다. 사용자와 사이트 사이에 있는 무언가가 연결을 가로채고 있을 가능성이 높습니다."
+  },
+  "verdictCaChangedSameNameBody": {
+    "message": "인증서에는 이전처럼 $1에서 발급했다고 표시되어 있지만, 이 사이트에서 한 번도 본 적 없는 키로 서명되었고 공개 로그에 기록되어 있지 않습니다. 사용자와 사이트 사이에 있는 무언가가 연결을 가로채고 있을 가능성이 높습니다."
+  },
+  "warnCaChanged": { "message": "이 사이트의 인증 기관이 변경되었습니다. 이전: $1, 현재: $2." },
+  "warnCaChangedSameName": {
+    "message": "인증서에는 이전처럼 $1에서 발급했다고 표시되어 있지만, 이 사이트에서 한 번도 본 적 없는 키로 서명되었습니다."
+  },
+  "warnCaChangedPublic": {
+    "message": "이 사이트의 인증 기관이 바뀌었습니다(이전: $1, 현재: $2). 새 인증서는 공개 로그에 기록되어 있습니다."
+  },
+  "warnCaChangedNowPublic": {
+    "message": "이전 검사에서 이 사이트의 인증서는 이 컴퓨터나 네트워크에 설치된 인증 기관(예: 회사 프록시)인 $1에서 발급한 것이었습니다. 이제는 공개 인증서입니다."
+  },
+  "warnNotaryTampered": {
+    "message": "$1의 서명된 응답이 전송 중에 변경되어 사용하지 않았습니다. 무언가가 이 브라우저의 보안 연결을 가로채고 있습니다."
+  },
+
+  "optMemoryTitle": { "message": "사이트 기억" },
+  "optMemoryIntro": {
+    "message": "브라우저에서 인증서를 읽을 때 SSL Checker는 검사하는 각 사이트의 인증서를 어느 인증 기관에서 발급했는지 기억하고, 알고 있는 사이트가 갑자기 다른 인증 기관의 인증서를 사용하면 경고합니다. 모든 정보는 이 기기에만 저장되며, 시크릿 창에서는 아무것도 기록하지 않습니다."
+  },
+  "fieldMemoryEnabled": { "message": "검사한 사이트의 인증 기관 기억하기" },
+  "optMemoryHelp": {
+    "message": "사용 중지하면 기록이 중단됩니다. 이미 저장된 정보를 삭제하려면 모든 사이트 잊기를 사용하세요."
+  },
+  "memoryCountOne": { "message": "기억한 사이트 $1개" },
+  "memoryCountFew": { "message": "기억한 사이트 $1개" },
+  "memoryCountOther": { "message": "기억한 사이트 $1개" },
+  "actionForgetAll": { "message": "모든 사이트 잊기" },
+  "forgotAll": { "message": "모든 사이트를 잊음" },
+
+  "optionsTitle": { "message": "SSL Checker 옵션" },
+  "optionsIntro": { "message": "인증서를 읽는 방법과 비교할 외부 소스를 선택하세요." },
+  "optLocalTitle": { "message": "브라우저에서 읽기" },
+  "optLocalIntro": {
+    "message": "브라우저가 받은 인증서를 정확히 보여 주므로 네트워크에서 일어나는 가로채기를 감지할 수 있습니다. Chrome에는 이를 위한 전용 API가 없으므로 확장 프로그램이 약 1초 동안 탭에 디버거를 연결하며, 그동안 Chrome에서 SSL Checker가 브라우저를 디버깅하고 있다는 표시줄을 보여 줍니다."
+  },
+  "optLocalUnavailable": {
+    "message": "이 버전의 SSL Checker에는 디버거 권한이 포함되어 있지 않으므로 외부 소스를 통해서만 인증서를 읽습니다."
+  },
+  "modeAlways": { "message": "매번" },
+  "modeAlwaysHelp": { "message": "SSL Checker를 열 때마다 인증서를 읽습니다." },
+  "modeAsk": { "message": "요청 시" },
+  "modeAskHelp": { "message": "외부 결과를 먼저 표시하고, 클릭할 때만 브라우저에서 읽습니다." },
+  "modeNever": { "message": "사용 안함" },
+  "modeNeverHelp": { "message": "외부 소스만 사용합니다. 디버깅 표시줄이 나타나지 않습니다." },
+  "optSourcesTitle": { "message": "외부 소스" },
+  "optSourcesIntro": {
+    "message": "각 소스는 인터넷의 다른 위치에서 사이트에 연결하고 받은 인증서를 알려 주는 공증 서버입니다. 소스에는 사이트의 호스트 이름과 포트만 전송됩니다."
+  },
+  "optAddSourceTitle": { "message": "소스 추가" },
+  "optOwnNotary": {
+    "message": "직접 공증 서버를 운영하고 싶으신가요? 오픈소스이며 Docker가 있는 모든 서버에서 실행됩니다."
+  },
+  "optOwnNotaryLink": { "message": "설치 방법" },
+  "fieldName": { "message": "이름" },
+  "fieldNamePlaceholder": { "message": "Frankfurt 서버" },
+  "fieldUrl": { "message": "주소" },
+  "fieldUrlHelp": {
+    "message": "공증 서버의 HTTPS 주소입니다. SSL Checker는 사이트를 주소에 넣지 않고 POST 요청 본문에 담아 보냅니다."
+  },
+  "fieldToken": { "message": "액세스 토큰(선택사항)" },
+  "fieldTokenHelp": { "message": "Authorization: Bearer 헤더로 전송되며 이 기기에만 저장됩니다." },
+  "fieldKey": { "message": "공개 키(선택사항)" },
+  "fieldKeyHelp": {
+    "message": "키를 지정하면 이 공증 서버가 서명한 응답만 인정되므로 중간에서 누구도 응답을 변경할 수 없습니다. 공증 서버는 시작할 때 키를 출력합니다. 키가 여러 개이면 공백으로 구분하세요."
+  },
+  "endpointEnabled": { "message": "$1 사용" },
+  "tokenSet": { "message": "토큰 저장됨" },
+  "keySet": { "message": "서명된 응답만" },
+  "defaultSource": {
+    "message": "PlusPrivacy에서 운영하는 기본 소스입니다. 응답에 서명하며, 사용자가 검사하는 사이트를 기록하지 않습니다."
+  },
+  "testRunning": { "message": "example.com에 대해 소스에 묻는 중…" },
+  "testOk": { "message": "정상 작동: example.com 인증서(발급자: $1)를 $2에서 $3ms 만에 받았습니다." },
+  "testSigned": { "message": "응답이 예상한 키로 서명되었습니다." },
+  "testSelfSigned": {
+    "message": "응답에 $1 키의 서명이 있습니다. 이 키를 추가하기 전에 공증 서버가 자체 서버에서 출력한 키와 같은지 확인하세요. 연결을 가로채는 쪽에서 자체 키를 보냈을 수도 있습니다."
+  },
+  "testUnsigned": { "message": "응답이 서명되어 있지 않습니다." },
+  "testFailed": { "message": "실패: $1" },
+  "endpointErrorInvalidUrl": { "message": "올바른 주소를 입력하세요." },
+  "endpointErrorCredentialsInUrl": {
+    "message": "주소에 사용자 이름이나 비밀번호를 넣지 말고 토큰 필드를 사용하세요."
+  },
+  "endpointErrorFragment": { "message": "주소에서 # 부분을 삭제하세요." },
+  "endpointErrorTemplate": {
+    "message": "{host} 또는 {port} 없이 공증 서버 주소를 입력하세요. SSL Checker는 사이트를 요청 본문에 담아 보냅니다."
+  },
+  "endpointErrorHttps": { "message": "주소는 HTTPS를 사용해야 합니다(일반 HTTP는 localhost에서만 허용됨)." },
+  "endpointErrorDuplicate": { "message": "이 소스는 이미 목록에 있습니다." },
+  "endpointErrorToken": { "message": "토큰에는 표시 가능한 ASCII 문자만 사용할 수 있습니다." },
+  "endpointErrorKey": { "message": "공증 서버가 출력한 형식대로 키를 입력하세요. ed25519: 다음에 43자가 와야 합니다." },
+  "optAdvancedTitle": { "message": "고급" },
+  "fieldTimeout": { "message": "소스별 대기 시간(초)" },
+  "optProtocolTitle": { "message": "공증 서버 프로토콜" },
+  "optProtocolIntro": {
+    "message": "이 요청에 응답하는 서버라면 어떤 서버든 소스가 될 수 있습니다. 참조 구현은 SSL Checker 프로젝트의 공증 서버로, Docker용으로 패키징된 작은 Node.js 서비스입니다."
+  },
+  "optProtocolSigning": {
+    "message": "서명 키가 있는 공증 서버는 요청의 nonce를 그대로 돌려주고 공개 키를 추가한 뒤 응답에 서명합니다. Notary-Signature에는 \"SSL Checker notary answer v1\" 줄 뒤에 본문을 그대로 이어 붙인 데이터의 Ed25519 서명이 들어 있습니다. 소스에 키를 지정하면 확장 프로그램은 요청한 호스트, 포트, nonce에 대해 그 키로 서명된 응답만 사용합니다."
+  },
+  "optProtocolErrors": {
+    "message": "오류가 발생하면 4xx 또는 5xx 상태 코드와 함께 {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}} 형식으로 응답하세요. 확장 프로그램에는 호스트 권한이 없으므로 서버에서 CORS 헤더를 보내고 Content-Type이 지정된 POST 요청의 프리플라이트에 응답해야 합니다."
+  },
+  "saved": { "message": "저장됨" },
+  "versionLabel": { "message": "버전 $1" }
+}

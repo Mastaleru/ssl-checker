@@ -1,0 +1,23 @@
+SSL Checker zeigt das TLS-Zertifikat, das Ihr Browser für die Website im aktuellen Tab wirklich erhielt, und meldet, ob etwas unterwegs es ersetzt.
+
+WAS SIE SEHEN
+• Zertifikat: Namen, Aussteller, Gültigkeit, Validierungsstufe (DV, OV, EV), Schlüssel- und Signaturalgorithmen.
+• Verbindung: TLS-Version, Schlüsselaustausch (auch Post-Quanten-Hybride), Chiffre, Encrypted Client Hello, Certificate Transparency.
+• Ganze Kette, Fingerabdrücke, Seriennummer, alle Erweiterungen. PEM kopieren oder Kette herunterladen.
+
+ABFANGEN ERKENNEN
+SSL Checker fragt den PlusPrivacy-Notar und weitere Notare Ihrer Wahl, welches Zertifikat ihnen dieselbe Website anderswo im Netz zeigt, und vergleicht:
+• Überall dasselbe Zertifikat → bestätigt.
+• Ihres ist anders und nicht öffentlich protokolliert → Ihr HTTPS-Verkehr wird entschlüsselt und neu signiert (Firmen-Proxy, Antivirensoftware oder Schlimmeres); SSL Checker nennt den Aussteller des Ersatzes.
+
+MERKT SICH GEPRÜFTE WEBSITES
+SSL Checker merkt sich die Zertifizierungsstelle jeder Website und warnt bei plötzlichem Wechsel. Das Website-Gedächtnis bleibt auf Ihrem Gerät; Inkognitofenster werden nie erfasst.
+
+SIE BESTIMMEN, WANN DER DEBUGGER LÄUFT
+Mangels Chrome-API für das Zertifikat geladener Seiten verbindet SSL Checker den Chrome-Debugger etwa eine Sekunde mit dem Tab; Chrome zeigt dabei seine Fehlerbehebungsleiste. In den Optionen: jedes Mal, bei Bedarf oder nie (nur Notare).
+
+SIGNIERTE ANTWORTEN
+Der PlusPrivacy-Notar signiert jede Antwort, SSL Checker prüft die Signatur: Niemand kann unterwegs eine Bestätigung fälschen. Der Notar ist Open Source: Betreiben Sie einen eigenen und fügen Sie ihn mit Schlüssel hinzu.
+
+DATENSCHUTZ
+Keine Analysedienste, kein Tracking, kein Konto. Vor der ersten Prüfung nennt SSL Checker, was ausgelesen und gesendet wird, und bittet um Zustimmung. Nur Hostname und Port der Website verlassen Ihr Gerät, für die Notare. Der PlusPrivacy-Notar protokolliert sie nicht und ist abschaltbar.

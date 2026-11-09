@@ -1,0 +1,18 @@
+{
+  "confirmed": [
+    "Certyfikat, który naprawdę dostała Twoja przeglądarka",
+    "Łańcuch, wersja TLS, wymiana kluczy i Certificate Transparency, odczytane bezpośrednio z Chrome i potwierdzone przez niezależnych notariuszy."
+  ],
+  "intercepted": [
+    "Wykryj przechwycenie HTTPS",
+    "Notariusze pokazują, co widzi reszta internetu. Inny, niezarejestrowany publicznie certyfikat oznacza, że coś po drodze ponownie podpisuje Twój ruch."
+  ],
+  "details": [
+    "Wszystkie szczegóły na jedno kliknięcie",
+    "Nazwy, ważność, łańcuch, odciski cyfrowe, pin klucza, OCSP i CRL, SCT oraz rozszerzenia. Skopiuj PEM lub pobierz łańcuch."
+  ],
+  "options": [
+    "Ty decydujesz, kiedy działa debuger",
+    "Odczytuj certyfikat za każdym razem, na żądanie lub nigdy i wybierz, czy SSL Checker ma pamiętać sprawdzane witryny."
+  ]
+}

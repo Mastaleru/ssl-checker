@@ -1,0 +1,421 @@
+{
+  "localeCode": { "message": "zh-CN", "description": "BCP 47 tag used to format dates and plurals in this language." },
+  "extName": { "message": "SSL Checker" },
+  "extNameLite": { "message": "SSL Checker Lite" },
+  "extDescription": {
+    "message": "查看当前网站的真实 TLS 证书，并与独立公证服务器看到的证书进行比对，从而检测拦截。"
+  },
+  "extDescriptionLite": {
+    "message": "查看独立公证服务器收到的当前网站 TLS 证书。"
+  },
+  "actionTitle": { "message": "检查此网站的证书" },
+
+  "schemeHttps": { "message": "HTTPS 连接" },
+  "schemeHttp": { "message": "明文 HTTP 页面" },
+  "actionRecheck": { "message": "重新检查" },
+  "actionSettings": { "message": "选项" },
+  "unsupportedTitle": { "message": "此处没有可检查的内容" },
+  "unsupportedBody": { "message": "请打开一个网站（http 或 https），然后再次点击此图标查看其证书。" },
+  "loadingTitle": { "message": "正在检查证书…" },
+  "loadingReload": { "message": "正在重新加载页面以读取证书…" },
+  "loadingDebuggerBar": {
+    "message": "读取证书时，Chrome 会显示几秒钟的提示栏，指出 SSL Checker 已开始调试此浏览器。"
+  },
+  "checkFailedTitle": { "message": "无法运行检查" },
+  "checkFailedBody": { "message": "错误：$1" },
+  "consentTitle": { "message": "首次检查之前" },
+  "consentIntro": {
+    "message": "SSL Checker 只在您点击其图标时，才会查看当前标签页中的网站。它会读取您的浏览器收到的证书；如果您同意，它还会："
+  },
+  "consentIntroLite": {
+    "message": "SSL Checker 只在您点击其图标时，才会查看当前标签页中的网站。如果您同意，它会："
+  },
+  "consentNotaryName": { "message": "询问 PlusPrivacy 公证服务器。" },
+  "consentNotaryBody": {
+    "message": "网站的主机名和端口会发送到 $1，它会从自己的网络连接到该网站，并返回它看到的证书。该公证服务器不会保留这些网站的任何记录。"
+  },
+  "consentMemoryName": { "message": "记住每个网站的证书颁发机构。" },
+  "consentMemoryBody": {
+    "message": "仅保存在此设备上，以便在已知网站突然出现其他颁发机构时提醒您。"
+  },
+  "consentLater": {
+    "message": "您可以随时在选项中更改这两项设置。在您同意之前，不会读取或发送任何内容。"
+  },
+  "consentAgree": { "message": "同意并检查" },
+  "checkedAt": { "message": "检查时间：$1" },
+
+  "sectionWitnesses": { "message": "各方所见" },
+  "witnessBrowser": { "message": "您的浏览器" },
+  "witnessViaReload": { "message": "重新加载页面后读取" },
+  "witnessLocalNotRead": { "message": "尚未读取。" },
+  "witnessIssuedBy": { "message": "颁发者：$1" },
+  "witnessSigned": { "message": "已签名响应" },
+  "durationMs": { "message": "$1 毫秒" },
+  "fingerprintLabel": { "message": "SHA-256 指纹 $1" },
+  "externalSkippedInternal": { "message": "内部网站：外部来源无法访问，因此未向其询问。" },
+  "noSourcesNote": {
+    "message": "请在选项中开启 PlusPrivacy 公证服务器或添加其他来源，以便将您的浏览器收到的证书与其他方看到的证书进行比较。"
+  },
+  "noSourcesNoteLite": {
+    "message": "此版本只通过外部来源读取证书。请在选项中开启 PlusPrivacy 公证服务器或添加来源。"
+  },
+  "askLocalText": {
+    "message": "从浏览器读取已设为按需读取。Chrome 会显示几秒钟的调试提示栏。"
+  },
+  "probeBlockedText": {
+    "message": "此页面阻止了用于读取证书的小型请求（内容安全策略）。重新加载页面即可可靠地读取证书。"
+  },
+
+  "actionAddSource": { "message": "添加来源" },
+  "actionReadLocal": { "message": "从浏览器读取" },
+  "actionReloadAndRead": { "message": "重新加载页面并读取" },
+  "actionCopyPem": { "message": "复制 PEM" },
+  "actionDownloadChain": { "message": "下载证书链" },
+  "actionTest": { "message": "测试" },
+  "actionRemove": { "message": "移除" },
+  "copied": { "message": "已复制" },
+  "copyFailed": { "message": "复制失败" },
+
+  "relationSameCertificate": { "message": "完全相同" },
+  "relationSameKey": { "message": "密钥相同" },
+  "relationSameIssuer": { "message": "证书不同，颁发者相同" },
+  "relationSameCa": { "message": "证书不同，CA 相同" },
+  "relationDifferent": { "message": "证书不同" },
+
+  "verdictConfirmedTitleOne": { "message": "已由 $1 个外部来源确认" },
+  "verdictConfirmedTitleFew": { "message": "已由 $1 个外部来源确认" },
+  "verdictConfirmedTitleOther": { "message": "已由 $1 个外部来源确认" },
+  "verdictConfirmedBody": {
+    "message": "您的浏览器收到的证书与外部来源看到的相同。传输途中没有任何一方替换它。"
+  },
+  "verdictSameCaTitle": { "message": "颁发者相同，证书不同" },
+  "verdictSameCaBody": {
+    "message": "外部来源收到的是同一颁发机构（$1）颁发的另一张证书。这在使用 CDN 时以及证书轮换期间很正常。"
+  },
+  "verdictSameCaUnloggedTitle": { "message": "颁发者名称相同，未经确认" },
+  "verdictSameCaUnloggedBody": {
+    "message": "外部来源收到的是另一张证书，其颁发机构与您的证书颁发机构同名（$1），且 Chrome 未确认您的证书已公开记录。CDN 可能会提供多张证书，但拦截者也可以冒用颁发机构的名称，因此这无法确认您的证书。"
+  },
+  "verdictPublicTitle": { "message": "已公开记录的证书" },
+  "verdictPublicBody": {
+    "message": "Chrome 已确认此证书在公开的 Certificate Transparency 日志中，因此它不是由本地代理或杀毒软件生成的。请在选项中开启外部来源进行交叉核对。"
+  },
+  "verdictPublicBodyNoAnswer": {
+    "message": "Chrome 已确认此证书在公开的 Certificate Transparency 日志中，因此它不是由本地代理或杀毒软件生成的。外部来源均未响应。"
+  },
+  "verdictPrivateCaTitle": { "message": "未确认为公开证书" },
+  "verdictPrivateCaBody": {
+    "message": "Chrome 未确认这张由 $1 颁发的证书在公开的 Certificate Transparency 日志中。如果证书来自本地安装的颁发机构（公司网络、杀毒软件、内部服务器），或者浏览器的 CT 日志列表已过时，就会出现这种情况。请添加外部来源，以确定连接是否遭到拦截。"
+  },
+  "verdictInterceptedTitle": { "message": "连接很可能遭到拦截" },
+  "verdictInterceptedByTitle": { "message": "被 $1 拦截" },
+  "verdictInterceptedBody": {
+    "message": "您的浏览器收到的证书由 $1 颁发，但外部来源看到的证书由 $2 颁发，且 Chrome 未确认您的证书已公开记录。很可能是您与网站之间的某一方（公司代理、杀毒软件或其他）在解密流量并重新签名。"
+  },
+  "verdictSplitTitle": { "message": "各来源结果不一致" },
+  "verdictSplitBody": {
+    "message": "与您的证书相同：$1。不同的证书（由 $2 颁发）：$3。要么您的连接遭到拦截，而结果一致的来源与您处于同一网络；要么其他来源所在的网络遭到拦截。"
+  },
+  "verdictInterceptorBody": {
+    "message": "此证书由 $1 颁发，且不在公开的 Certificate Transparency 日志中，这正是 HTTPS 检查产品的工作方式。"
+  },
+  "interceptorIdentified": { "message": "$1 是$2。" },
+  "verdictConflictTitle": { "message": "各来源看到的证书不同" },
+  "verdictConflictBody": {
+    "message": "您的浏览器与外部来源看到的是不同的公开证书（您的由 $1 颁发，它们的由 $2 颁发）。使用多个 CDN 的网站会出现这种情况，但仍值得留意。"
+  },
+  "verdictExternalTitleOne": { "message": "$1 个外部来源看到的证书" },
+  "verdictExternalTitleFew": { "message": "$1 个外部来源看到的证书" },
+  "verdictExternalTitleOther": { "message": "$1 个外部来源看到的证书" },
+  "verdictExternalBody": {
+    "message": "从浏览器读取已关闭，因此无法检测您网络中的拦截。以下是这些来源看到的证书。"
+  },
+  "verdictExternalBodyAsk": {
+    "message": "请从浏览器读取证书，以便与这些来源看到的证书进行比较。"
+  },
+  "verdictExternalBodyLocalFailed": {
+    "message": "无法从您的浏览器读取证书，因此不能排除您的网络中存在拦截。以下是这些来源看到的证书。"
+  },
+  "verdictExternalBodyLite": {
+    "message": "此版本无法从您的浏览器读取证书，因此无法检测您网络中的拦截。以下是这些来源看到的证书。"
+  },
+  "verdictExternalDisagreeTitle": { "message": "外部来源结果不一致" },
+  "verdictExternalDisagreeBody": { "message": "各外部来源之间看到的证书不一致。" },
+  "verdictTamperedTitle": { "message": "有响应在传输途中被修改" },
+  "verdictTamperedBody": {
+    "message": "来自 $1 的签名响应在该来源与您的浏览器之间被修改，因此未采用。只有能够拦截此浏览器安全连接的一方才能做到这一点。"
+  },
+  "verdictUnsignedTitle": { "message": "仅由未签名的响应确认" },
+  "verdictUnsignedBody": {
+    "message": "您的浏览器收到的证书与 $1 的响应中的证书相同，但这些响应未签名，且 Chrome 未确认您的证书已公开记录。这些响应可能出自拦截您连接的一方之手。使用已知密钥签名的响应（例如 PlusPrivacy 公证服务器的响应）无法伪造。"
+  },
+  "verdictHttpTitle": { "message": "未加密的页面" },
+  "verdictHttpBody": {
+    "message": "此页面通过明文 HTTP 加载，网络上的任何人都可以读取或更改它。没有证书保护此页面。"
+  },
+  "verdictHttpBodyWithCert": {
+    "message": "此页面通过明文 HTTP 加载，网络上的任何人都可以读取或更改它。下方是该服务器通过 HTTPS（端口 443）提供的证书。"
+  },
+  "verdictNoSourcesTitle": { "message": "没有可显示的证书" },
+  "verdictNoSourcesBody": {
+    "message": "请在选项中开启从浏览器读取、PlusPrivacy 公证服务器或其他来源。"
+  },
+  "verdictNoSourcesLite": {
+    "message": "请在选项中开启 PlusPrivacy 公证服务器或添加来源，以查看此网站的证书。"
+  },
+  "verdictNoSourcesLocalFailed": {
+    "message": "无法从您的浏览器读取证书，且没有任何外部来源响应。"
+  },
+  "verdictInternalBody": {
+    "message": "外部来源无法访问内部网站，且未从您的浏览器读取证书。"
+  },
+  "verdictAllSourcesFailed": { "message": "所有外部来源均未响应。请在选项中检查这些来源。" },
+  "verdictAskTitle": { "message": "已准备好读取证书" },
+  "verdictAskBody": { "message": "从浏览器读取已设为按需读取。" },
+
+  "kind_corporateProxy": { "message": "一种企业代理或防火墙" },
+  "kind_cloudProxy": { "message": "一种云安全网关" },
+  "kind_antivirus": { "message": "一种带 HTTPS 扫描功能的杀毒软件" },
+  "kind_contentFilter": { "message": "一种内容过滤器" },
+  "kind_debugProxy": { "message": "一种调试代理" },
+  "kind_adware": { "message": "一种广告软件" },
+
+  "warnExpired": { "message": "证书已过期。" },
+  "warnNotYetValid": { "message": "证书尚未生效。" },
+  "warnExpiresSoon": { "message": "证书将在 $1后过期。" },
+  "warnHostMismatch": { "message": "证书未涵盖 $1。" },
+  "warnWeakSignature": { "message": "证书链使用了弱签名（SHA-1 或 MD5）。" },
+  "warnWeakKey": { "message": "RSA 密钥只有 $1 位。" },
+  "warnObsoleteProtocol": { "message": "过时的协议：$1。" },
+  "warnNotaryUntrusted": { "message": "$1 不信任它看到的证书：$2。" },
+  "warnNotPubliclyLogged": { "message": "Chrome 未确认此证书已公开记录。" },
+  "warnSomeSourcesDiffer": {
+    "message": "$1 看到的证书不同（由 $2 颁发）。您的证书已公开记录，因此差异很可能出在对方一侧。"
+  },
+
+  "sectionCertificate": { "message": "证书" },
+  "sectionCertificateExternal": { "message": "$1 看到的证书" },
+  "certIssuedTo": { "message": "颁发对象" },
+  "andMore": { "message": "及另外 $1 个" },
+  "certOrganization": { "message": "组织" },
+  "certIssuedBy": { "message": "颁发者" },
+  "certValidity": { "message": "有效期" },
+  "certType": { "message": "类型" },
+  "validityRemaining": { "message": "剩余 $1" },
+  "validityExpired": { "message": "已过期 $1" },
+  "validityFuture": { "message": "尚未生效" },
+  "daysOne": { "message": "$1 天" },
+  "daysFew": { "message": "$1 天" },
+  "daysOther": { "message": "$1 天" },
+  "level_DV": { "message": "域名验证（DV）" },
+  "level_OV": { "message": "组织验证（OV）" },
+  "level_EV": { "message": "扩展验证（EV）" },
+  "level_IV": { "message": "个人验证（IV）" },
+
+  "sectionConnection": { "message": "连接" },
+  "connProtocol": { "message": "协议" },
+  "connKeyExchange": { "message": "密钥交换" },
+  "connCipher": { "message": "加密算法" },
+  "connCT": { "message": "透明度" },
+  "connECH": { "message": "Encrypted Client Hello" },
+  "ctCompliant": { "message": "已公开记录" },
+  "ctNotCompliant": { "message": "未记录" },
+  "ctUnknown": { "message": "未知" },
+  "sctsOne": { "message": "$1 个有效 SCT" },
+  "sctsFew": { "message": "$1 个有效 SCT" },
+  "sctsOther": { "message": "$1 个有效 SCT" },
+  "yes": { "message": "是" },
+  "no": { "message": "否" },
+
+  "sectionChain": { "message": "证书链（$1）" },
+  "chainLeaf": { "message": "网站" },
+  "chainIntermediate": { "message": "中间证书" },
+  "chainRoot": { "message": "根证书" },
+  "chainIssuedBy": { "message": "颁发者：$1" },
+
+  "sectionDetails": { "message": "技术详情" },
+  "detailSpkiPin": { "message": "公钥固定值" },
+  "detailSerial": { "message": "序列号" },
+  "detailSignature": { "message": "签名" },
+  "detailPublicKey": { "message": "公钥" },
+  "detailServerSignature": { "message": "TLS 签名" },
+  "detailNamesOne": { "message": "名称" },
+  "detailNamesFew": { "message": "名称（$1）" },
+  "detailNamesOther": { "message": "名称（$1）" },
+  "detailKeyUsage": { "message": "密钥用法" },
+  "detailExtKeyUsage": { "message": "扩展密钥用法" },
+  "detailPolicies": { "message": "证书策略" },
+  "detailCaIssuers": { "message": "CA 颁发者" },
+  "detailScts": { "message": "SCT" },
+  "detailMustStaple": { "message": "OCSP must-staple" },
+  "detailExtensions": { "message": "扩展" },
+  "critical": { "message": "关键" },
+
+  "localErr_restrictedPage": {
+    "message": "Chrome 不允许读取此页面（内部页面、错误页面或其他扩展程序的页面）。"
+  },
+  "localErr_blockedByPolicy": { "message": "您所在组织的政策禁止从浏览器读取证书。" },
+  "localErr_probeBlocked": { "message": "此页面阻止了用于读取证书的请求。" },
+  "localErr_reloadFailed": { "message": "页面未能及时完成加载。" },
+  "localErr_canceledByUser": { "message": "已通过 Chrome 的调试提示栏取消读取。" },
+  "localErr_detached": { "message": "Chrome 结束了读取会话。" },
+  "localErr_navigated": { "message": "标签页已转到其他网站。请重新检查。" },
+  "localErr_noCertificate": { "message": "Chrome 未返回此页面的证书。" },
+  "localErr_notHttps": { "message": "此页面不是通过 HTTPS 提供的。" },
+  "localErr_tabGone": { "message": "标签页已关闭。" },
+  "localErr_alreadyAttached": { "message": "此标签页上已附加了另一个调试程序。" },
+  "localErr_generic": { "message": "读取失败：$1" },
+
+  "notaryErr_timeout": { "message": "$1 秒内无响应。" },
+  "notaryErr_http": { "message": "该来源返回了 HTTP $1。" },
+  "notaryErr_network": { "message": "无法连接到该来源（网络错误或缺少 CORS 标头）。" },
+  "notaryErr_unauthorized": { "message": "该来源拒绝了令牌。" },
+  "notaryErr_rateLimited": { "message": "请求过多；该来源要求降低请求频率。" },
+  "notaryErr_badResponse": { "message": "该来源发送的响应无效。" },
+  "notaryErr_badCertificate": { "message": "该来源发送的证书无法读取。" },
+  "notaryErr_badEndpoint": { "message": "该来源的地址无效。" },
+  "notaryErr_forbiddenTarget": { "message": "该来源拒绝访问此地址（私有或保留地址）。" },
+  "notaryErr_forbiddenPort": { "message": "该来源不检查此端口。" },
+  "notaryErr_dnsFailed": { "message": "该来源无法解析此网站的域名。" },
+  "notaryErr_connectFailed": { "message": "该来源无法连接到此网站。" },
+  "notaryErr_tlsFailed": { "message": "该来源的 TLS 握手失败。" },
+  "notaryErr_busy": { "message": "该来源正忙；请稍后重试。" },
+  "notaryErr_badRequest": { "message": "该来源无法理解此请求。" },
+  "notaryErr_forbiddenOrigin": { "message": "该来源不接受来自此扩展程序副本的请求。" },
+  "notaryErr_noKey": { "message": "此版本没有用于验证该来源响应的密钥，因此未向其询问。" },
+  "notaryErr_unsigned": { "message": "响应未签名，因此未采用。" },
+  "notaryErr_unknownKey": {
+    "message": "此响应使用了本扩展程序未知的密钥签名，因此未采用。该来源可能已启用新密钥：请更新扩展程序或该来源的密钥。"
+  },
+  "notaryErr_tampered": { "message": "响应在传输途中被修改，因此未采用。" },
+  "notaryErr_internal": { "message": "该来源发生了内部错误。" },
+  "notaryErr_cannotVerify": { "message": "此浏览器无法验证响应的签名，因此未采用。" },
+  "notaryErr_other": { "message": "错误 $1 $2" },
+
+  "sectionHistory": { "message": "历史记录" },
+  "historyFirst": {
+    "message": "首次检查此网站。从现在起，SSL Checker 会记住其证书来自 $1。"
+  },
+  "historyKnown": { "message": "与您之前检查时的证书颁发机构相同：$1，自 $3起共 $2。" },
+  "historyLearned": { "message": "从现在起，SSL Checker 也会为此网站记住 $1。" },
+  "historyChangedBefore": { "message": "此前：$1，$2，最后一次于 $3。" },
+  "historyChangedNow": { "message": "现在：$1。" },
+  "historySameName": {
+    "message": "该颁发机构的名称与之前相同，但它用于签名的密钥从未在此网站上出现过。"
+  },
+  "historyTrusted": { "message": "现已为此网站信任 $1。" },
+  "historyForgotten": { "message": "已忘记此网站。下次检查时将重新开始记录其历史。" },
+  "historyIncognito": { "message": "网站记忆在无痕式窗口中处于关闭状态：不会记录或比较任何内容。" },
+  "checksOne": { "message": "$1 次检查" },
+  "checksFew": { "message": "$1 次检查" },
+  "checksOther": { "message": "$1 次检查" },
+  "actionTrustCa": { "message": "为此网站信任该颁发机构" },
+  "actionForgetSite": { "message": "忘记此网站" },
+  "verdictCaChangedTitle": { "message": "证书颁发机构已变更" },
+  "verdictCaChangedBody": {
+    "message": "在您之前的检查中，此网站一直使用由 $1 颁发的公开证书。现在您的浏览器收到的证书由 $2 颁发，且未公开记录。很可能是您与网站之间有某一方正在拦截连接。"
+  },
+  "verdictCaChangedSameNameBody": {
+    "message": "此证书声称与之前一样来自 $1，但它的签名密钥从未在此网站上出现过，且未公开记录。很可能是您与网站之间有某一方正在拦截连接。"
+  },
+  "warnCaChanged": { "message": "此网站的证书颁发机构已变更：之前为 $1，现在为 $2。" },
+  "warnCaChangedSameName": {
+    "message": "此证书声称与之前一样来自 $1，但它的签名密钥从未在此网站上出现过。"
+  },
+  "warnCaChangedPublic": { "message": "此网站已从 $1 切换到 $2。新证书已公开记录。" },
+  "warnCaChangedNowPublic": {
+    "message": "之前对此网站的检查均经由 $1，这是安装在此计算机或网络中的颁发机构（例如公司代理）。现在的证书是公开证书。"
+  },
+  "warnNotaryTampered": {
+    "message": "来自 $1 的签名响应在传输途中被修改，未予采用：有某一方正在拦截此浏览器的安全连接。"
+  },
+
+  "optMemoryTitle": { "message": "网站记忆" },
+  "optMemoryIntro": {
+    "message": "从您的浏览器读取证书时，SSL Checker 会记住您检查的每个网站的证书由哪个颁发机构颁发，并在已知网站突然出现其他颁发机构时提醒您。所有数据都只保存在此设备上，且在无痕式窗口中不会记录任何内容。"
+  },
+  "fieldMemoryEnabled": { "message": "记住我所检查网站的证书颁发机构" },
+  "optMemoryHelp": {
+    "message": "关闭后将停止记录。如需删除已存储的数据，请使用忘记所有网站按钮。"
+  },
+  "memoryCountOne": { "message": "已记住 $1 个网站" },
+  "memoryCountFew": { "message": "已记住 $1 个网站" },
+  "memoryCountOther": { "message": "已记住 $1 个网站" },
+  "actionForgetAll": { "message": "忘记所有网站" },
+  "forgotAll": { "message": "已忘记所有网站" },
+
+  "optionsTitle": { "message": "SSL Checker 选项" },
+  "optionsIntro": { "message": "选择证书的读取方式，以及要与哪些外部来源进行比较。" },
+  "optLocalTitle": { "message": "从浏览器读取" },
+  "optLocalIntro": {
+    "message": "这会准确显示您的浏览器收到的证书，从而能够检测您网络中的拦截。Chrome 没有专门用于此目的的 API，因此本扩展程序会将调试程序附加到标签页约 1 秒；在此期间，Chrome 会显示一个提示栏，指出 SSL Checker 已开始调试此浏览器。"
+  },
+  "optLocalUnavailable": {
+    "message": "此版本的 SSL Checker 不含调试程序权限，因此只能通过外部来源读取证书。"
+  },
+  "modeAlways": { "message": "每次" },
+  "modeAlwaysHelp": { "message": "每次打开 SSL Checker 时都读取证书。" },
+  "modeAsk": { "message": "按需" },
+  "modeAskHelp": { "message": "先显示外部来源的结果；仅在您点击时才从浏览器读取。" },
+  "modeNever": { "message": "从不" },
+  "modeNeverHelp": { "message": "仅使用外部来源。绝不会显示调试提示栏。" },
+  "optSourcesTitle": { "message": "外部来源" },
+  "optSourcesIntro": {
+    "message": "每个来源都是一台公证服务器，它会从互联网上的其他位置连接到网站，并报告它收到的证书。只有网站的主机名和端口会发送给它。"
+  },
+  "optAddSourceTitle": { "message": "添加来源" },
+  "optOwnNotary": { "message": "想拥有自己的公证服务器？它是开源的，可在任何装有 Docker 的服务器上运行。" },
+  "optOwnNotaryLink": { "message": "安装方法" },
+  "fieldName": { "message": "名称" },
+  "fieldNamePlaceholder": { "message": "法兰克福服务器" },
+  "fieldUrl": { "message": "地址" },
+  "fieldUrlHelp": {
+    "message": "公证服务器的 HTTPS 地址。SSL Checker 会把要检查的网站放在 POST 请求的正文中发送给它，绝不会放在地址中。"
+  },
+  "fieldToken": { "message": "访问令牌（可选）" },
+  "fieldTokenHelp": { "message": "以 Authorization: Bearer 形式发送。仅存储在此设备上。" },
+  "fieldKey": { "message": "公钥（可选）" },
+  "fieldKeyHelp": {
+    "message": "设置密钥后，只有经此公证服务器签名的响应才有效，因此传输途中任何人都无法更改响应。公证服务器会在启动时输出其密钥。如有多个密钥，请用空格分隔。"
+  },
+  "endpointEnabled": { "message": "使用 $1" },
+  "tokenSet": { "message": "已保存令牌" },
+  "keySet": { "message": "仅限已签名响应" },
+  "defaultSource": {
+    "message": "默认来源，由 PlusPrivacy 运营。其响应均已签名，且不会保留您所检查网站的任何记录。"
+  },
+  "testRunning": { "message": "正在向该来源查询 example.com…" },
+  "testOk": { "message": "运行正常：它从 $2 看到了 example.com 的证书（由 $1 颁发），用时 $3 毫秒。" },
+  "testSigned": { "message": "其响应使用预期的密钥签名。" },
+  "testSelfSigned": {
+    "message": "其响应带有密钥 $1 的签名。添加该密钥之前，请核实它就是公证服务器在其服务器上输出的密钥：拦截者可能发送了自己的密钥。"
+  },
+  "testUnsigned": { "message": "其响应未签名。" },
+  "testFailed": { "message": "失败：$1" },
+  "endpointErrorInvalidUrl": { "message": "请输入有效的地址。" },
+  "endpointErrorCredentialsInUrl": {
+    "message": "请勿在地址中包含用户名或密码；请使用令牌字段。"
+  },
+  "endpointErrorFragment": { "message": "请从地址中移除 # 部分。" },
+  "endpointErrorTemplate": {
+    "message": "请提供不含 {host} 或 {port} 的公证服务器地址：SSL Checker 会在请求正文中发送要检查的网站。"
+  },
+  "endpointErrorHttps": { "message": "地址必须使用 HTTPS（仅 localhost 允许使用明文 HTTP）。" },
+  "endpointErrorDuplicate": { "message": "此来源已在列表中。" },
+  "endpointErrorToken": { "message": "令牌只能包含可见的 ASCII 字符。" },
+  "endpointErrorKey": { "message": "请按公证服务器输出的格式输入密钥：ed25519: 后跟 43 个字符。" },
+  "optAdvancedTitle": { "message": "高级" },
+  "fieldTimeout": { "message": "每个来源的等待时间（秒）" },
+  "optProtocolTitle": { "message": "公证服务器协议" },
+  "optProtocolIntro": {
+    "message": "任何能响应此请求的服务器都可以作为来源。参考实现是 SSL Checker 项目的公证服务器，这是一个为 Docker 打包的小型 Node.js 服务。"
+  },
+  "optProtocolSigning": {
+    "message": "拥有签名密钥的公证服务器会原样返回请求中的 nonce，附上其公钥并对响应签名：Notary-Signature 包含对“SSL Checker notary answer v1”这一行及其后原样正文的 Ed25519 签名。为来源设置其密钥后，扩展程序只会采用以该密钥签名、且与其所请求的主机、端口和 nonce 相符的响应。"
+  },
+  "optProtocolErrors": {
+    "message": "出错时，请返回 4xx 或 5xx 状态码以及 {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}}。此扩展程序不具备任何主机权限，因此服务器必须发送 CORS 标头，并响应带有 Content-Type 的 POST 请求的预检请求。"
+  },
+  "saved": { "message": "已保存" },
+  "versionLabel": { "message": "版本 $1" }
+}

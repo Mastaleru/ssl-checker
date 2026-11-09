@@ -1,0 +1,18 @@
+{
+  "confirmed": [
+    "Das Zertifikat, das Ihr Browser wirklich erhielt",
+    "Zertifikatskette, TLS-Version, Schlüsselaustausch und Certificate Transparency, direkt aus Chrome ausgelesen und von unabhängigen Notaren bestätigt."
+  ],
+  "intercepted": [
+    "Abfangen von HTTPS erkennen",
+    "Notare zeigen, was der Rest des Internets sieht. Ein abweichendes, nicht protokolliertes Zertifikat bedeutet, dass etwas auf Ihrem Verbindungsweg Ihren Datenverkehr neu signiert."
+  ],
+  "details": [
+    "Jedes Detail nur einen Klick entfernt",
+    "Namen, Gültigkeit, Zertifikatskette, Fingerabdrücke, Schlüssel-Pin, OCSP und CRL, SCTs und Erweiterungen. PEM kopieren oder Kette herunterladen."
+  ],
+  "options": [
+    "Sie bestimmen, wann der Debugger läuft",
+    "Das Zertifikat jedes Mal, bei Bedarf oder nie auslesen und festlegen, ob SSL Checker sich die geprüften Websites merkt."
+  ]
+}

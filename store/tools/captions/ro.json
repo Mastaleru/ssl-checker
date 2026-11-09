@@ -1,0 +1,18 @@
+{
+  "confirmed": [
+    "Vezi certificatul primit cu adevărat de browser",
+    "Lanțul, versiunea TLS, schimbul de chei și Certificate Transparency, citite direct din Chrome și confirmate de notari independenți."
+  ],
+  "intercepted": [
+    "Prinde interceptarea HTTPS",
+    "Notarii arată ce vede restul internetului. Un certificat diferit și neînregistrat public înseamnă că cineva de pe drum îți re-semnează traficul."
+  ],
+  "details": [
+    "Toate detaliile, la un clic",
+    "Nume, valabilitate, lanț, amprente, pin de cheie, OCSP și CRL, SCT-uri și extensii. Copiezi PEM-ul sau descarci lanțul."
+  ],
+  "options": [
+    "Tu decizi când rulează <span class=\"nowrap\">debugger-ul</span>",
+    "Citește certificatul de fiecare dată, la cerere sau niciodată și alege dacă SSL Checker ține minte site-urile verificate."
+  ]
+}

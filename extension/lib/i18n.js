@@ -13,11 +13,18 @@ export const uiLanguage = () => chrome.i18n.getMessage('localeCode') || chrome.i
 
 const pluralRules = new Intl.PluralRules(uiLanguage());
 
-/** Picks <base>One / <base>Few / <base>Other by the UI language's plural rules. */
+const SUFFIX = { zero: 'Zero', one: 'One', two: 'Two', few: 'Few', many: 'Many', other: 'Other' };
+
+/**
+ * Picks <base>One, <base>Few, <base>Many... by the UI language's plural rules.
+ * A category the language has no message for (Spanish uses "many" only for
+ * millions) falls back to <base>Other.
+ */
 export function plural(base, count) {
+  const subs = [String(count)];
   const category = pluralRules.select(count);
-  const key = category === 'one' ? `${base}One` : category === 'few' ? `${base}Few` : `${base}Other`;
-  return t(key, [count]);
+  const text = category === 'other' ? '' : chrome.i18n.getMessage(`${base}${SUFFIX[category]}`, subs);
+  return text || t(`${base}Other`, subs);
 }
 
 const dateFormat = new Intl.DateTimeFormat(uiLanguage(), { dateStyle: 'medium' });

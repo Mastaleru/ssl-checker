@@ -1,0 +1,23 @@
+SSL Checker pokazuje certyfikat TLS witryny w bieżącej karcie – ten, który naprawdę otrzymała przeglądarka – i mówi, czy coś między Tobą a witryną go podmienia.
+
+CO ZOBACZYSZ
+• Certyfikat: nazwy, wystawca, ważność, poziom weryfikacji (DV, OV, EV), algorytmy klucza i podpisu.
+• Połączenie: wersja TLS, wymiana kluczy (także hybrydy postkwantowe), szyfr, Encrypted Client Hello, Certificate Transparency.
+• Pełny łańcuch, odciski cyfrowe, numer seryjny i wszystkie rozszerzenia. Skopiuj PEM lub pobierz łańcuch.
+
+WYKRYJ PRZECHWYCENIE
+SSL Checker pyta notariusza PlusPrivacy i dodanych przez Ciebie notariuszy, jaki certyfikat tej samej witryny widzą z innych miejsc w internecie, i porównuje:
+• Wszędzie ten sam certyfikat → potwierdzony.
+• Twój jest inny i niezarejestrowany publicznie → ruch HTTPS jest odszyfrowywany i ponownie podpisywany (firmowy serwer proxy, antywirus lub coś gorszego), a SSL Checker wskazuje wystawcę podmienionego certyfikatu.
+
+PAMIĘTA SPRAWDZANE WITRYNY
+SSL Checker zapamiętuje urząd certyfikacji każdej witryny i ostrzega, gdy znana witryna nagle pokaże certyfikat innego urzędu. Pamięć zostaje na Twoim urządzeniu; okien incognito nigdy nie zapisuje.
+
+TY DECYDUJESZ, KIEDY DZIAŁA DEBUGER
+Chrome nie ma API zwracającego certyfikat załadowanej strony, więc SSL Checker podłącza debuger Chrome do karty na około sekundę, a Chrome pokazuje wtedy pasek debugowania. W Opcjach: za każdym razem, na żądanie lub nigdy (tylko notariusze).
+
+PODPISANE ODPOWIEDZI
+Notariusz PlusPrivacy podpisuje każdą odpowiedź, a SSL Checker sprawdza podpis, więc nikt po drodze nie podrobi potwierdzenia. Notariusz ma otwarty kod źródłowy: uruchom własnego i dodaj go z kluczem.
+
+PRYWATNOŚĆ
+Bez analityki, śledzenia i konta. Przed pierwszym sprawdzeniem SSL Checker mówi, co odczytuje i wysyła, oraz prosi o zgodę. Z urządzenia do notariuszy trafiają tylko nazwa hosta i port sprawdzanej witryny. Notariusz PlusPrivacy nie prowadzi ich rejestru i można go wyłączyć.

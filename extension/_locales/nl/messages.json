@@ -1,0 +1,441 @@
+{
+  "localeCode": { "message": "nl", "description": "BCP 47 tag used to format dates and plurals in this language." },
+  "extName": { "message": "SSL Checker" },
+  "extNameLite": { "message": "SSL Checker Lite" },
+  "extDescription": {
+    "message": "Bekijk het echte TLS-certificaat van de huidige site en ontdek onderschepping door het te vergelijken met onafhankelijke notarissen."
+  },
+  "extDescriptionLite": {
+    "message": "Bekijk het TLS-certificaat van de huidige site zoals onafhankelijke notarisservers het ontvangen."
+  },
+  "actionTitle": { "message": "Certificaat van deze site controleren" },
+
+  "schemeHttps": { "message": "HTTPS-verbinding" },
+  "schemeHttp": { "message": "Onversleutelde HTTP-pagina" },
+  "actionRecheck": { "message": "Opnieuw controleren" },
+  "actionSettings": { "message": "Opties" },
+  "unsupportedTitle": { "message": "Hier valt niets te controleren" },
+  "unsupportedBody": {
+    "message": "Open een website (http of https) en klik opnieuw op het icoon om het certificaat te bekijken."
+  },
+  "loadingTitle": { "message": "Certificaat controleren…" },
+  "loadingReload": { "message": "Pagina opnieuw laden om het certificaat te lezen…" },
+  "loadingDebuggerBar": {
+    "message": "Tijdens het lezen toont Chrome een paar seconden een balk met de melding dat SSL Checker is begonnen met foutopsporing voor deze browser."
+  },
+  "checkFailedTitle": { "message": "De controle kon niet worden uitgevoerd" },
+  "checkFailedBody": { "message": "Fout: $1" },
+  "consentTitle": { "message": "Vóór de eerste controle" },
+  "consentIntro": {
+    "message": "SSL Checker bekijkt de site op het huidige tabblad alleen als je op het icoon klikt. Het leest het certificaat dat je browser heeft ontvangen en, als je akkoord gaat:"
+  },
+  "consentIntroLite": {
+    "message": "SSL Checker bekijkt de site op het huidige tabblad alleen als je op het icoon klikt. Als je akkoord gaat:"
+  },
+  "consentNotaryName": { "message": "Het raadpleegt de PlusPrivacy-notaris." },
+  "consentNotaryBody": {
+    "message": "De naam en poort van de site gaan naar $1, die vanuit een eigen netwerk verbinding maakt met de site en het certificaat terugstuurt dat hij ziet. De notaris legt de sites nergens vast."
+  },
+  "consentMemoryName": { "message": "Het onthoudt de certificeringsinstantie van elke site." },
+  "consentMemoryBody": {
+    "message": "Alleen op dit apparaat, om je te waarschuwen als een bekende site plotseling met een andere opduikt."
+  },
+  "consentLater": {
+    "message": "Je kunt beide altijd wijzigen in Opties. Er wordt niets gelezen of verstuurd voordat je akkoord gaat."
+  },
+  "consentAgree": { "message": "Akkoord en controleren" },
+  "checkedAt": { "message": "Gecontroleerd $1" },
+
+  "sectionWitnesses": { "message": "Gezien door" },
+  "witnessBrowser": { "message": "Je browser" },
+  "witnessViaReload": { "message": "gelezen na opnieuw laden van de pagina" },
+  "witnessLocalNotRead": { "message": "Nog niet gelezen." },
+  "witnessIssuedBy": { "message": "uitgegeven door $1" },
+  "witnessSigned": { "message": "ondertekend antwoord" },
+  "durationMs": { "message": "$1 ms" },
+  "fingerprintLabel": { "message": "SHA-256-vingerafdruk $1" },
+  "externalSkippedInternal": {
+    "message": "Interne site: externe bronnen kunnen die niet bereiken en zijn daarom niet geraadpleegd."
+  },
+  "noSourcesNote": {
+    "message": "Zet in Opties de PlusPrivacy-notaris aan of voeg een andere bron toe om te vergelijken wat je browser ontvangt met wat anderen zien."
+  },
+  "noSourcesNoteLite": {
+    "message": "Deze versie leest certificaten alleen via externe bronnen. Zet in Opties de PlusPrivacy-notaris aan of voeg een bron toe."
+  },
+  "askLocalText": {
+    "message": "Lezen uit je browser gebeurt alleen op verzoek. Chrome toont dan een paar seconden zijn foutopsporingsbalk."
+  },
+  "probeBlockedText": {
+    "message": "Deze pagina blokkeert het kleine verzoek waarmee het certificaat wordt gelezen (Content Security Policy). Als je de pagina opnieuw laadt, wordt het betrouwbaar gelezen."
+  },
+
+  "actionAddSource": { "message": "Bron toevoegen" },
+  "actionReadLocal": { "message": "Uit browser lezen" },
+  "actionReloadAndRead": { "message": "Opnieuw laden en lezen" },
+  "actionCopyPem": { "message": "PEM kopiëren" },
+  "actionDownloadChain": { "message": "Keten downloaden" },
+  "actionTest": { "message": "Testen" },
+  "actionRemove": { "message": "Verwijderen" },
+  "copied": { "message": "Gekopieerd" },
+  "copyFailed": { "message": "Kopiëren mislukt" },
+
+  "relationSameCertificate": { "message": "Identiek" },
+  "relationSameKey": { "message": "Zelfde sleutel" },
+  "relationSameIssuer": { "message": "Ander certificaat, zelfde uitgever" },
+  "relationSameCa": { "message": "Ander certificaat, zelfde CA" },
+  "relationDifferent": { "message": "Afwijkend certificaat" },
+
+  "verdictConfirmedTitleOne": { "message": "Bevestigd door $1 externe bron" },
+  "verdictConfirmedTitleFew": { "message": "Bevestigd door $1 externe bronnen" },
+  "verdictConfirmedTitleOther": { "message": "Bevestigd door $1 externe bronnen" },
+  "verdictConfirmedBody": {
+    "message": "Je browser ontvangt hetzelfde certificaat dat de externe bronnen zien. Niemand vervangt het onderweg."
+  },
+  "verdictSameCaTitle": { "message": "Zelfde uitgever, ander certificaat" },
+  "verdictSameCaBody": {
+    "message": "De externe bronnen ontvangen een ander certificaat van dezelfde certificeringsinstantie ($1). Dat is normaal bij CDN's en als certificaten worden vervangen."
+  },
+  "verdictSameCaUnloggedTitle": { "message": "Zelfde uitgeversnaam, niet bevestigd" },
+  "verdictSameCaUnloggedBody": {
+    "message": "De externe bronnen ontvangen een ander certificaat, van een certificeringsinstantie met dezelfde naam als de jouwe ($1), en Chrome heeft niet bevestigd dat jouw certificaat openbaar is gelogd. CDN's kunnen meerdere certificaten aanbieden, maar wie de verbinding onderschept, kan ook de naam van een certificeringsinstantie kopiëren. Dit bevestigt je certificaat dus niet."
+  },
+  "verdictPublicTitle": { "message": "Openbaar gelogd certificaat" },
+  "verdictPublicBody": {
+    "message": "Chrome heeft bevestigd dat het certificaat in de openbare Certificate Transparency-logboeken staat, dus het is niet gemaakt door een lokale proxy of antivirus. Zet in Opties een externe bron aan voor een extra controle."
+  },
+  "verdictPublicBodyNoAnswer": {
+    "message": "Chrome heeft bevestigd dat het certificaat in de openbare Certificate Transparency-logboeken staat, dus het is niet gemaakt door een lokale proxy of antivirus. De externe bronnen hebben niet geantwoord."
+  },
+  "verdictPrivateCaTitle": { "message": "Niet bevestigd als openbaar certificaat" },
+  "verdictPrivateCaBody": {
+    "message": "Chrome heeft niet bevestigd dat dit certificaat, uitgegeven door $1, in de openbare Certificate Transparency-logboeken staat. Dat gebeurt als het afkomstig is van een lokaal geïnstalleerde certificeringsinstantie (bedrijfsnetwerk, antivirus, interne server) of als de lijst met CT-logboeken van de browser verouderd is. Voeg externe bronnen toe om te achterhalen of de verbinding wordt onderschept."
+  },
+  "verdictInterceptedTitle": { "message": "Verbinding waarschijnlijk onderschept" },
+  "verdictInterceptedByTitle": { "message": "Onderschept door $1" },
+  "verdictInterceptedBody": {
+    "message": "Je browser ontvangt een certificaat uitgegeven door $1, maar externe bronnen zien er een uitgegeven door $2, en Chrome heeft niet bevestigd dat het jouwe openbaar is gelogd. Hoogstwaarschijnlijk ontsleutelt iets tussen jou en de site (bedrijfsproxy, antivirus of iets anders) het verkeer en ondertekent het opnieuw."
+  },
+  "verdictSplitTitle": { "message": "Bronnen zijn het oneens" },
+  "verdictSplitBody": {
+    "message": "Hetzelfde certificaat als het jouwe: $1. Een ander, uitgegeven door $2: $3. Óf je verbinding wordt onderschept en de overeenkomende bronnen zitten op hetzelfde netwerk als jij, óf het netwerk van de andere bronnen wordt onderschept."
+  },
+  "verdictInterceptorBody": {
+    "message": "Het certificaat is uitgegeven door $1 en staat niet in de openbare Certificate Transparency-logboeken. Zo werken producten voor HTTPS-inspectie."
+  },
+  "interceptorIdentified": { "message": "$1 is $2." },
+  "verdictConflictTitle": { "message": "Bronnen zien verschillende certificaten" },
+  "verdictConflictBody": {
+    "message": "Je browser en de externe bronnen zien verschillende openbare certificaten (het jouwe uitgegeven door $1, dat van hen door $2). Sites achter meerdere CDN's doen dit, maar het is het bekijken waard."
+  },
+  "verdictExternalTitleOne": { "message": "Gezien door $1 externe bron" },
+  "verdictExternalTitleFew": { "message": "Gezien door $1 externe bronnen" },
+  "verdictExternalTitleOther": { "message": "Gezien door $1 externe bronnen" },
+  "verdictExternalBody": {
+    "message": "Lezen uit je browser staat uit, dus onderschepping op je netwerk kan niet worden gedetecteerd. Dit is wat de bronnen zien."
+  },
+  "verdictExternalBodyAsk": {
+    "message": "Lees het certificaat uit je browser om het te vergelijken met wat de bronnen zien."
+  },
+  "verdictExternalBodyLocalFailed": {
+    "message": "Het certificaat kon niet uit je browser worden gelezen, dus onderschepping op je netwerk is niet uit te sluiten. Dit is wat de bronnen zien."
+  },
+  "verdictExternalBodyLite": {
+    "message": "Deze versie kan het certificaat niet uit je browser lezen, dus onderschepping op je netwerk kan niet worden gedetecteerd. Dit is wat de bronnen zien."
+  },
+  "verdictExternalDisagreeTitle": { "message": "Externe bronnen zijn het oneens" },
+  "verdictExternalDisagreeBody": { "message": "De externe bronnen zien onderling verschillende certificaten." },
+  "verdictTamperedTitle": { "message": "Een antwoord is onderweg gewijzigd" },
+  "verdictTamperedBody": {
+    "message": "Het ondertekende antwoord van $1 is tussen die bron en je browser gewijzigd en daarom niet gebruikt. Alleen iets wat de beveiligde verbindingen van deze browser onderschept, kan dat doen."
+  },
+  "verdictUnsignedTitle": { "message": "Alleen bevestigd door niet-ondertekende antwoorden" },
+  "verdictUnsignedBody": {
+    "message": "Je browser ontvangt hetzelfde certificaat als in de antwoorden van $1, maar die antwoorden zijn niet ondertekend en Chrome heeft niet bevestigd dat je certificaat openbaar is gelogd. Iets wat je verbinding onderschept, kan ze hebben geschreven. Antwoorden die met een bekende sleutel zijn ondertekend, zoals die van de PlusPrivacy-notaris, kunnen niet worden vervalst."
+  },
+  "verdictHttpTitle": { "message": "Onversleutelde pagina" },
+  "verdictHttpBody": {
+    "message": "Deze pagina is via onversleuteld HTTP geladen, dus iedereen op het netwerk kan haar lezen of wijzigen. Geen certificaat beschermt haar."
+  },
+  "verdictHttpBodyWithCert": {
+    "message": "Deze pagina is via onversleuteld HTTP geladen, dus iedereen op het netwerk kan haar lezen of wijzigen. Hieronder zie je het certificaat dat de server via HTTPS aanbiedt (poort 443)."
+  },
+  "verdictNoSourcesTitle": { "message": "Geen certificaat om te tonen" },
+  "verdictNoSourcesBody": {
+    "message": "Zet in Opties lezen uit de browser, de PlusPrivacy-notaris of een andere bron aan."
+  },
+  "verdictNoSourcesLite": {
+    "message": "Zet in Opties de PlusPrivacy-notaris aan of voeg een bron toe om het certificaat van deze site te zien."
+  },
+  "verdictNoSourcesLocalFailed": {
+    "message": "Het certificaat kon niet uit je browser worden gelezen en geen enkele externe bron heeft geantwoord."
+  },
+  "verdictInternalBody": {
+    "message": "Externe bronnen kunnen interne sites niet bereiken en het certificaat is niet uit je browser gelezen."
+  },
+  "verdictAllSourcesFailed": { "message": "Geen van de externe bronnen heeft geantwoord. Controleer ze in Opties." },
+  "verdictAskTitle": { "message": "Klaar om het certificaat te lezen" },
+  "verdictAskBody": { "message": "Lezen uit de browser gebeurt alleen op verzoek." },
+
+  "kind_corporateProxy": { "message": "een bedrijfsproxy of firewall" },
+  "kind_cloudProxy": { "message": "een beveiligingsgateway in de cloud" },
+  "kind_antivirus": { "message": "een antivirusprogramma dat HTTPS scant" },
+  "kind_contentFilter": { "message": "een contentfilter" },
+  "kind_debugProxy": { "message": "een proxy voor foutopsporing" },
+  "kind_adware": { "message": "adware" },
+
+  "warnExpired": { "message": "Het certificaat is verlopen." },
+  "warnNotYetValid": { "message": "Het certificaat is nog niet geldig." },
+  "warnExpiresSoon": { "message": "Het certificaat verloopt over $1." },
+  "warnHostMismatch": { "message": "Het certificaat geldt niet voor $1." },
+  "warnWeakSignature": { "message": "De keten gebruikt een zwakke handtekening (SHA-1 of MD5)." },
+  "warnWeakKey": { "message": "De RSA-sleutel heeft slechts $1 bits." },
+  "warnObsoleteProtocol": { "message": "Verouderd protocol: $1." },
+  "warnNotaryUntrusted": { "message": "$1 vertrouwt het certificaat dat hij ziet niet: $2." },
+  "warnNotPubliclyLogged": { "message": "Chrome heeft niet bevestigd dat dit certificaat openbaar is gelogd." },
+  "warnSomeSourcesDiffer": {
+    "message": "Afwijkend certificaat gezien door $1 (uitgegeven door $2). Het jouwe is openbaar gelogd, dus het verschil ligt waarschijnlijk aan hun kant."
+  },
+
+  "sectionCertificate": { "message": "Certificaat" },
+  "sectionCertificateExternal": { "message": "Certificaat gezien door $1" },
+  "certIssuedTo": { "message": "Uitgegeven aan" },
+  "andMore": { "message": "+$1 meer" },
+  "certOrganization": { "message": "Organisatie" },
+  "certIssuedBy": { "message": "Uitgegeven door" },
+  "certValidity": { "message": "Geldig" },
+  "certType": { "message": "Type" },
+  "validityRemaining": { "message": "nog $1" },
+  "validityExpired": { "message": "$1 geleden verlopen" },
+  "validityFuture": { "message": "nog niet geldig" },
+  "daysOne": { "message": "$1 dag" },
+  "daysFew": { "message": "$1 dagen" },
+  "daysOther": { "message": "$1 dagen" },
+  "level_DV": { "message": "Domeingevalideerd (DV)" },
+  "level_OV": { "message": "Organisatiegevalideerd (OV)" },
+  "level_EV": { "message": "Uitgebreide validatie (EV)" },
+  "level_IV": { "message": "Persoonsgevalideerd (IV)" },
+
+  "sectionConnection": { "message": "Verbinding" },
+  "connProtocol": { "message": "Protocol" },
+  "connKeyExchange": { "message": "Sleuteluitwisseling" },
+  "connCipher": { "message": "Codering" },
+  "connCT": { "message": "Transparantie" },
+  "connECH": { "message": "Encrypted Client Hello" },
+  "ctCompliant": { "message": "Openbaar gelogd" },
+  "ctNotCompliant": { "message": "Niet gelogd" },
+  "ctUnknown": { "message": "Onbekend" },
+  "sctsOne": { "message": "$1 geldige SCT" },
+  "sctsFew": { "message": "$1 geldige SCT's" },
+  "sctsOther": { "message": "$1 geldige SCT's" },
+  "yes": { "message": "Ja" },
+  "no": { "message": "Nee" },
+
+  "sectionChain": { "message": "Certificaatketen ($1)" },
+  "chainLeaf": { "message": "Site" },
+  "chainIntermediate": { "message": "Tussenliggend" },
+  "chainRoot": { "message": "Root" },
+  "chainIssuedBy": { "message": "Uitgegeven door $1" },
+
+  "sectionDetails": { "message": "Technische details" },
+  "detailSpkiPin": { "message": "Pin van openbare sleutel" },
+  "detailSerial": { "message": "Serienummer" },
+  "detailSignature": { "message": "Handtekening" },
+  "detailPublicKey": { "message": "Openbare sleutel" },
+  "detailServerSignature": { "message": "TLS-handtekening" },
+  "detailNamesOne": { "message": "Naam" },
+  "detailNamesFew": { "message": "Namen ($1)" },
+  "detailNamesOther": { "message": "Namen ($1)" },
+  "detailKeyUsage": { "message": "Sleutelgebruik" },
+  "detailExtKeyUsage": { "message": "Uitgebreid sleutelgebruik" },
+  "detailPolicies": { "message": "Beleid" },
+  "detailCaIssuers": { "message": "CA-uitgevers" },
+  "detailScts": { "message": "SCT's" },
+  "detailMustStaple": { "message": "OCSP must-staple" },
+  "detailExtensions": { "message": "Extensies" },
+  "critical": { "message": "kritiek" },
+
+  "localErr_restrictedPage": {
+    "message": "Chrome staat niet toe dat deze pagina wordt gelezen (interne pagina, foutpagina of pagina van een andere extensie)."
+  },
+  "localErr_blockedByPolicy": {
+    "message": "Het beleid van je organisatie blokkeert het lezen van certificaten uit de browser."
+  },
+  "localErr_probeBlocked": { "message": "De pagina blokkeerde het verzoek om het certificaat te lezen." },
+  "localErr_reloadFailed": { "message": "De pagina is niet op tijd volledig geladen." },
+  "localErr_canceledByUser": { "message": "Het lezen is geannuleerd via de foutopsporingsbalk van Chrome." },
+  "localErr_detached": { "message": "Chrome heeft de leessessie beëindigd." },
+  "localErr_navigated": { "message": "Het tabblad toont nu een andere site. Controleer opnieuw." },
+  "localErr_noCertificate": { "message": "Chrome heeft geen certificaat voor deze pagina geretourneerd." },
+  "localErr_notHttps": { "message": "De pagina wordt niet via HTTPS aangeboden." },
+  "localErr_tabGone": { "message": "Het tabblad is gesloten." },
+  "localErr_alreadyAttached": { "message": "Een andere debugger is al aan dit tabblad gekoppeld." },
+  "localErr_generic": { "message": "Lezen mislukt: $1" },
+
+  "notaryErr_timeout": { "message": "Geen antwoord binnen $1 s." },
+  "notaryErr_http": { "message": "De bron heeft geantwoord met HTTP $1." },
+  "notaryErr_network": { "message": "Kan de bron niet bereiken (netwerkfout of ontbrekende CORS-headers)." },
+  "notaryErr_unauthorized": { "message": "De bron heeft het token geweigerd." },
+  "notaryErr_rateLimited": { "message": "Te veel verzoeken; de bron vraagt om het tempo te verlagen." },
+  "notaryErr_badResponse": { "message": "De bron heeft een ongeldig antwoord gestuurd." },
+  "notaryErr_badCertificate": { "message": "De bron heeft een onleesbaar certificaat gestuurd." },
+  "notaryErr_badEndpoint": { "message": "Het adres van de bron is ongeldig." },
+  "notaryErr_forbiddenTarget": { "message": "De bron weigert dit adres (privé of gereserveerd)." },
+  "notaryErr_forbiddenPort": { "message": "De bron controleert deze poort niet." },
+  "notaryErr_dnsFailed": { "message": "De bron kon de naam van de site niet omzetten." },
+  "notaryErr_connectFailed": { "message": "De bron kon geen verbinding maken met de site." },
+  "notaryErr_tlsFailed": { "message": "De TLS-handshake is bij de bron mislukt." },
+  "notaryErr_busy": { "message": "De bron is bezet; probeer het zo opnieuw." },
+  "notaryErr_badRequest": { "message": "De bron heeft het verzoek niet begrepen." },
+  "notaryErr_forbiddenOrigin": { "message": "De bron accepteert geen verzoeken van dit exemplaar van de extensie." },
+  "notaryErr_noKey": {
+    "message": "Deze versie heeft geen sleutel om antwoorden van deze bron te controleren, dus is de bron niet geraadpleegd."
+  },
+  "notaryErr_unsigned": { "message": "Het antwoord was niet ondertekend en is daarom niet gebruikt." },
+  "notaryErr_unknownKey": {
+    "message": "Het antwoord is ondertekend met een sleutel die deze extensie niet kent en is daarom niet gebruikt. Misschien heeft de bron een nieuwe sleutel: update de extensie of de sleutel van de bron."
+  },
+  "notaryErr_tampered": { "message": "Het antwoord is onderweg gewijzigd en is daarom niet gebruikt." },
+  "notaryErr_internal": { "message": "Er is een interne fout opgetreden bij de bron." },
+  "notaryErr_cannotVerify": {
+    "message": "Deze browser kon de handtekening van het antwoord niet controleren, dus het is niet gebruikt."
+  },
+  "notaryErr_other": { "message": "Fout $1 $2" },
+
+  "sectionHistory": { "message": "Geschiedenis" },
+  "historyFirst": {
+    "message": "Eerste controle van deze site. Vanaf nu onthoudt SSL Checker dat het certificaat van deze site afkomstig is van $1."
+  },
+  "historyKnown": { "message": "Dezelfde certificeringsinstantie als bij je eerdere controles: $1, $2 sinds $3." },
+  "historyLearned": { "message": "Vanaf nu onthoudt SSL Checker ook $1 voor deze site." },
+  "historyChangedBefore": { "message": "Tot nu toe: $1, $2, de laatste op $3." },
+  "historyChangedNow": { "message": "Nu: $1." },
+  "historySameName": {
+    "message": "De certificeringsinstantie heeft dezelfde naam als eerder, maar ondertekent met een sleutel die nooit eerder voor deze site is gezien."
+  },
+  "historyTrusted": { "message": "$1 wordt nu vertrouwd voor deze site." },
+  "historyForgotten": { "message": "Deze site is vergeten. Bij de volgende controle begint de geschiedenis opnieuw." },
+  "historyIncognito": {
+    "message": "Het sitegeheugen staat uit in incognitovensters: er wordt niets vastgelegd of vergeleken."
+  },
+  "checksOne": { "message": "$1 controle" },
+  "checksFew": { "message": "$1 controles" },
+  "checksOther": { "message": "$1 controles" },
+  "actionTrustCa": { "message": "Vertrouwen voor deze site" },
+  "actionForgetSite": { "message": "Deze site vergeten" },
+  "verdictCaChangedTitle": { "message": "Certificeringsinstantie gewijzigd" },
+  "verdictCaChangedBody": {
+    "message": "Bij je eerdere controles had deze site altijd een openbaar certificaat van $1. Nu ontvangt je browser er een van $2 dat niet openbaar is gelogd. Hoogstwaarschijnlijk onderschept iets tussen jou en de site de verbinding."
+  },
+  "verdictCaChangedSameNameBody": {
+    "message": "Het certificaat beweert net als eerder afkomstig te zijn van $1, maar is ondertekend met een sleutel die nooit eerder voor deze site is gezien en is niet openbaar gelogd. Hoogstwaarschijnlijk onderschept iets tussen jou en de site de verbinding."
+  },
+  "warnCaChanged": { "message": "De certificeringsinstantie van deze site is gewijzigd: eerder $1, nu $2." },
+  "warnCaChangedSameName": {
+    "message": "Het certificaat beweert net als eerder afkomstig te zijn van $1, maar is ondertekend met een sleutel die nooit eerder voor deze site is gezien."
+  },
+  "warnCaChangedPublic": {
+    "message": "Deze site is overgestapt van $1 naar $2. Het nieuwe certificaat is openbaar gelogd."
+  },
+  "warnCaChangedNowPublic": {
+    "message": "Eerdere controles van deze site liepen via $1, een certificeringsinstantie die op deze computer of in dit netwerk is geïnstalleerd (bijvoorbeeld een bedrijfsproxy). Nu is het certificaat openbaar."
+  },
+  "warnNotaryTampered": {
+    "message": "Het ondertekende antwoord van $1 is onderweg gewijzigd en niet gebruikt: iets onderschept de beveiligde verbindingen van deze browser."
+  },
+
+  "optMemoryTitle": { "message": "Sitegeheugen" },
+  "optMemoryIntro": {
+    "message": "Als het certificaat uit je browser wordt gelezen, onthoudt SSL Checker voor elke site die je controleert welke certificeringsinstantie het heeft uitgegeven. Je krijgt een waarschuwing als een bekende site plotseling met een andere opduikt. Alles blijft op dit apparaat en in incognitovensters wordt niets vastgelegd."
+  },
+  "fieldMemoryEnabled": { "message": "Certificeringsinstantie onthouden van sites die ik controleer" },
+  "optMemoryHelp": {
+    "message": "Als je dit uitzet, wordt er niets meer vastgelegd. Gebruik Alle sites vergeten om te verwijderen wat al is opgeslagen."
+  },
+  "memoryCountOne": { "message": "$1 site onthouden" },
+  "memoryCountFew": { "message": "$1 sites onthouden" },
+  "memoryCountOther": { "message": "$1 sites onthouden" },
+  "actionForgetAll": { "message": "Alle sites vergeten" },
+  "forgotAll": { "message": "Alle sites zijn vergeten" },
+
+  "optionsTitle": { "message": "Opties voor SSL Checker" },
+  "optionsIntro": {
+    "message": "Kies hoe het certificaat wordt gelezen en met welke externe bronnen het wordt vergeleken."
+  },
+  "optLocalTitle": { "message": "Lezen uit je browser" },
+  "optLocalIntro": {
+    "message": "Zo zie je precies het certificaat dat je browser heeft ontvangen, zodat onderschepping op je netwerk kan worden gedetecteerd. Chrome heeft hier geen aparte API voor, dus koppelt de extensie de debugger van Chrome ongeveer een seconde aan het tabblad. Intussen toont Chrome een balk met de melding dat SSL Checker is begonnen met foutopsporing voor deze browser."
+  },
+  "optLocalUnavailable": {
+    "message": "Deze versie van SSL Checker heeft geen rechten voor de debugger, dus certificaten worden alleen via externe bronnen gelezen."
+  },
+  "modeAlways": { "message": "Elke keer" },
+  "modeAlwaysHelp": { "message": "Het certificaat lezen telkens als je SSL Checker opent." },
+  "modeAsk": { "message": "Op verzoek" },
+  "modeAskHelp": { "message": "Eerst de externe resultaten tonen; pas uit de browser lezen als je klikt." },
+  "modeNever": { "message": "Nooit" },
+  "modeNeverHelp": { "message": "Alleen externe bronnen gebruiken. De foutopsporingsbalk verschijnt nooit." },
+  "optSourcesTitle": { "message": "Externe bronnen" },
+  "optSourcesIntro": {
+    "message": "Elke bron is een notarisserver die vanaf een andere plek op internet verbinding maakt met de site en meldt welk certificaat hij ontvangt. Alleen de hostnaam en poort van de site worden naar de bron gestuurd."
+  },
+  "optAddSourceTitle": { "message": "Een bron toevoegen" },
+  "optOwnNotary": { "message": "Wil je een eigen notaris? Die is open source en draait op elke server met Docker." },
+  "optOwnNotaryLink": { "message": "Zo installeer je hem" },
+  "fieldName": { "message": "Naam" },
+  "fieldNamePlaceholder": { "message": "Server in Frankfurt" },
+  "fieldUrl": { "message": "Adres" },
+  "fieldUrlHelp": {
+    "message": "HTTPS-adres van de notaris. SSL Checker stuurt de site in de inhoud van een POST-verzoek, nooit in het adres."
+  },
+  "fieldToken": { "message": "Toegangstoken (optioneel)" },
+  "fieldTokenHelp": { "message": "Verstuurd als Authorization: Bearer. Alleen op dit apparaat opgeslagen." },
+  "fieldKey": { "message": "Openbare sleutel (optioneel)" },
+  "fieldKeyHelp": {
+    "message": "Met een sleutel telt een antwoord alleen als deze notaris het heeft ondertekend, zodat niemand het onderweg kan wijzigen. De notaris toont zijn sleutel bij het opstarten. Scheid meerdere sleutels met spaties."
+  },
+  "endpointEnabled": { "message": "$1 gebruiken" },
+  "tokenSet": { "message": "Token opgeslagen" },
+  "keySet": { "message": "Alleen ondertekende antwoorden" },
+  "defaultSource": {
+    "message": "Standaardbron, beheerd door PlusPrivacy. De antwoorden zijn ondertekend en de bron legt de sites die je controleert nergens vast."
+  },
+  "testRunning": { "message": "Bron raadplegen over example.com…" },
+  "testOk": {
+    "message": "Werkt: de bron ziet het certificaat van example.com, uitgegeven door $1, vanuit $2, in $3 ms."
+  },
+  "testSigned": { "message": "Het antwoord is ondertekend met de verwachte sleutel." },
+  "testSelfSigned": {
+    "message": "De antwoorden zijn ondertekend met de sleutel $1. Controleer voordat je die sleutel toevoegt of het de sleutel is die de notaris op zijn server heeft getoond: wie de verbinding onderschept, kan een eigen sleutel hebben gestuurd."
+  },
+  "testUnsigned": { "message": "De antwoorden zijn niet ondertekend." },
+  "testFailed": { "message": "Mislukt: $1" },
+  "endpointErrorInvalidUrl": { "message": "Geef een geldig adres op." },
+  "endpointErrorCredentialsInUrl": {
+    "message": "Zet geen gebruikersnaam of wachtwoord in het adres; gebruik het tokenveld."
+  },
+  "endpointErrorFragment": { "message": "Verwijder het deel met # uit het adres." },
+  "endpointErrorTemplate": {
+    "message": "Geef het adres van de notaris op zonder {host} of {port}: SSL Checker stuurt de site in de inhoud van het verzoek."
+  },
+  "endpointErrorHttps": {
+    "message": "Het adres moet HTTPS gebruiken (onversleuteld HTTP is alleen toegestaan voor localhost)."
+  },
+  "endpointErrorDuplicate": { "message": "Deze bron staat al in de lijst." },
+  "endpointErrorToken": { "message": "Het token mag alleen zichtbare ASCII-tekens bevatten." },
+  "endpointErrorKey": { "message": "Geef de sleutel op zoals de notaris die toont: ed25519: gevolgd door 43 tekens." },
+  "optAdvancedTitle": { "message": "Geavanceerd" },
+  "fieldTimeout": { "message": "Wachttijd per bron (seconden)" },
+  "optProtocolTitle": { "message": "Notarisprotocol" },
+  "optProtocolIntro": {
+    "message": "Elke server die op dit verzoek antwoordt, kan een bron zijn. De referentie-implementatie is de notaris van het SSL Checker-project, een kleine Node.js-service verpakt voor Docker."
+  },
+  "optProtocolSigning": {
+    "message": "Een notaris met een ondertekeningssleutel stuurt de nonce van het verzoek terug, voegt zijn openbare sleutel toe en ondertekent het antwoord: Notary-Signature bevat de Ed25519-handtekening van de regel \"SSL Checker notary answer v1\" gevolgd door de exacte inhoud van het antwoord. Geef je een bron zijn sleutel, dan gebruikt de extensie alleen antwoorden die daarmee zijn ondertekend voor de host, poort en nonce waarnaar ze heeft gevraagd."
+  },
+  "optProtocolErrors": {
+    "message": "Antwoord bij fouten met een 4xx- of 5xx-status en {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}}. De extensie heeft geen hostrechten, dus de server moet CORS-headers sturen en de preflight van een POST met Content-Type beantwoorden."
+  },
+  "saved": { "message": "Opgeslagen" },
+  "versionLabel": { "message": "Versie $1" }
+}

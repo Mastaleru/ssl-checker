@@ -1,0 +1,18 @@
+{
+  "confirmed": [
+    "Vedi il vero certificato ricevuto dal browser",
+    "Catena, versione TLS, scambio di chiavi e Certificate Transparency, letti direttamente da Chrome e confermati da notai indipendenti."
+  ],
+  "intercepted": [
+    "Rileva l'intercettazione HTTPS",
+    "I notai mostrano ciò che vede il resto di Internet. Un certificato diverso e non registrato significa che qualcosa lungo il percorso firma di nuovo il tuo traffico."
+  ],
+  "details": [
+    "Ogni dettaglio a portata di clic",
+    "Nomi, validità, catena, impronte, pin della chiave, OCSP e CRL, SCT ed estensioni. Copia il PEM o scarica la catena."
+  ],
+  "options": [
+    "Decidi tu quando usare il debugger",
+    "Leggi il certificato ogni volta, su richiesta o mai, e scegli se SSL Checker deve ricordare i siti che controlli."
+  ]
+}
