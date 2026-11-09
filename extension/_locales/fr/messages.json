@@ -1,0 +1,449 @@
+{
+  "localeCode": { "message": "fr", "description": "BCP 47 tag used to format dates and plurals in this language." },
+  "extName": { "message": "SSL Checker" },
+  "extNameLite": { "message": "SSL Checker Lite" },
+  "extDescription": {
+    "message": "Voyez le certificat TLS réel du site actuel et détectez les interceptions en le comparant à ce que voient des notaires indépendants."
+  },
+  "extDescriptionLite": {
+    "message": "Voyez le certificat TLS du site actuel tel que le reçoivent des serveurs notaires indépendants."
+  },
+  "actionTitle": { "message": "Vérifier le certificat de ce site" },
+
+  "schemeHttps": { "message": "Connexion HTTPS" },
+  "schemeHttp": { "message": "Page HTTP non chiffrée" },
+  "actionRecheck": { "message": "Vérifier à nouveau" },
+  "actionSettings": { "message": "Options" },
+  "unsupportedTitle": { "message": "Rien à vérifier ici" },
+  "unsupportedBody": {
+    "message": "Ouvrez un site Web (http ou https) et cliquez de nouveau sur l'icône pour afficher son certificat."
+  },
+  "loadingTitle": { "message": "Vérification du certificat…" },
+  "loadingReload": { "message": "Actualisation de la page pour lire le certificat…" },
+  "loadingDebuggerBar": {
+    "message": "Lors de la lecture du certificat, Chrome affiche pendant quelques secondes une barre indiquant que SSL Checker a démarré le débogage de ce navigateur."
+  },
+  "checkFailedTitle": { "message": "Impossible d'effectuer la vérification" },
+  "checkFailedBody": { "message": "Erreur : $1" },
+  "consentTitle": { "message": "Avant la première vérification" },
+  "consentIntro": {
+    "message": "SSL Checker n'examine le site de l'onglet actuel que lorsque vous cliquez sur son icône. Il lit le certificat reçu par votre navigateur et, si vous êtes d'accord :"
+  },
+  "consentIntroLite": {
+    "message": "SSL Checker n'examine le site de l'onglet actuel que lorsque vous cliquez sur son icône. Si vous êtes d'accord :"
+  },
+  "consentNotaryName": { "message": "Il interroge le notaire PlusPrivacy." },
+  "consentNotaryBody": {
+    "message": "Le nom et le port du site sont envoyés à $1, qui se connecte au site depuis son propre réseau et renvoie le certificat qu'il voit. Le notaire ne conserve aucune trace des sites."
+  },
+  "consentMemoryName": { "message": "Il mémorise l'autorité de certification de chaque site." },
+  "consentMemoryBody": {
+    "message": "Sur cet appareil uniquement, pour vous avertir si un site connu se présente soudain avec une autre."
+  },
+  "consentLater": {
+    "message": "Vous pouvez modifier ces deux choix à tout moment dans les options. Rien n'est lu ni envoyé avant votre accord."
+  },
+  "consentAgree": { "message": "Accepter et vérifier" },
+  "checkedAt": { "message": "Vérifié $1" },
+
+  "sectionWitnesses": { "message": "Vu par" },
+  "witnessBrowser": { "message": "Votre navigateur" },
+  "witnessViaReload": { "message": "lu après actualisation de la page" },
+  "witnessLocalNotRead": { "message": "Pas encore lu." },
+  "witnessIssuedBy": { "message": "émis par $1" },
+  "witnessSigned": { "message": "réponse signée" },
+  "durationMs": { "message": "$1 ms" },
+  "fingerprintLabel": { "message": "Empreinte SHA-256 $1" },
+  "externalSkippedInternal": {
+    "message": "Site interne : les sources externes ne peuvent pas y accéder et n'ont donc pas été interrogées."
+  },
+  "noSourcesNote": {
+    "message": "Activez le notaire PlusPrivacy ou ajoutez une autre source dans les options pour comparer ce que reçoit votre navigateur avec ce que voient les autres."
+  },
+  "noSourcesNoteLite": {
+    "message": "Cette version ne lit les certificats que via des sources externes. Activez le notaire PlusPrivacy ou ajoutez une source dans les options."
+  },
+  "askLocalText": {
+    "message": "La lecture depuis votre navigateur est en mode à la demande. Chrome affichera sa barre de débogage pendant quelques secondes."
+  },
+  "probeBlockedText": {
+    "message": "Cette page bloque la petite requête utilisée pour lire le certificat (Content Security Policy). Actualiser la page permet de le lire de façon fiable."
+  },
+
+  "actionAddSource": { "message": "Ajouter une source" },
+  "actionReadLocal": { "message": "Lire depuis le navigateur" },
+  "actionReloadAndRead": { "message": "Actualiser la page et lire" },
+  "actionCopyPem": { "message": "Copier le PEM" },
+  "actionDownloadChain": { "message": "Télécharger la chaîne" },
+  "actionTest": { "message": "Tester" },
+  "actionRemove": { "message": "Supprimer" },
+  "copied": { "message": "Copié" },
+  "copyFailed": { "message": "Échec de la copie" },
+
+  "relationSameCertificate": { "message": "Identique" },
+  "relationSameKey": { "message": "Même clé" },
+  "relationSameIssuer": { "message": "Autre certificat, même émetteur" },
+  "relationSameCa": { "message": "Autre certificat, même autorité" },
+  "relationDifferent": { "message": "Certificat différent" },
+
+  "verdictConfirmedTitleOne": { "message": "Confirmé par $1 source externe" },
+  "verdictConfirmedTitleFew": { "message": "Confirmé par $1 sources externes" },
+  "verdictConfirmedTitleOther": { "message": "Confirmé par $1 sources externes" },
+  "verdictConfirmedBody": {
+    "message": "Votre navigateur reçoit le même certificat que celui que voient les sources externes. Personne ne le remplace en chemin."
+  },
+  "verdictSameCaTitle": { "message": "Même émetteur, certificat différent" },
+  "verdictSameCaBody": {
+    "message": "Les sources externes reçoivent un autre certificat de la même autorité ($1). C'est normal pour les CDN et lors d'une rotation de certificats."
+  },
+  "verdictSameCaUnloggedTitle": { "message": "Même nom d'émetteur, non confirmé" },
+  "verdictSameCaUnloggedBody": {
+    "message": "Les sources externes reçoivent un autre certificat, émis par une autorité portant le même nom que la vôtre ($1), et Chrome n'a pas confirmé que votre certificat est journalisé publiquement. Les CDN peuvent servir plusieurs certificats, mais un intercepteur peut aussi copier le nom d'une autorité : ce résultat ne confirme donc pas votre certificat."
+  },
+  "verdictPublicTitle": { "message": "Certificat journalisé publiquement" },
+  "verdictPublicBody": {
+    "message": "Chrome a confirmé que le certificat figure dans les journaux publics de Certificate Transparency : il n'a donc pas été généré par un proxy ou un antivirus local. Activez une source externe dans les options pour une vérification croisée."
+  },
+  "verdictPublicBodyNoAnswer": {
+    "message": "Chrome a confirmé que le certificat figure dans les journaux publics de Certificate Transparency : il n'a donc pas été généré par un proxy ou un antivirus local. Les sources externes n'ont pas répondu."
+  },
+  "verdictPrivateCaTitle": { "message": "Non confirmé comme certificat public" },
+  "verdictPrivateCaBody": {
+    "message": "Chrome n'a pas confirmé que ce certificat, émis par $1, figure dans les journaux publics de Certificate Transparency. Cela se produit lorsqu'il provient d'une autorité installée localement (réseau d'entreprise, antivirus, serveur interne) ou lorsque la liste des journaux CT du navigateur n'est pas à jour. Ajoutez des sources externes pour savoir si la connexion est interceptée."
+  },
+  "verdictInterceptedTitle": { "message": "Connexion probablement interceptée" },
+  "verdictInterceptedByTitle": { "message": "Connexion interceptée par $1" },
+  "verdictInterceptedBody": {
+    "message": "Votre navigateur reçoit un certificat émis par $1, mais les sources externes en voient un émis par $2, et Chrome n'a pas confirmé que le vôtre est journalisé publiquement. Très probablement, un intermédiaire entre vous et le site (proxy d'entreprise, antivirus ou autre) déchiffre le trafic et le signe à nouveau."
+  },
+  "verdictSplitTitle": { "message": "Les sources divergent" },
+  "verdictSplitBody": {
+    "message": "Même certificat que le vôtre : $1. Un certificat différent, émis par $2 : $3. Soit votre connexion est interceptée et les sources concordantes partagent votre réseau, soit le réseau des autres sources est intercepté."
+  },
+  "verdictInterceptorBody": {
+    "message": "Le certificat est émis par $1 et ne figure pas dans les journaux publics de Certificate Transparency, ce qui correspond au fonctionnement des produits d'inspection HTTPS."
+  },
+  "interceptorIdentified": { "message": "$1 est $2." },
+  "verdictConflictTitle": { "message": "Les sources voient des certificats différents" },
+  "verdictConflictBody": {
+    "message": "Votre navigateur et les sources externes voient des certificats publics différents (le vôtre émis par $1, le leur par $2). Cela arrive avec les sites servis par plusieurs CDN, mais mieux vaut y regarder de plus près."
+  },
+  "verdictExternalTitleOne": { "message": "Vu par $1 source externe" },
+  "verdictExternalTitleFew": { "message": "Vu par $1 sources externes" },
+  "verdictExternalTitleOther": { "message": "Vu par $1 sources externes" },
+  "verdictExternalBody": {
+    "message": "La lecture depuis votre navigateur est désactivée : une interception sur votre réseau ne peut donc pas être détectée. Voici ce que voient les sources."
+  },
+  "verdictExternalBodyAsk": {
+    "message": "Lisez le certificat depuis votre navigateur pour le comparer avec ce que voient les sources."
+  },
+  "verdictExternalBodyLocalFailed": {
+    "message": "Le certificat n'a pas pu être lu depuis votre navigateur : une interception sur votre réseau ne peut donc pas être exclue. Voici ce que voient les sources."
+  },
+  "verdictExternalBodyLite": {
+    "message": "Cette version ne peut pas lire le certificat depuis votre navigateur : une interception sur votre réseau ne peut donc pas être détectée. Voici ce que voient les sources."
+  },
+  "verdictExternalDisagreeTitle": { "message": "Les sources externes divergent" },
+  "verdictExternalDisagreeBody": { "message": "Les sources externes ne voient pas toutes le même certificat." },
+  "verdictTamperedTitle": { "message": "Une réponse a été modifiée en chemin" },
+  "verdictTamperedBody": {
+    "message": "La réponse signée de $1 a été modifiée entre cette source et votre navigateur ; elle n'a donc pas été utilisée. Seul un intermédiaire qui intercepte les connexions sécurisées de ce navigateur peut faire cela."
+  },
+  "verdictUnsignedTitle": { "message": "Confirmé uniquement par des réponses non signées" },
+  "verdictUnsignedBody": {
+    "message": "Votre navigateur reçoit le même certificat que dans les réponses de $1, mais ces réponses ne sont pas signées et Chrome n'a pas confirmé que votre certificat est journalisé publiquement. Un intermédiaire qui intercepte votre connexion aurait pu les écrire. Les réponses signées avec une clé connue, comme celles du notaire PlusPrivacy, ne peuvent pas être falsifiées."
+  },
+  "verdictHttpTitle": { "message": "Page non chiffrée" },
+  "verdictHttpBody": {
+    "message": "Cette page a été chargée en HTTP non chiffré : n'importe qui sur le réseau peut donc la lire ou la modifier. Aucun certificat ne la protège."
+  },
+  "verdictHttpBodyWithCert": {
+    "message": "Cette page a été chargée en HTTP non chiffré : n'importe qui sur le réseau peut donc la lire ou la modifier. Ci-dessous, le certificat que le serveur présente en HTTPS (port 443)."
+  },
+  "verdictNoSourcesTitle": { "message": "Aucun certificat à afficher" },
+  "verdictNoSourcesBody": {
+    "message": "Activez dans les options la lecture depuis le navigateur, le notaire PlusPrivacy ou une autre source."
+  },
+  "verdictNoSourcesLite": {
+    "message": "Activez le notaire PlusPrivacy ou ajoutez une source dans les options pour afficher le certificat de ce site."
+  },
+  "verdictNoSourcesLocalFailed": {
+    "message": "Le certificat n'a pas pu être lu depuis votre navigateur et aucune source externe n'a répondu."
+  },
+  "verdictInternalBody": {
+    "message": "Les sources externes ne peuvent pas accéder aux sites internes, et le certificat n'a pas été lu depuis votre navigateur."
+  },
+  "verdictAllSourcesFailed": { "message": "Aucune des sources externes n'a répondu. Vérifiez-les dans les options." },
+  "verdictAskTitle": { "message": "Prêt à lire le certificat" },
+  "verdictAskBody": { "message": "La lecture depuis le navigateur est en mode à la demande." },
+
+  "kind_corporateProxy": { "message": "un proxy ou un pare-feu d'entreprise" },
+  "kind_cloudProxy": { "message": "une passerelle de sécurité cloud" },
+  "kind_antivirus": { "message": "un antivirus avec analyse HTTPS" },
+  "kind_contentFilter": { "message": "un filtre de contenu" },
+  "kind_debugProxy": { "message": "un proxy de débogage" },
+  "kind_adware": { "message": "un logiciel publicitaire" },
+
+  "warnExpired": { "message": "Le certificat a expiré." },
+  "warnNotYetValid": { "message": "Le certificat n'est pas encore valide." },
+  "warnExpiresSoon": { "message": "Le certificat expire dans $1." },
+  "warnHostMismatch": { "message": "Le certificat ne couvre pas $1." },
+  "warnWeakSignature": { "message": "La chaîne utilise une signature faible (SHA-1 ou MD5)." },
+  "warnWeakKey": { "message": "La clé RSA ne fait que $1 bits." },
+  "warnObsoleteProtocol": { "message": "Protocole obsolète : $1." },
+  "warnNotaryUntrusted": { "message": "$1 ne fait pas confiance au certificat qu'il voit : $2." },
+  "warnNotPubliclyLogged": { "message": "Chrome n'a pas confirmé que ce certificat est journalisé publiquement." },
+  "warnSomeSourcesDiffer": {
+    "message": "Certificat différent vu par $1 (émis par $2). Le vôtre est journalisé publiquement : la différence vient donc probablement de leur côté."
+  },
+
+  "sectionCertificate": { "message": "Certificat" },
+  "sectionCertificateExternal": { "message": "Certificat vu par $1" },
+  "certIssuedTo": { "message": "Émis pour" },
+  "andMore": { "message": "et $1 de plus" },
+  "certOrganization": { "message": "Organisation" },
+  "certIssuedBy": { "message": "Émis par" },
+  "certValidity": { "message": "Validité" },
+  "certType": { "message": "Type" },
+  "validityRemaining": { "message": "il reste $1" },
+  "validityExpired": { "message": "expiré il y a $1" },
+  "validityFuture": { "message": "pas encore valide" },
+  "daysOne": { "message": "$1 jour" },
+  "daysFew": { "message": "$1 jours" },
+  "daysOther": { "message": "$1 jours" },
+  "level_DV": { "message": "Validation du domaine (DV)" },
+  "level_OV": { "message": "Validation de l'organisation (OV)" },
+  "level_EV": { "message": "Validation étendue (EV)" },
+  "level_IV": { "message": "Validation de la personne (IV)" },
+
+  "sectionConnection": { "message": "Connexion" },
+  "connProtocol": { "message": "Protocole" },
+  "connKeyExchange": { "message": "Échange de clés" },
+  "connCipher": { "message": "Chiffrement" },
+  "connCT": { "message": "Transparence" },
+  "connECH": { "message": "Encrypted Client Hello" },
+  "ctCompliant": { "message": "Journalisé publiquement" },
+  "ctNotCompliant": { "message": "Non journalisé" },
+  "ctUnknown": { "message": "Inconnu" },
+  "sctsOne": { "message": "$1 SCT valide" },
+  "sctsFew": { "message": "$1 SCT valides" },
+  "sctsOther": { "message": "$1 SCT valides" },
+  "yes": { "message": "Oui" },
+  "no": { "message": "Non" },
+
+  "sectionChain": { "message": "Chaîne de certificats ($1)" },
+  "chainLeaf": { "message": "Site" },
+  "chainIntermediate": { "message": "Intermédiaire" },
+  "chainRoot": { "message": "Racine" },
+  "chainIssuedBy": { "message": "Émis par $1" },
+
+  "sectionDetails": { "message": "Détails techniques" },
+  "detailSpkiPin": { "message": "Épingle de clé publique" },
+  "detailSerial": { "message": "Numéro de série" },
+  "detailSignature": { "message": "Signature" },
+  "detailPublicKey": { "message": "Clé publique" },
+  "detailServerSignature": { "message": "Signature TLS" },
+  "detailNamesOne": { "message": "Nom" },
+  "detailNamesFew": { "message": "Noms ($1)" },
+  "detailNamesOther": { "message": "Noms ($1)" },
+  "detailKeyUsage": { "message": "Utilisation de la clé" },
+  "detailExtKeyUsage": { "message": "Utilisation étendue de la clé" },
+  "detailPolicies": { "message": "Stratégies" },
+  "detailCaIssuers": { "message": "Émetteurs de l'AC" },
+  "detailScts": { "message": "SCT" },
+  "detailMustStaple": { "message": "OCSP must-staple" },
+  "detailExtensions": { "message": "Extensions" },
+  "critical": { "message": "critique" },
+
+  "localErr_restrictedPage": {
+    "message": "Chrome ne permet pas de lire cette page (page interne, page d'erreur ou page d'une autre extension)."
+  },
+  "localErr_blockedByPolicy": {
+    "message": "Les règles de votre organisation bloquent la lecture des certificats depuis le navigateur."
+  },
+  "localErr_probeBlocked": { "message": "La page a bloqué la requête utilisée pour lire le certificat." },
+  "localErr_reloadFailed": { "message": "La page n'a pas fini de se charger à temps." },
+  "localErr_canceledByUser": { "message": "La lecture a été annulée depuis la barre de débogage de Chrome." },
+  "localErr_detached": { "message": "Chrome a mis fin à la session de lecture." },
+  "localErr_navigated": { "message": "L'onglet a changé de site. Vérifiez à nouveau." },
+  "localErr_noCertificate": { "message": "Chrome n'a renvoyé aucun certificat pour cette page." },
+  "localErr_notHttps": { "message": "La page n'est pas servie en HTTPS." },
+  "localErr_tabGone": { "message": "L'onglet a été fermé." },
+  "localErr_alreadyAttached": { "message": "Un autre débogueur est attaché à cet onglet." },
+  "localErr_generic": { "message": "Échec de la lecture : $1" },
+
+  "notaryErr_timeout": { "message": "Aucune réponse dans les $1 s." },
+  "notaryErr_http": { "message": "La source a répondu avec le code HTTP $1." },
+  "notaryErr_network": { "message": "Impossible de joindre la source (erreur réseau ou en-têtes CORS manquants)." },
+  "notaryErr_unauthorized": { "message": "La source a refusé le jeton." },
+  "notaryErr_rateLimited": { "message": "Trop de requêtes ; la source demande de ralentir." },
+  "notaryErr_badResponse": { "message": "La source a envoyé une réponse non valide." },
+  "notaryErr_badCertificate": { "message": "La source a envoyé un certificat illisible." },
+  "notaryErr_badEndpoint": { "message": "L'adresse de la source n'est pas valide." },
+  "notaryErr_forbiddenTarget": { "message": "La source refuse cette adresse (privée ou réservée)." },
+  "notaryErr_forbiddenPort": { "message": "La source ne vérifie pas ce port." },
+  "notaryErr_dnsFailed": { "message": "La source n'a pas pu résoudre le nom du site." },
+  "notaryErr_connectFailed": { "message": "La source n'a pas pu se connecter au site." },
+  "notaryErr_tlsFailed": { "message": "La négociation TLS a échoué au niveau de la source." },
+  "notaryErr_busy": { "message": "La source est occupée ; réessayez dans un instant." },
+  "notaryErr_badRequest": { "message": "La source n'a pas compris la requête." },
+  "notaryErr_forbiddenOrigin": { "message": "La source n'accepte pas les requêtes de cette copie de l'extension." },
+  "notaryErr_noKey": {
+    "message": "Cette version n'a aucune clé pour vérifier les réponses de cette source, qui n'a donc pas été interrogée."
+  },
+  "notaryErr_unsigned": { "message": "La réponse n'était pas signée et n'a donc pas été utilisée." },
+  "notaryErr_unknownKey": {
+    "message": "La réponse est signée avec une clé que cette extension ne connaît pas et n'a donc pas été utilisée. La source a peut-être une nouvelle clé : mettez à jour l'extension ou la clé de la source."
+  },
+  "notaryErr_tampered": { "message": "La réponse a été modifiée en chemin et n'a donc pas été utilisée." },
+  "notaryErr_internal": { "message": "La source a rencontré une erreur interne." },
+  "notaryErr_cannotVerify": {
+    "message": "Ce navigateur n'a pas pu vérifier la signature de la réponse, qui n'a donc pas été utilisée."
+  },
+  "notaryErr_other": { "message": "Erreur $1 $2" },
+
+  "sectionHistory": { "message": "Historique" },
+  "historyFirst": {
+    "message": "Première vérification de ce site. Désormais, SSL Checker retient que son certificat provient de $1."
+  },
+  "historyKnown": {
+    "message": "Même autorité de certification que lors de vos vérifications précédentes : $1, $2 depuis le $3."
+  },
+  "historyLearned": { "message": "Désormais, SSL Checker mémorise aussi $1 pour ce site." },
+  "historyChangedBefore": { "message": "Jusqu'à présent : $1, $2, la dernière le $3." },
+  "historyChangedNow": { "message": "À présent : $1." },
+  "historySameName": {
+    "message": "L'autorité porte le même nom qu'avant, mais elle signe avec une clé jamais vue pour ce site."
+  },
+  "historyTrusted": { "message": "Autorité désormais approuvée pour ce site : $1." },
+  "historyForgotten": { "message": "Ce site a été oublié. Son historique recommencera à la prochaine vérification." },
+  "historyIncognito": {
+    "message": "La mémoire des sites est désactivée dans les fenêtres de navigation privée : rien n'est enregistré ni comparé."
+  },
+  "checksOne": { "message": "$1 vérification" },
+  "checksFew": { "message": "$1 vérifications" },
+  "checksOther": { "message": "$1 vérifications" },
+  "actionTrustCa": { "message": "Approuver pour ce site" },
+  "actionForgetSite": { "message": "Oublier ce site" },
+  "verdictCaChangedTitle": { "message": "L'autorité de certification a changé" },
+  "verdictCaChangedBody": {
+    "message": "Lors de vos vérifications précédentes, ce site a toujours présenté un certificat public émis par $1. Votre navigateur en reçoit maintenant un émis par $2, qui n'est pas journalisé publiquement. Très probablement, un intermédiaire entre vous et le site intercepte la connexion."
+  },
+  "verdictCaChangedSameNameBody": {
+    "message": "Le certificat prétend provenir de $1, comme avant, mais il est signé avec une clé jamais vue pour ce site et n'est pas journalisé publiquement. Très probablement, un intermédiaire entre vous et le site intercepte la connexion."
+  },
+  "warnCaChanged": { "message": "L'autorité de certification de ce site a changé : $1 auparavant, $2 à présent." },
+  "warnCaChangedSameName": {
+    "message": "Le certificat prétend provenir de $1, comme avant, mais il est signé avec une clé jamais vue pour ce site."
+  },
+  "warnCaChangedPublic": {
+    "message": "Ce site est passé de $1 à $2. Le nouveau certificat est journalisé publiquement."
+  },
+  "warnCaChangedNowPublic": {
+    "message": "Les vérifications précédentes de ce site passaient par $1, une autorité installée sur cet ordinateur ou ce réseau (par exemple un proxy d'entreprise). Le certificat est désormais public."
+  },
+  "warnNotaryTampered": {
+    "message": "La réponse signée de $1 a été modifiée en chemin et n'a pas été utilisée : un intermédiaire intercepte les connexions sécurisées de ce navigateur."
+  },
+
+  "optMemoryTitle": { "message": "Mémoire des sites" },
+  "optMemoryIntro": {
+    "message": "Lorsque le certificat est lu depuis votre navigateur, SSL Checker mémorise l'autorité qui l'a émis pour chaque site que vous vérifiez, et vous avertit si un site que vous connaissez se présente soudain avec une autre autorité. Tout reste sur cet appareil, et rien n'est enregistré dans les fenêtres de navigation privée."
+  },
+  "fieldMemoryEnabled": { "message": "Mémoriser l'autorité de certification des sites que je vérifie" },
+  "optMemoryHelp": {
+    "message": "Si vous la désactivez, plus rien n'est enregistré. Pour supprimer les données déjà stockées, utilisez Oublier tous les sites."
+  },
+  "memoryCountOne": { "message": "$1 site mémorisé" },
+  "memoryCountFew": { "message": "$1 sites mémorisés" },
+  "memoryCountOther": { "message": "$1 sites mémorisés" },
+  "actionForgetAll": { "message": "Oublier tous les sites" },
+  "forgotAll": { "message": "Tous les sites ont été oubliés" },
+
+  "optionsTitle": { "message": "Options de SSL Checker" },
+  "optionsIntro": {
+    "message": "Choisissez comment le certificat est lu et avec quelles sources externes il est comparé."
+  },
+  "optLocalTitle": { "message": "Lecture depuis votre navigateur" },
+  "optLocalIntro": {
+    "message": "Vous voyez ainsi le certificat exact reçu par votre navigateur, ce qui permet de détecter une interception sur votre réseau. Chrome ne propose pas d'API dédiée : l'extension attache donc son débogueur à l'onglet pendant environ une seconde, et Chrome affiche pendant ce temps une barre indiquant que SSL Checker a démarré le débogage de ce navigateur."
+  },
+  "optLocalUnavailable": {
+    "message": "Cette version de SSL Checker n'inclut pas l'autorisation d'accès au débogueur : les certificats ne sont donc lus que via des sources externes."
+  },
+  "modeAlways": { "message": "Chaque fois" },
+  "modeAlwaysHelp": { "message": "Lire le certificat chaque fois que vous ouvrez SSL Checker." },
+  "modeAsk": { "message": "À la demande" },
+  "modeAskHelp": {
+    "message": "Afficher d'abord les résultats externes ; lire depuis le navigateur seulement quand vous cliquez."
+  },
+  "modeNever": { "message": "Jamais" },
+  "modeNeverHelp": { "message": "Utiliser uniquement les sources externes. La barre de débogage n'apparaît jamais." },
+  "optSourcesTitle": { "message": "Sources externes" },
+  "optSourcesIntro": {
+    "message": "Chaque source est un serveur notaire qui se connecte au site depuis un autre point d'Internet et indique le certificat qu'il reçoit. Seuls le nom d'hôte et le port du site lui sont envoyés."
+  },
+  "optAddSourceTitle": { "message": "Ajouter une source" },
+  "optOwnNotary": {
+    "message": "Vous voulez votre propre notaire ? Il est open source et fonctionne sur n'importe quel serveur avec Docker."
+  },
+  "optOwnNotaryLink": { "message": "Comment l'installer" },
+  "fieldName": { "message": "Nom" },
+  "fieldNamePlaceholder": { "message": "Serveur de Francfort" },
+  "fieldUrl": { "message": "Adresse" },
+  "fieldUrlHelp": {
+    "message": "Adresse HTTPS du notaire. SSL Checker lui envoie le site dans le corps d'une requête POST, jamais dans l'adresse."
+  },
+  "fieldToken": { "message": "Jeton d'accès (facultatif)" },
+  "fieldTokenHelp": {
+    "message": "Envoyé dans l'en-tête Authorization: Bearer. Enregistré uniquement sur cet appareil."
+  },
+  "fieldKey": { "message": "Clé publique (facultative)" },
+  "fieldKeyHelp": {
+    "message": "Avec une clé, une réponse n'est prise en compte que si ce notaire l'a signée : aucun intermédiaire ne peut donc la modifier. Le notaire affiche sa clé au démarrage. Séparez plusieurs clés par des espaces."
+  },
+  "endpointEnabled": { "message": "Utiliser $1" },
+  "tokenSet": { "message": "Jeton enregistré" },
+  "keySet": { "message": "Réponses signées uniquement" },
+  "defaultSource": {
+    "message": "Source par défaut, gérée par PlusPrivacy. Ses réponses sont signées et elle ne conserve aucune trace des sites que vous vérifiez."
+  },
+  "testRunning": { "message": "Interrogation de la source sur example.com…" },
+  "testOk": { "message": "Fonctionne : elle voit le certificat d'example.com émis par $1, depuis $2, en $3 ms." },
+  "testSigned": { "message": "Sa réponse est signée avec la clé attendue." },
+  "testSelfSigned": {
+    "message": "Ses réponses portent une signature de la clé $1. Avant d'ajouter cette clé, vérifiez qu'il s'agit bien de celle que le notaire a affichée sur son serveur : un intercepteur aurait pu envoyer la sienne."
+  },
+  "testUnsigned": { "message": "Ses réponses ne sont pas signées." },
+  "testFailed": { "message": "Échec : $1" },
+  "endpointErrorInvalidUrl": { "message": "Saisissez une adresse valide." },
+  "endpointErrorCredentialsInUrl": {
+    "message": "N'indiquez pas de nom d'utilisateur ni de mot de passe dans l'adresse ; utilisez le champ du jeton."
+  },
+  "endpointErrorFragment": { "message": "Supprimez la partie # de l'adresse." },
+  "endpointErrorTemplate": {
+    "message": "Indiquez l'adresse du notaire sans {host} ni {port} : SSL Checker envoie le site dans le corps de la requête."
+  },
+  "endpointErrorHttps": {
+    "message": "L'adresse doit utiliser HTTPS (le HTTP non chiffré n'est autorisé que pour localhost)."
+  },
+  "endpointErrorDuplicate": { "message": "Cette source figure déjà dans la liste." },
+  "endpointErrorToken": { "message": "Le jeton ne peut contenir que des caractères ASCII visibles." },
+  "endpointErrorKey": {
+    "message": "Saisissez la clé telle que le notaire l'affiche : ed25519: suivi de 43 caractères."
+  },
+  "optAdvancedTitle": { "message": "Options avancées" },
+  "fieldTimeout": { "message": "Délai d'attente par source (secondes)" },
+  "optProtocolTitle": { "message": "Protocole des notaires" },
+  "optProtocolIntro": {
+    "message": "Tout serveur qui répond à cette requête peut servir de source. L'implémentation de référence est le notaire du projet SSL Checker, un petit service Node.js empaqueté pour Docker."
+  },
+  "optProtocolSigning": {
+    "message": "Un notaire doté d'une clé de signature renvoie le nonce de la requête, ajoute sa clé publique et signe la réponse : Notary-Signature contient la signature Ed25519 de la ligne \"SSL Checker notary answer v1\" suivie du corps exact. Si vous indiquez la clé d'une source, l'extension n'utilise que les réponses signées avec cette clé pour l'hôte, le port et le nonce demandés."
+  },
+  "optProtocolErrors": {
+    "message": "En cas d'erreur, répondez avec un statut 4xx ou 5xx et {\"version\": 1, \"error\": {\"code\": \"…\", \"message\": \"…\"}}. L'extension n'a aucune autorisation d'accès aux hôtes : le serveur doit donc envoyer les en-têtes CORS et répondre à la requête de pré-vérification (preflight) d'un POST avec Content-Type."
+  },
+  "saved": { "message": "Enregistré" },
+  "versionLabel": { "message": "Version $1" }
+}

@@ -1,0 +1,23 @@
+SSL Checker mostra il certificato TLS del sito nella scheda corrente — quello davvero ricevuto dal browser — e ti dice se qualcosa tra te e il sito lo sostituisce.
+
+COSA VEDI
+• Il certificato: nomi, emittente, validità, livello di convalida (DV, OV, EV), algoritmi di chiave e firma.
+• La connessione: versione TLS, scambio di chiavi (anche ibridi post-quantistici), cifrario, Encrypted Client Hello, Certificate Transparency.
+• Catena completa, impronte, numero di serie e tutte le estensioni. Copia il PEM o scarica la catena.
+
+RILEVA L'INTERCETTAZIONE
+SSL Checker chiede al notaio PlusPrivacy e a quelli che aggiungi quale certificato vedono per lo stesso sito da altrove su Internet, e confronta:
+• Stesso certificato ovunque → confermato.
+• Il tuo è diverso e non registrato pubblicamente → il traffico HTTPS è decriptato e firmato di nuovo (proxy aziendale, antivirus o peggio) e SSL Checker indica l'autorità emittente del sostituto.
+
+RICORDA I SITI CHE CONTROLLI
+SSL Checker memorizza l'autorità di certificazione di ogni sito e ti avvisa se un sito noto ne presenta all'improvviso un'altra. La memoria resta sul dispositivo; le finestre Incognito non sono mai registrate.
+
+DECIDI TU QUANDO USARE IL DEBUGGER
+Chrome non ha un'API per il certificato di una pagina caricata: SSL Checker collega il debugger di Chrome alla scheda per circa un secondo, mentre Chrome mostra la barra di debug. In Opzioni: ogni volta, su richiesta o mai (solo notai).
+
+RISPOSTE FIRMATE
+Il notaio PlusPrivacy firma ogni risposta e SSL Checker verifica la firma, così nessuno lungo il percorso può falsificare una conferma. Il notaio è open source: installa il tuo e aggiungilo con la sua chiave.
+
+PRIVACY
+Niente strumenti di analisi, tracciamento o account. Prima del primo controllo, SSL Checker spiega cosa legge e invia e chiede il consenso. Solo il nome host e la porta del sito controllato lasciano il dispositivo, per i notai. Il notaio PlusPrivacy non li registra e si può disattivare.

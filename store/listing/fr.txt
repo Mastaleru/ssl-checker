@@ -1,0 +1,23 @@
+SSL Checker affiche le certificat TLS que votre navigateur a vraiment reçu pour le site de votre onglet, et vous dit si un intermédiaire le remplace.
+
+CE QUE VOUS VOYEZ
+• Certificat : noms, émetteur, validité, niveau de validation (DV, OV, EV), algorithmes de clé et de signature.
+• Connexion : version TLS, échange de clés (dont hybrides post-quantiques), chiffrement, Encrypted Client Hello, Certificate Transparency.
+• Chaîne complète, empreintes, numéro de série et toutes les extensions. Copiez le PEM ou téléchargez la chaîne.
+
+DÉTECTEZ LES INTERCEPTIONS
+SSL Checker demande au notaire PlusPrivacy et à vos notaires quel certificat ce site leur présente ailleurs sur Internet, puis compare :
+• Même certificat partout → confirmé.
+• Le vôtre diffère et n'est pas journalisé publiquement → votre trafic HTTPS est déchiffré et signé à nouveau (proxy d'entreprise, antivirus ou pire), et SSL Checker nomme l'autorité qui l'a émis.
+
+MÉMOIRE DES SITES
+SSL Checker mémorise l'autorité de certification de chaque site vérifié et vous avertit si un site connu en change soudain. Cette mémoire reste sur votre appareil ; rien n'est enregistré en navigation privée.
+
+LE DÉBOGUEUR, C'EST VOUS QUI DÉCIDEZ
+Faute d'API Chrome pour le certificat d'une page chargée, SSL Checker attache le débogueur à l'onglet une seconde environ ; Chrome affiche alors sa barre de débogage. Dans les options : chaque fois, à la demande ou jamais (notaires seuls).
+
+RÉPONSES SIGNÉES
+Le notaire PlusPrivacy signe chaque réponse et SSL Checker vérifie la signature : nul ne peut falsifier une confirmation en chemin. Le notaire est open source : installez le vôtre et ajoutez-le avec sa clé.
+
+CONFIDENTIALITÉ
+Ni mesure d'audience, ni suivi, ni compte. Avant toute vérification, SSL Checker dit ce qu'il lit et envoie, et demande votre accord. Seuls le nom d'hôte et le port du site vérifié quittent votre appareil, pour les notaires. Le notaire PlusPrivacy n'en garde aucune trace et peut être désactivé.

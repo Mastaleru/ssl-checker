@@ -1,0 +1,23 @@
+SSL Checker, sekmenizdeki sitenin TLS sertifikasını — tarayıcınızın gerçekten aldığını — gösterir ve sizinle site arasında onu değiştiren bir şey olup olmadığını söyler.
+
+GÖRDÜKLERİNİZ
+• Sertifika: adlar, veren, geçerlilik, doğrulama düzeyi (DV, OV, EV), anahtar ve imza algoritmaları.
+• Bağlantı: TLS sürümü, anahtar değişimi (kuantum sonrası hibritler dahil), şifreleme, Encrypted Client Hello, Certificate Transparency.
+• Tam zincir, parmak izleri, seri numarası ve tüm uzantılar. PEM'i kopyalayın veya zinciri indirin.
+
+MÜDAHALEYİ YAKALAYIN
+SSL Checker, PlusPrivacy noterine ve eklediğiniz her notere aynı sitenin internetin başka bir yerinden hangi sertifikayı gösterdiğini sorar ve karşılaştırır:
+• Her yerde aynı sertifika → doğrulandı.
+• Sizinki farklı ve herkese açık kayıtlı değil → HTTPS trafiğinizin şifresi çözülüp yeniden imzalanıyor (şirket proxy'si, antivirüs ya da daha kötüsü) ve SSL Checker bunu veren yetkiliyi adıyla belirtir.
+
+KONTROL ETTİĞİNİZ SİTELERİ HATIRLAR
+SSL Checker her sitenin sertifika yetkilisini hatırlar ve bilinen bir site aniden başka bir yetkiliyle gelirse sizi uyarır. Bellek cihazınızda kalır; gizli pencereler asla kaydedilmez.
+
+HATA AYIKLAYICI NE ZAMAN ÇALIŞSIN, SİZ SEÇİN
+Chrome'da yüklü sayfanın sertifikası için API yok. SSL Checker bu yüzden Chrome'un hata ayıklayıcısını sekmeye yaklaşık bir saniye bağlar; Chrome bu sırada hata ayıklama çubuğunu gösterir. Seçenekler'de: her seferinde, istek üzerine veya hiçbir zaman (yalnızca noterler).
+
+İMZALI YANITLAR
+PlusPrivacy noteri her yanıtı imzalar ve SSL Checker imzayı doğrular; yolda kimse doğrulama taklit edemez. Noter açık kaynaklı: Kendi noterinizi çalıştırıp anahtarıyla ekleyin.
+
+GİZLİLİK
+Analitik yok, izleme yok, hesap yok. İlk kontrolden önce SSL Checker neyi okuyup gönderdiğini söyler ve onayınızı ister. Cihazınızdan yalnızca kontrol edilen sitenin ana makine adı ve bağlantı noktası noterlere gider. PlusPrivacy noteri bunların kaydını tutmaz ve kapatılabilir.

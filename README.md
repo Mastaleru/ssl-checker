@@ -15,7 +15,7 @@ Website and privacy policy: <https://sslchecker.plusprivacy.com>, published from
 - **You decide when the debugger runs.** Reading the certificate from the browser needs Chrome's debugger, so it can run every time, on demand or never. A lite package without the debugger permission is built as well.
 - **Your own notaries.** Any server that speaks the notary protocol can be a source, and given its key, its answers are checked too. The one in [`notary/`](notary/README.md), which also runs the PlusPrivacy notary, is a small Express service packaged for Docker.
 - **Private by design.** No analytics, no account, no host permissions. Nothing is read or sent before you agree in the popup. Only the host name and port go to the notaries (PlusPrivacy's unless you turn it off, and any you add), and the site memory stays on the device.
-- **English and Romanian** user interface.
+- **14 languages.** The interface follows Chrome's language: English, Romanian, German, Spanish, French, Italian, Dutch, Polish, Portuguese (Brazil), Turkish, Ukrainian, Japanese, Korean and Chinese (Simplified), with English for any other. The store listing and the website come in the same languages.
 
 ## Try it
 
@@ -75,7 +75,7 @@ extension/              what Chrome loads (Load unpacked) and what gets packaged
   background/           service worker: local reading (chrome.debugger), notary queries
   lib/                  X.509 parser, verdict, notary signatures, site memory, host names, known interceptors, settings, i18n
   popup/  options/  ui/ user interface
-  _locales/{en,ro}/     messages
+  _locales/<language>/  messages, one folder per language
   fonts/  icons/
 notary/                 the notary service (Express), its Docker and VPS setup, and its own tests
 scripts/
@@ -96,7 +96,7 @@ npm test                    # X.509 parser (checked against pyca/cryptography), 
 npm ci --prefix notary
 npm run test:notary         # the notary: configuration, SSRF ranges, bans, capacity, the HTTP API, signing
 npm install && npx playwright install chromium
-npm run test:e2e            # 18 scenarios in Chromium; E2E_LANG=ro for the Romanian UI
+npm run test:e2e            # 18 scenarios in Chromium; E2E_LANG=ro (any _locales folder) for another language
 ```
 
 `npm test` needs no `npm install`: it only uses Node.js 20 or newer. The notary needs Node.js 22 or newer.
@@ -104,6 +104,10 @@ npm run test:e2e            # 18 scenarios in Chromium; E2E_LANG=ro for the Roma
 GitHub Actions runs all of it on every push and pull request (`.github/workflows/ci.yml`): lint, the unit tests on Node.js 20 and 24, the notary tests on Node.js 22 and 24, and the end-to-end tests in English and Romanian. Screenshots of a failed end-to-end run are kept as an artifact for a week.
 
 The end-to-end tests need Chromium or Chrome for Testing, because Google Chrome ignores `--load-extension` since version 137. They start two real notary processes, each with its own signing key: a private one with a token, and a public one that stands in for PlusPrivacy's (the staged extension is pointed at it, with its key). Interception is simulated on a single machine: the browser visits a server with a "Contoso Inspection CA" certificate, while the notary is pointed at the server with the "real" certificate. Between the extension and the PlusPrivacy stand-in sits a proxy that plays the interceptor: it rewrites the chain in the answer, sends the notary to another server, replays an old answer or drops the signature, and each attempt must be caught. For the site memory, one server swaps its certificate between two checks, and a check in an incognito window confirms that nothing is recorded there (that scenario loads the extension through the DevTools protocol, the only way to allow it in incognito from a test).
+
+## Translations
+
+English and Romanian are the originals; the other languages are translations of the English texts, and corrections from native speakers are welcome. A language's texts are in `extension/_locales/<language>/messages.json` (the interface), `store/listing/<language>.txt` (the store description) and `store/tools/captions/<language>.json` (the texts on the store images), and the website's are in the `i18n/` folder of ssl-checker-website. `npm test` checks that every language has every message, keeps the English placeholders, has the plural forms its grammar needs and fits the store's limits.
 
 ## Code style
 

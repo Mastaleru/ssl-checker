@@ -1,0 +1,23 @@
+SSL Checker toont het TLS-certificaat van de site die je bekijkt, zoals je browser het echt ontving, en zegt of iets tussen jou en de site het vervangt.
+
+WAT JE ZIET
+• Het certificaat: namen, uitgever, geldigheid, validatieniveau (DV, OV, EV), sleutel- en handtekeningalgoritmen.
+• De verbinding: TLS-versie, sleuteluitwisseling (ook post-quantumhybrides), codering, Encrypted Client Hello, Certificate Transparency.
+• Volledige keten, vingerafdrukken, serienummer en alle extensies. Kopieer de PEM of download de keten.
+
+ONTDEK ONDERSCHEPPING
+SSL Checker vraagt de PlusPrivacy-notaris en elke notaris die je toevoegt welk certificaat dezelfde site hun elders op internet toont, en vergelijkt:
+• Overal hetzelfde certificaat → bevestigd.
+• Het jouwe wijkt af en is niet openbaar gelogd → je HTTPS-verkeer wordt ontsleuteld en opnieuw ondertekend (bedrijfsproxy, antivirus of erger); SSL Checker noemt wie dat certificaat uitgaf.
+
+ONTHOUDT GECONTROLEERDE SITES
+SSL Checker onthoudt de certificeringsinstantie van elke site en waarschuwt als een bekende site plotseling een andere toont. Dit blijft op je apparaat; incognitovensters worden nooit vastgelegd.
+
+JIJ BEPAALT WANNEER DE DEBUGGER START
+Chrome heeft geen API voor het certificaat van een geladen pagina, dus koppelt SSL Checker de Chrome-debugger zo'n seconde aan het tabblad; Chrome toont dan de foutopsporingsbalk. In Opties: elke keer, op verzoek of nooit (alleen notarissen).
+
+ONDERTEKENDE ANTWOORDEN
+De PlusPrivacy-notaris ondertekent elk antwoord en SSL Checker controleert de handtekening: niemand onderweg kan een bevestiging vervalsen. De notaris is open source: draai er zelf een en voeg die toe met zijn sleutel.
+
+PRIVACY
+Geen analytics, tracking of account. Vóór de eerste controle zegt SSL Checker wat het leest en verstuurt, en vraagt je toestemming. Alleen hostnaam en poort van de gecontroleerde site verlaten je apparaat, voor de notarissen. De PlusPrivacy-notaris bewaart ze niet en is uit te zetten.

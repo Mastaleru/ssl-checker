@@ -1,0 +1,18 @@
+{
+  "confirmed": [
+    "Tarayıcınızın aldığı gerçek sertifikayı görün",
+    "Zincir, TLS sürümü, anahtar değişimi ve Certificate Transparency doğrudan Chrome'dan okunur ve bağımsız noterler tarafından doğrulanır."
+  ],
+  "intercepted": [
+    "HTTPS trafiğine müdahaleyi yakalayın",
+    "Noterler, internetin geri kalanının ne gördüğünü gösterir. Farklı ve herkese açık kayıtlı olmayan bir sertifika, yolunuzdaki bir şeyin trafiğinizi yeniden imzaladığı anlamına gelir."
+  ],
+  "details": [
+    "Her ayrıntı bir tık uzağınızda",
+    "Adlar, geçerlilik, zincir, parmak izleri, anahtar pini, OCSP ve CRL, SCT'ler ve uzantılar. PEM'i kopyalayın veya zinciri indirin."
+  ],
+  "options": [
+    "Hata ayıklayıcı ne zaman çalışsın, siz seçin",
+    "Sertifikayı her seferinde, istek üzerine veya hiçbir zaman okuyun ve kontrol ettiğiniz sitelerin SSL Checker tarafından hatırlanıp hatırlanmayacağını seçin."
+  ]
+}

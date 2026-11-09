@@ -3,10 +3,23 @@
 // The popup shows results built by the extension's own parser and verdict code
 // from the fictional certificates in store/tools/certs (no real site involved).
 //   node store/tools/make-screenshots.mjs        (needs Playwright + Chromium, see tests/e2e/run.mjs)
+// Every language with captions in store/tools/captions/ (LANGS=de,fr for some of them).
+// The promo tile cannot be localized in the store, so it is only made in English.
 // For the website (the ssl-checker-website repository), SITE_IMAGES=<its img folder>
-// writes the bare popup and Options images instead, in WebP, light and dark:
+// writes the bare popup and Options images instead, in WebP, light and dark, and the
+// link previews (og-<language>.png) from the website's tools/og.html:
 //   SITE_IMAGES=../ssl-checker-website/img node store/tools/make-screenshots.mjs
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
+import http from 'node:http';
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
@@ -28,46 +41,17 @@ const pemChain = (file) =>
     ),
   ].map((m) => m[1].replace(/\s+/g, ''));
 
-const COPY = {
-  en: {
-    confirmed: [
-      'See the certificate your browser really received',
-      'Chain, TLS version, key exchange and Certificate Transparency, read straight from Chrome and confirmed by independent notaries.',
-    ],
-    intercepted: [
-      'Catch HTTPS interception',
-      'Notaries show what the rest of the internet sees. A different, unlogged certificate means something on your path is re-signing your traffic.',
-    ],
-    details: [
-      'Every detail, one click away',
-      'Names, validity, chain, fingerprints, key pin, OCSP and CRL, SCTs and extensions. Copy the PEM or download the chain.',
-    ],
-    options: [
-      'You decide when the debugger runs',
-      'Read the certificate every time, on demand or never, and choose whether SSL Checker remembers the sites you check.',
-    ],
-    tagline: 'See the real certificate. Catch interception.',
-  },
-  ro: {
-    confirmed: [
-      'Vezi certificatul primit cu adevărat de browser',
-      'Lanțul, versiunea TLS, schimbul de chei și Certificate Transparency, citite direct din Chrome și confirmate de notari independenți.',
-    ],
-    intercepted: [
-      'Prinde interceptarea HTTPS',
-      'Notarii arată ce vede restul internetului. Un certificat diferit și neînregistrat public înseamnă că cineva de pe drum îți re-semnează traficul.',
-    ],
-    details: [
-      'Toate detaliile, la un clic',
-      'Nume, valabilitate, lanț, amprente, pin de cheie, OCSP și CRL, SCT-uri și extensii. Copiezi PEM-ul sau descarci lanțul.',
-    ],
-    options: [
-      'Tu decizi când rulează <span class="nowrap">debugger-ul</span>',
-      'Citește certificatul de fiecare dată, la cerere sau niciodată și alege dacă SSL Checker ține minte site-urile verificate.',
-    ],
-    tagline: 'Vezi certificatul real. Prinde interceptarea.',
-  },
-};
+// The captions of the store images, one file per language in store/tools/captions/,
+// named like the extension's _locales folders (pt_BR, zh_CN). LANGS=de,fr limits a run.
+const CAPTIONS = path.join(ROOT, 'store/tools/captions');
+const LANGUAGES = readdirSync(CAPTIONS)
+  .filter((file) => file.endsWith('.json'))
+  .map((file) => file.slice(0, -'.json'.length))
+  .filter((lang) => !process.env.LANGS || process.env.LANGS.split(',').includes(lang))
+  .sort((a, b) => (a === 'en' ? -1 : b === 'en' ? 1 : a.localeCompare(b)));
+const captions = (lang) => JSON.parse(readFileSync(path.join(CAPTIONS, `${lang}.json`), 'utf8'));
+/** The BCP 47 tag of a _locales folder name: pt_BR -> pt-BR. */
+const bcp47 = (lang) => lang.replace('_', '-');
 
 async function buildResults() {
   const genuine = await describeChain(pemChain('genuine-chain.pem'));
@@ -187,8 +171,13 @@ async function popupShot(ctx, sw, extId, result, tabId, { expand = false, format
     for (const summary of await page.$$('details > summary')) {
       await summary.click();
     }
-    await page.evaluate(() => document.querySelector('details:last-of-type').scrollIntoView({ block: 'start' }));
-    await page.evaluate(() => window.scrollBy(0, -380));
+    // The Transparency row just below the top bar, however tall the rows above it are in this language.
+    await page.evaluate(() => {
+      const label = chrome.i18n.getMessage('connCT');
+      const row = [...document.querySelectorAll('dt')].find((dt) => dt.textContent === label);
+      const bar = document.querySelector('header.topbar').getBoundingClientRect().bottom;
+      window.scrollTo(0, Math.round(window.scrollY + row.getBoundingClientRect().top - bar) - 5);
+    });
   }
   await page.waitForTimeout(300);
   const image = await capture(page, { x: 0, y: 0, width: 400, height: 600 }, format);
@@ -232,14 +221,21 @@ const FONTS = `
 @font-face { font-family: 'Atkinson Next'; font-weight: 200 800; src: url(${font('atkinson-hyperlegible-next-latin-wght-normal.woff2')}) format('woff2'); }
 @font-face { font-family: 'Atkinson Next'; font-weight: 200 800; unicode-range: U+0100-024F, U+1E00-1EFF; src: url(${font('atkinson-hyperlegible-next-latin-ext-wght-normal.woff2')}) format('woff2'); }`;
 
-function composeHtml({ title, body, shot, shotWidth, shotHeight, icon }) {
-  return `<!doctype html><meta charset="utf-8"><style>${FONTS}
+// lang picks the right glyphs for Chinese, Japanese and Korean, which share code
+// points; those scripts get their own widths and line breaking.
+function composeHtml({ lang, title, body, shot, shotWidth, shotHeight, icon }) {
+  return `<!doctype html><html lang="${bcp47(lang)}"><meta charset="utf-8"><style>${FONTS}
   * { box-sizing: border-box; } html, body { margin: 0; }
   body { width: 1280px; height: 800px; overflow: hidden; background: #f5f7fa; color: #16233a; font-family: 'Atkinson Next', sans-serif;
          display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 64px; padding: 0 88px 0 96px; position: relative; }
   .brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 700; margin-bottom: 36px; }
   h1 { font-size: 46px; line-height: 1.12; font-weight: 720; margin: 0 0 22px; letter-spacing: -0.01em; max-width: 13ch; }
   p { font-size: 20px; line-height: 1.5; color: #485870; margin: 0; max-width: 30ch; }
+  h1, p { overflow-wrap: break-word; }
+  :lang(ja) h1, :lang(zh) h1, :lang(ko) h1 { max-width: 10.5em; line-height: 1.25; letter-spacing: 0; text-wrap: balance; }
+  :lang(ja) p, :lang(zh) p, :lang(ko) p { max-width: 22em; line-height: 1.7; text-wrap: pretty; }
+  :lang(ja) h1 { word-break: auto-phrase; }
+  :lang(ko) h1, :lang(ko) p { word-break: keep-all; }
   .nowrap { white-space: nowrap; }
   .frame { width: ${shotWidth}px; height: ${shotHeight}px; border-radius: 12px; overflow: hidden; background: #fff;
            border: 1px solid #c3ccd9; box-shadow: 18px 18px 0 #dde6f3; }
@@ -249,12 +245,12 @@ function composeHtml({ title, body, shot, shotWidth, shotHeight, icon }) {
   <div class="frame"><img src="${shot}" alt=""></div>`;
 }
 
-function promoHtml(tagline, icon) {
+function promoHtml(lang, tagline, icon) {
   const bars = Array.from({ length: 41 }, (_, i) => {
     const h = 6 + ((i * 37) % 23);
     return `<rect x="${i * 9}" y="${30 - h}" width="5" height="${h}" rx="1"/>`;
   }).join('');
-  return `<!doctype html><meta charset="utf-8"><style>${FONTS}
+  return `<!doctype html><html lang="${bcp47(lang)}"><meta charset="utf-8"><style>${FONTS}
   html, body { margin: 0; } body { width: 440px; height: 280px; overflow: hidden; background: #16233a; color: #fff; font-family: 'Atkinson Next', sans-serif; position: relative; }
   .row { position: absolute; left: 36px; top: 46px; display: flex; align-items: center; gap: 16px; }
   .tile { width: 72px; height: 72px; border-radius: 16px; background: #f5f7fa; display: grid; place-items: center; }
@@ -285,7 +281,7 @@ async function openExtension(ext, lang, colorScheme = 'light') {
       `--disable-extensions-except=${ext}`,
       `--load-extension=${ext}`,
       '--headless=new',
-      `--lang=${lang}`,
+      `--lang=${bcp47(lang)}`,
       '--no-proxy-server',
     ],
   });
@@ -302,8 +298,9 @@ async function openExtension(ext, lang, colorScheme = 'light') {
 
 /** The website's images: the bare popup and Options page, at twice their size. */
 async function siteImages(results, ext, dir) {
-  for (const lang of ['en', 'ro']) {
-    mkdirSync(path.join(dir, lang), { recursive: true });
+  for (const lang of LANGUAGES) {
+    const folder = path.join(dir, bcp47(lang).toLowerCase());
+    mkdirSync(folder, { recursive: true });
     for (const scheme of ['light', 'dark']) {
       const { ctx, sw, extId, close } = await openExtension(ext, lang, scheme);
       const format = 'webp';
@@ -314,23 +311,75 @@ async function siteImages(results, ext, dir) {
         options: await optionsShot(ctx, sw, extId, { format }),
       };
       for (const [key, image] of Object.entries(images)) {
-        writeFileSync(path.join(dir, lang, `${key}-${scheme}.webp`), image);
+        writeFileSync(path.join(folder, `${key}-${scheme}.webp`), image);
       }
       await close();
     }
-    console.log(`${lang}: 8 images in ${path.join(dir, lang)}`);
+    console.log(`${lang}: 8 images in ${folder}`);
   }
+}
+
+const TYPES = {
+  '.html': 'text/html',
+  '.css': 'text/css',
+  '.png': 'image/png',
+  '.webp': 'image/webp',
+  '.woff2': 'font/woff2',
+};
+
+/** The website's link previews, og-<language>.png: its tools/og.html, served from its folder at 1200x630. */
+async function linkPreviews(dir) {
+  const site = path.dirname(dir);
+  if (!existsSync(path.join(site, 'tools', 'og.html'))) {
+    console.log(`No tools/og.html in ${site}: no link previews`);
+    return;
+  }
+  const server = http.createServer((request, response) => {
+    const file = path.join(site, decodeURIComponent(new URL(request.url, 'http://localhost').pathname));
+    if (!file.startsWith(site + path.sep) || !existsSync(file) || !statSync(file).isFile()) {
+      response.writeHead(404).end();
+      return;
+    }
+    response.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream' });
+    response.end(readFileSync(file));
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const browser = await chromium.launch({
+    executablePath: process.env.CHROME_PATH || undefined,
+    headless: true,
+    args: ['--no-proxy-server'],
+  });
+  const page = await browser.newPage({
+    viewport: { width: 1200, height: 630 },
+    deviceScaleFactor: 1,
+    colorScheme: 'light',
+  });
+  for (const lang of LANGUAGES) {
+    const tag = bcp47(lang).toLowerCase();
+    await page.goto(`http://127.0.0.1:${server.address().port}/tools/og.html?lang=${tag}`, { waitUntil: 'load' });
+    // og.html fits a long title once the fonts are ready; wait one frame past that.
+    await page.evaluate(() =>
+      document.fonts.ready.then(() => new Promise((resolve) => window.requestAnimationFrame(resolve))),
+    );
+    await page.screenshot({ path: path.join(dir, `og-${tag}.png`) });
+  }
+  await browser.close();
+  server.close();
+  console.log(`${LANGUAGES.length} link previews in ${dir}`);
 }
 
 async function main() {
   const results = await buildResults();
   const ext = stageVariant('full', mkdtempSync(path.join(os.tmpdir(), 'sslc-store-')));
   if (process.env.SITE_IMAGES) {
-    await siteImages(results, ext, path.resolve(process.env.SITE_IMAGES));
+    const dir = path.resolve(process.env.SITE_IMAGES);
+    await siteImages(results, ext, dir);
+    await linkPreviews(dir);
     return;
   }
   const icon = dataUri(readFileSync(path.join(ROOT, 'extension/icons/ssl128.png')), 'image/png');
-  for (const lang of ['en', 'ro']) {
+  for (const lang of LANGUAGES) {
+    const copy = captions(lang);
     const { ctx, sw, extId, close } = await openExtension(ext, lang);
     const shots = {
       confirmed: await popupShot(ctx, sw, extId, results.confirmed, 101),
@@ -345,11 +394,12 @@ async function main() {
     const composer = await plain.newPage({ deviceScaleFactor: 1 });
     const order = ['confirmed', 'intercepted', 'details', 'options'];
     for (const [i, key] of order.entries()) {
-      const [title, body] = COPY[lang][key];
+      const [title, body] = copy[key];
       const isOptions = key === 'options';
       await render(
         composer,
         composeHtml({
+          lang,
           title,
           body,
           shot: dataUri(shots[key], 'image/png'),
@@ -362,10 +412,14 @@ async function main() {
         800,
       );
     }
-    await render(composer, promoHtml(COPY[lang].tagline, icon), path.join(dir, 'promo-440x280.png'), 440, 280);
+    if (lang === 'en') {
+      await render(composer, promoHtml(lang, copy.tagline, icon), path.join(dir, 'promo-440x280.png'), 440, 280);
+    }
     await plain.close();
     await close();
-    console.log(`${lang}: ${order.length} screenshots + promo tile in ${path.relative(ROOT, dir)}`);
+    console.log(
+      `${lang}: ${order.length} screenshots${lang === 'en' ? ' + promo tile' : ''} in ${path.relative(ROOT, dir)}`,
+    );
   }
 }
 

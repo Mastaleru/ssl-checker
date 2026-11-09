@@ -1,0 +1,18 @@
+{
+  "confirmed": [
+    "Het certificaat dat je browser echt ontving",
+    "Keten, TLS-versie, sleuteluitwisseling en Certificate Transparency, rechtstreeks uit Chrome gelezen en bevestigd door onafhankelijke notarissen."
+  ],
+  "intercepted": [
+    "Ontdek of HTTPS wordt onderschept",
+    "Notarissen tonen wat de rest van het internet ziet. Een afwijkend, niet-gelogd certificaat betekent dat iets onderweg je verkeer opnieuw ondertekent."
+  ],
+  "details": [
+    "Elk detail met één klik",
+    "Namen, geldigheid, keten, vingerafdrukken, sleutelpin, OCSP en CRL, SCT's en extensies. Kopieer de PEM of download de keten."
+  ],
+  "options": [
+    "Jij bepaalt wanneer de debugger start",
+    "Laat het certificaat elke keer, op verzoek of nooit lezen, en kies of SSL Checker de sites onthoudt die je controleert."
+  ]
+}

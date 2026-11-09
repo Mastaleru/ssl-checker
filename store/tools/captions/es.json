@@ -1,0 +1,18 @@
+{
+  "confirmed": [
+    "Mira el certificado real que recibe tu navegador",
+    "Cadena, versión de TLS, intercambio de claves y Certificate Transparency, leídos directamente de Chrome y confirmados por notarios independientes."
+  ],
+  "intercepted": [
+    "Detecta la interceptación HTTPS",
+    "Los notarios muestran lo que ve el resto de Internet. Un certificado distinto y no registrado significa que algo en el camino está volviendo a firmar tu tráfico."
+  ],
+  "details": [
+    "Todos los detalles, a un clic",
+    "Nombres, validez, cadena, huellas digitales, pin de clave, OCSP y CRL, SCT y extensiones. Copia el PEM o descarga la cadena."
+  ],
+  "options": [
+    "Tú decides cuándo se ejecuta el depurador",
+    "Lee el certificado siempre, a petición o nunca, y elige si SSL Checker recuerda los sitios que compruebas."
+  ]
+}

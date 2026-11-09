@@ -1,0 +1,18 @@
+{
+  "confirmed": [
+    "Voyez le certificat réellement reçu",
+    "Chaîne, version de TLS, échange de clés et Certificate Transparency, lus directement dans Chrome et confirmés par des notaires indépendants."
+  ],
+  "intercepted": [
+    "Détectez les interceptions HTTPS",
+    "Les notaires montrent ce que voit le reste d'Internet. Un certificat différent et non journalisé signifie qu'un intermédiaire signe à nouveau votre trafic."
+  ],
+  "details": [
+    "Tous les détails à portée de clic",
+    "Noms, validité, chaîne, empreintes, épingle de clé, OCSP et CRL, SCT et extensions. Copiez le PEM ou téléchargez la chaîne."
+  ],
+  "options": [
+    "Le débogueur, c'est vous qui décidez",
+    "Lisez le certificat chaque fois, à la demande ou jamais, et choisissez si SSL Checker mémorise les sites que vous vérifiez."
+  ]
+}
