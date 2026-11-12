@@ -45,6 +45,81 @@ test('a name is resolved and its first public address is used', async () => {
   assert.equal(await resolveTarget('example.com', { lookup }), '93.184.215.14');
 });
 
+test('address family can be restricted to IPv4 or IPv6', async () => {
+  const lookup = async () => [
+    { address: '93.184.215.14', family: 4 },
+    { address: '2606:4700:4700::1111', family: 6 },
+  ];
+
+  assert.equal(
+    await resolveTarget('example.com', { family: 4, lookup }),
+    '93.184.215.14',
+  );
+
+  assert.equal(
+    await resolveTarget('example.com', { family: 6, lookup }),
+    '2606:4700:4700::1111',
+  );
+
+  assert.equal(
+    await resolveTarget('example.com', { family: 0, lookup }),
+    '93.184.215.14',
+  );
+});
+
+test('missing requested address family is reported', async () => {
+  const lookup = async () => [
+    { address: '93.184.215.14', family: 4 },
+  ];
+
+  await assert.rejects(
+    resolveTarget('ipv4-only.example', { family: 6, lookup }),
+    {
+      code: 'dnsFailed',
+      message: 'target has no usable IPv6 address',
+    },
+  );
+});
+
+test('literal addresses must match the requested family', async () => {
+  assert.equal(
+    await resolveTarget('1.1.1.1', { family: 4 }),
+    '1.1.1.1',
+  );
+
+  assert.equal(
+    await resolveTarget('2606:4700:4700::1111', { family: 6 }),
+    '2606:4700:4700::1111',
+  );
+
+  await assert.rejects(
+    resolveTarget('1.1.1.1', { family: 6 }),
+    { code: 'dnsFailed' },
+  );
+
+  await assert.rejects(
+    resolveTarget('2606:4700:4700::1111', { family: 4 }),
+    { code: 'dnsFailed' },
+  );
+});
+
+test('family selection does not bypass reserved-address filtering', async () => {
+  const lookup = async () => [
+    { address: '10.0.0.5', family: 4 },
+    { address: 'fd00::5', family: 6 },
+  ];
+
+  await assert.rejects(
+    resolveTarget('internal.example', { family: 4, lookup }),
+    { code: 'forbiddenTarget' },
+  );
+
+  await assert.rejects(
+    resolveTarget('internal.example', { family: 6, lookup }),
+    { code: 'forbiddenTarget' },
+  );
+});
+
 test('a name with only private addresses is refused; DNS failures are reported', async () => {
   await assert.rejects(resolveTarget('internal.example', { lookup: async () => [{ address: '192.168.0.10' }] }), {
     code: 'forbiddenTarget',

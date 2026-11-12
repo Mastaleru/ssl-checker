@@ -95,8 +95,18 @@ export function normalizeHost(raw) {
 }
 
 /** Resolves the host and returns the first public address, or refuses the target. */
-export async function resolveTarget(host, { allowPrivate = false, lookup = dns.lookup } = {}) {
+export async function resolveTarget(host, { allowPrivate = false, family = 0, lookup = dns.lookup } = {}) {
   if (net.isIP(host)) {
+    const hostFamily = net.isIP(host);
+
+    if (family && hostFamily !== family) {
+      throw new NotaryError(
+        502,
+        'dnsFailed',
+        `target has no usable IPv${family} address`,
+      );
+    }
+
     if (!allowPrivate && isBlockedAddress(host)) {
       throw new NotaryError(403, 'forbiddenTarget', 'address is private or reserved');
     }
@@ -111,11 +121,31 @@ export async function resolveTarget(host, { allowPrivate = false, lookup = dns.l
     }
     throw new NotaryError(502, 'dnsFailed', `could not resolve ${host}`);
   }
-  const usable = records.map((r) => r.address).filter((a) => allowPrivate || !isBlockedAddress(a));
-  if (usable.length === 0) {
-    throw new NotaryError(403, 'forbiddenTarget', 'name resolves only to private or reserved addresses');
+  const publicRecords = records.filter(
+    (record) => allowPrivate || !isBlockedAddress(record.address),
+  );
+
+  if (publicRecords.length === 0) {
+    throw new NotaryError(
+      403,
+      'forbiddenTarget',
+      'name resolves only to private or reserved addresses',
+    );
   }
-  return usable[0];
+
+  const usable = family
+    ? publicRecords.filter((record) => net.isIP(record.address) === family)
+    : publicRecords;
+
+  if (usable.length === 0) {
+    throw new NotaryError(
+      502,
+      'dnsFailed',
+      `target has no usable IPv${family} address`,
+    );
+  }
+
+  return usable[0].address;
 }
 
 export function withTimeout(promise, ms, what) {

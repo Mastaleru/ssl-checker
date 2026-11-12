@@ -11,10 +11,10 @@ import { connectThroughProxy } from './upstream.js';
  * @param {number} port
  * @param {{ timeoutMs: number, allowPrivate: boolean, upstreamProxy: URL | null, name: string }} options
  */
-export async function probeTls(host, port, { timeoutMs, allowPrivate, upstreamProxy, name }) {
+export async function probeTls(host, port, { timeoutMs, allowPrivate, upstreamProxy, name, ipFamily }) {
   const deadline = Date.now() + timeoutMs;
   // Through an upstream proxy the target is still checked, but the proxy connects to it.
-  const address = await resolveTarget(host, { allowPrivate });
+  const address = await resolveTarget(host, { allowPrivate, family: ipFamily });
   const rawSocket = upstreamProxy ? await connectThroughProxy(upstreamProxy, host, port, deadline) : null;
 
   return new Promise((resolve, reject) => {

@@ -48,6 +48,7 @@ test('health endpoint and CORS preflight', async (t) => {
     ok: true,
     vantage: 'Test vantage',
     ports: [443, 8443],
+    family: 'auto',
     auth: false,
     key: null,
   });
