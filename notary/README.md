@@ -217,6 +217,7 @@ Environment variables, set in `.env` (see `.env.example`). A bad value stops the
 | `UPSTREAM_PROXY`         | —                  | `http://host:port`: reach sites through an HTTP CONNECT proxy. If that proxy inspects TLS, the notary sees the interception too.                        |
 | `ALLOW_PRIVATE`          | `0`                | `1` allows private addresses, for testing only: it opens the door to SSRF.                                                                              |
 | `LOG_HOSTS`              | `0`                | `1` writes the checked site to the log. Off by default, for privacy.                                                                                    |
+| `IP_FAMILY` | `auto` | Outbound probe family: `auto` uses IPv6-preferred Happy Eyeballs with a 250 ms fallback delay; `4` uses only IPv4; `6` uses only IPv6. When `UPSTREAM_PROXY` is set, the proxy controls the actual outbound family. |
 
 ## Protection
 

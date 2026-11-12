@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { isBlockedAddress, normalizeHost, resolveTarget } from '../src/probe/target.js';
+import {
+  isBlockedAddress,
+  normalizeHost,
+  resolveTarget,
+  resolveTargets,
+} from '../src/probe/target.js';
 
 test('host names are normalized; IDNs become punycode', () => {
   assert.equal(normalizeHost(' Example.COM. '), 'example.com');
@@ -61,9 +66,10 @@ test('address family can be restricted to IPv4 or IPv6', async () => {
     '2606:4700:4700::1111',
   );
 
+  // auto prefers IPv6; Happy Eyeballs may fall back to IPv4 at connection time.
   assert.equal(
     await resolveTarget('example.com', { family: 0, lookup }),
-    '93.184.215.14',
+    '2606:4700:4700::1111',
   );
 });
 
@@ -135,5 +141,66 @@ test('a name with only private addresses is refused; DNS failures are reported',
   assert.equal(
     await resolveTarget('internal.example', { allowPrivate: true, lookup: async () => [{ address: '10.0.0.5' }] }),
     '10.0.0.5',
+  );
+});
+
+test('auto mode prefers validated IPv6 candidates before IPv4', async () => {
+  const lookup = async () => [
+    { address: '93.184.215.14', family: 4 },
+    { address: '2606:4700:4700::1111', family: 6 },
+    { address: '1.1.1.1', family: 4 },
+    { address: '2606:4700:4700::1001', family: 6 },
+  ];
+
+  assert.deepEqual(
+    await resolveTargets('example.com', { family: 0, lookup }),
+    [
+      { address: '2606:4700:4700::1111', family: 6 },
+      { address: '2606:4700:4700::1001', family: 6 },
+      { address: '93.184.215.14', family: 4 },
+      { address: '1.1.1.1', family: 4 },
+    ],
+  );
+});
+
+test('fixed family returns only validated candidates of that family', async () => {
+  const lookup = async () => [
+    { address: '93.184.215.14', family: 4 },
+    { address: '2606:4700:4700::1111', family: 6 },
+    { address: '1.1.1.1', family: 4 },
+    { address: '2606:4700:4700::1001', family: 6 },
+  ];
+
+  assert.deepEqual(
+    await resolveTargets('example.com', { family: 6, lookup }),
+    [
+      { address: '2606:4700:4700::1111', family: 6 },
+      { address: '2606:4700:4700::1001', family: 6 },
+    ],
+  );
+
+  assert.deepEqual(
+    await resolveTargets('example.com', { family: 4, lookup }),
+    [
+      { address: '93.184.215.14', family: 4 },
+      { address: '1.1.1.1', family: 4 },
+    ],
+  );
+});
+
+test('auto candidate list excludes private and reserved addresses', async () => {
+  const lookup = async () => [
+    { address: '10.0.0.5', family: 4 },
+    { address: 'fd00::5', family: 6 },
+    { address: '93.184.215.14', family: 4 },
+    { address: '2606:4700:4700::1111', family: 6 },
+  ];
+
+  assert.deepEqual(
+    await resolveTargets('example.com', { family: 0, lookup }),
+    [
+      { address: '2606:4700:4700::1111', family: 6 },
+      { address: '93.184.215.14', family: 4 },
+    ],
   );
 });
