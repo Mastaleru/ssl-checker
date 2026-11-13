@@ -33,6 +33,7 @@ const server = app.listen(config.port, config.host, () => {
     address: `${config.host}:${config.port}`,
     vantage: config.name,
     ports: [...config.allowedPorts],
+    family: config.ipFamily ? String(config.ipFamily) : 'auto',
     origins: config.allowedOrigins.length > 0 ? config.allowedOrigins : 'any',
     requireOrigin: config.requireOrigin,
     auth: Boolean(config.token),

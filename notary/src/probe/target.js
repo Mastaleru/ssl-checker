@@ -94,28 +94,69 @@ export function normalizeHost(raw) {
   return ascii;
 }
 
-/** Resolves the host and returns the first public address, or refuses the target. */
-export async function resolveTarget(host, { allowPrivate = false, lookup = dns.lookup } = {}) {
-  if (net.isIP(host)) {
+/**
+ * Resolves the host and returns every usable address.
+ *
+ * In auto mode IPv6 records are placed before IPv4 records. The caller may use
+ * the complete, already-validated list for Happy Eyeballs without resolving the
+ * name again, preserving the DNS rebinding protection.
+ */
+export async function resolveTargets(host, { allowPrivate = false, family = 0, lookup = dns.lookup } = {}) {
+  const literalFamily = net.isIP(host);
+
+  if (literalFamily) {
+    if (family && literalFamily !== family) {
+      throw new NotaryError(502, 'dnsFailed', `target has no usable IPv${family} address`);
+    }
+
     if (!allowPrivate && isBlockedAddress(host)) {
       throw new NotaryError(403, 'forbiddenTarget', 'address is private or reserved');
     }
-    return host;
+
+    return [{ address: host, family: literalFamily }];
   }
+
   let records;
+
   try {
     records = await withTimeout(lookup(host, { all: true, verbatim: true }), 4000, 'dns');
   } catch (error) {
     if (error instanceof NotaryError) {
       throw error;
     }
+
     throw new NotaryError(502, 'dnsFailed', `could not resolve ${host}`);
   }
-  const usable = records.map((r) => r.address).filter((a) => allowPrivate || !isBlockedAddress(a));
-  if (usable.length === 0) {
+
+  const publicRecords = records
+    .map((record) => ({
+      address: record.address,
+      family: net.isIP(record.address),
+    }))
+    .filter((record) => record.family !== 0 && (allowPrivate || !isBlockedAddress(record.address)));
+
+  if (publicRecords.length === 0) {
     throw new NotaryError(403, 'forbiddenTarget', 'name resolves only to private or reserved addresses');
   }
-  return usable[0];
+
+  const usable = family
+    ? publicRecords.filter((record) => record.family === family)
+    : [
+        ...publicRecords.filter((record) => record.family === 6),
+        ...publicRecords.filter((record) => record.family === 4),
+      ];
+
+  if (usable.length === 0) {
+    throw new NotaryError(502, 'dnsFailed', `target has no usable IPv${family} address`);
+  }
+
+  return usable;
+}
+
+/** Compatibility helper for callers that need only one validated address. */
+export async function resolveTarget(host, options = {}) {
+  const targets = await resolveTargets(host, options);
+  return targets[0].address;
 }
 
 export function withTimeout(promise, ms, what) {

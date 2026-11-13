@@ -8,6 +8,7 @@ export function healthRoute({ config }) {
       ok: true,
       vantage: config.name,
       ports: [...config.allowedPorts],
+      family: config.ipFamily ? String(config.ipFamily) : 'auto',
       auth: Boolean(config.token),
       key: config.signer ? config.signer.publicKey : null,
     });
