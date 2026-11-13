@@ -217,7 +217,7 @@ Environment variables, set in `.env` (see `.env.example`). A bad value stops the
 | `UPSTREAM_PROXY`         | —                  | `http://host:port`: reach sites through an HTTP CONNECT proxy. If that proxy inspects TLS, the notary sees the interception too.                        |
 | `ALLOW_PRIVATE`          | `0`                | `1` allows private addresses, for testing only: it opens the door to SSRF.                                                                              |
 | `LOG_HOSTS`              | `0`                | `1` writes the checked site to the log. Off by default, for privacy.                                                                                    |
-| `IP_FAMILY` | `auto` | Outbound probe family: `auto` uses IPv6-preferred Happy Eyeballs with a 250 ms fallback delay; `4` uses only IPv4; `6` uses only IPv6. When `UPSTREAM_PROXY` is set, the proxy controls the actual outbound family. |
+| `IP_FAMILY`              | `auto`             | Address family for checks: `auto` tries IPv6 first, IPv4 250 ms later (Happy Eyeballs); `4` or `6` uses only that one. A proxy picks its own.           |
 
 ## Protection
 
@@ -294,7 +294,7 @@ Errors use a `4xx` or `5xx` status and this body:
 | `busy`                                    | 503           | Too many checks at once or this minute; `Retry-After` says when to try again. |
 | `timeout`                                 | 504           | The check took longer than `TIMEOUT_SECONDS`.                                 |
 
-`GET /v1/health` returns `{ "version": 1, "ok": true, "vantage": "…", "ports": [443, 8443], "auth": false, "key": "ed25519:…" }`.
+`GET /v1/health` returns `{ "version": 1, "ok": true, "vantage": "…", "ports": [443, 8443], "family": "auto", "auth": false, "key": "ed25519:…" }`.
 
 Any server that follows this contract can be a source. The extension has no host permissions, so the server **must** send the CORS headers (`Access-Control-Allow-Origin`, `Access-Control-Allow-Methods` with `POST`, `Access-Control-Allow-Headers: Authorization, Content-Type`, and `Access-Control-Expose-Headers: Notary-Signature` when it signs) and answer `OPTIONS` requests.
 

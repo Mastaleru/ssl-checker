@@ -21,9 +21,7 @@ export async function probeTls(host, port, { timeoutMs, allowPrivate, upstreamPr
     family: ipFamily,
   });
 
-  const rawSocket = upstreamProxy
-    ? await connectThroughProxy(upstreamProxy, host, port, deadline)
-    : null;
+  const rawSocket = upstreamProxy ? await connectThroughProxy(upstreamProxy, host, port, deadline) : null;
 
   const literalHost = net.isIP(host) !== 0;
 
@@ -34,10 +32,7 @@ export async function probeTls(host, port, { timeoutMs, allowPrivate, upstreamPr
     targets.some((target) => target.family === 4) &&
     targets.some((target) => target.family === 6);
 
-  const directAddress =
-    !rawSocket && !useHappyEyeballs
-      ? targets[0].address
-      : null;
+  const directAddress = !rawSocket && !useHappyEyeballs ? targets[0].address : null;
 
   const lookup = createValidatedLookup(targets);
 
@@ -45,11 +40,7 @@ export async function probeTls(host, port, { timeoutMs, allowPrivate, upstreamPr
     const socket = tls.connect({
       socket: rawSocket || undefined,
 
-      host: rawSocket
-        ? undefined
-        : useHappyEyeballs
-          ? host
-          : directAddress,
+      host: rawSocket ? undefined : useHappyEyeballs ? host : directAddress,
 
       port: rawSocket ? undefined : port,
 
@@ -79,9 +70,7 @@ export async function probeTls(host, port, { timeoutMs, allowPrivate, upstreamPr
         observedAt: new Date().toISOString(),
         vantage: name,
         // Through an upstream proxy the target's address is known only to the proxy.
-        address: rawSocket
-          ? null
-          : socket.remoteAddress || targets[0].address,
+        address: rawSocket ? null : socket.remoteAddress || targets[0].address,
         trusted: socket.authorized === true,
         trustError: socket.authorized ? null : String(socket.authorizationError || 'unknown'),
         tls: {
@@ -106,26 +95,15 @@ export async function probeTls(host, port, { timeoutMs, allowPrivate, upstreamPr
         return;
       }
 
-      const codes = [
-        error.code,
-        ...(Array.isArray(error.errors)
-          ? error.errors.map((item) => item?.code)
-          : []),
-      ].filter(Boolean);
+      const codes = [error.code, ...(Array.isArray(error.errors) ? error.errors.map((item) => item?.code) : [])].filter(
+        Boolean,
+      );
 
       const connectionError = codes.some((code) =>
-        /ECONNREFUSED|EHOSTUNREACH|ENETUNREACH|ETIMEDOUT|ECONNRESET|EPIPE/.test(
-          code,
-        ),
+        /ECONNREFUSED|EHOSTUNREACH|ENETUNREACH|ETIMEDOUT|ECONNRESET|EPIPE/.test(code),
       );
 
-      reject(
-        new NotaryError(
-          502,
-          connectionError ? 'connectFailed' : 'tlsFailed',
-          codes.join(',') || error.message,
-        ),
-      );
+      reject(new NotaryError(502, connectionError ? 'connectFailed' : 'tlsFailed', codes.join(',') || error.message));
     });
   });
 }
@@ -141,22 +119,14 @@ function createValidatedLookup(targets) {
   }));
 
   return function validatedLookup(hostname, options, callback) {
-    const requestedFamily =
-      typeof options === 'number'
-        ? options
-        : Number(options?.family || 0);
+    const requestedFamily = typeof options === 'number' ? options : Number(options?.family || 0);
 
-    const usable = requestedFamily
-      ? frozen.filter((target) => target.family === requestedFamily)
-      : frozen;
+    const usable = requestedFamily ? frozen.filter((target) => target.family === requestedFamily) : frozen;
 
     if (usable.length === 0) {
-      const error = Object.assign(
-        new Error(
-          `no validated IPv${requestedFamily} address for ${hostname}`,
-        ),
-        { code: 'ENOTFOUND' },
-      );
+      const error = Object.assign(new Error(`no validated IPv${requestedFamily} address for ${hostname}`), {
+        code: 'ENOTFOUND',
+      });
       callback(error);
       return;
     }

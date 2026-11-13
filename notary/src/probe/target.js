@@ -101,27 +101,16 @@ export function normalizeHost(raw) {
  * the complete, already-validated list for Happy Eyeballs without resolving the
  * name again, preserving the DNS rebinding protection.
  */
-export async function resolveTargets(
-  host,
-  { allowPrivate = false, family = 0, lookup = dns.lookup } = {},
-) {
+export async function resolveTargets(host, { allowPrivate = false, family = 0, lookup = dns.lookup } = {}) {
   const literalFamily = net.isIP(host);
 
   if (literalFamily) {
     if (family && literalFamily !== family) {
-      throw new NotaryError(
-        502,
-        'dnsFailed',
-        `target has no usable IPv${family} address`,
-      );
+      throw new NotaryError(502, 'dnsFailed', `target has no usable IPv${family} address`);
     }
 
     if (!allowPrivate && isBlockedAddress(host)) {
-      throw new NotaryError(
-        403,
-        'forbiddenTarget',
-        'address is private or reserved',
-      );
+      throw new NotaryError(403, 'forbiddenTarget', 'address is private or reserved');
     }
 
     return [{ address: host, family: literalFamily }];
@@ -130,21 +119,13 @@ export async function resolveTargets(
   let records;
 
   try {
-    records = await withTimeout(
-      lookup(host, { all: true, verbatim: true }),
-      4000,
-      'dns',
-    );
+    records = await withTimeout(lookup(host, { all: true, verbatim: true }), 4000, 'dns');
   } catch (error) {
     if (error instanceof NotaryError) {
       throw error;
     }
 
-    throw new NotaryError(
-      502,
-      'dnsFailed',
-      `could not resolve ${host}`,
-    );
+    throw new NotaryError(502, 'dnsFailed', `could not resolve ${host}`);
   }
 
   const publicRecords = records
@@ -152,18 +133,10 @@ export async function resolveTargets(
       address: record.address,
       family: net.isIP(record.address),
     }))
-    .filter(
-      (record) =>
-        record.family !== 0 &&
-        (allowPrivate || !isBlockedAddress(record.address)),
-    );
+    .filter((record) => record.family !== 0 && (allowPrivate || !isBlockedAddress(record.address)));
 
   if (publicRecords.length === 0) {
-    throw new NotaryError(
-      403,
-      'forbiddenTarget',
-      'name resolves only to private or reserved addresses',
-    );
+    throw new NotaryError(403, 'forbiddenTarget', 'name resolves only to private or reserved addresses');
   }
 
   const usable = family
@@ -174,11 +147,7 @@ export async function resolveTargets(
       ];
 
   if (usable.length === 0) {
-    throw new NotaryError(
-      502,
-      'dnsFailed',
-      `target has no usable IPv${family} address`,
-    );
+    throw new NotaryError(502, 'dnsFailed', `target has no usable IPv${family} address`);
   }
 
   return usable;
@@ -189,7 +158,6 @@ export async function resolveTarget(host, options = {}) {
   const targets = await resolveTargets(host, options);
   return targets[0].address;
 }
-
 
 export function withTimeout(promise, ms, what) {
   let timer;

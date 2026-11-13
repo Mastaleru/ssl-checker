@@ -1,11 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import {
-  isBlockedAddress,
-  normalizeHost,
-  resolveTarget,
-  resolveTargets,
-} from '../src/probe/target.js';
+import { isBlockedAddress, normalizeHost, resolveTarget, resolveTargets } from '../src/probe/target.js';
 
 test('host names are normalized; IDNs become punycode', () => {
   assert.equal(normalizeHost(' Example.COM. '), 'example.com');
@@ -56,57 +51,31 @@ test('address family can be restricted to IPv4 or IPv6', async () => {
     { address: '2606:4700:4700::1111', family: 6 },
   ];
 
-  assert.equal(
-    await resolveTarget('example.com', { family: 4, lookup }),
-    '93.184.215.14',
-  );
+  assert.equal(await resolveTarget('example.com', { family: 4, lookup }), '93.184.215.14');
 
-  assert.equal(
-    await resolveTarget('example.com', { family: 6, lookup }),
-    '2606:4700:4700::1111',
-  );
+  assert.equal(await resolveTarget('example.com', { family: 6, lookup }), '2606:4700:4700::1111');
 
   // auto prefers IPv6; Happy Eyeballs may fall back to IPv4 at connection time.
-  assert.equal(
-    await resolveTarget('example.com', { family: 0, lookup }),
-    '2606:4700:4700::1111',
-  );
+  assert.equal(await resolveTarget('example.com', { family: 0, lookup }), '2606:4700:4700::1111');
 });
 
 test('missing requested address family is reported', async () => {
-  const lookup = async () => [
-    { address: '93.184.215.14', family: 4 },
-  ];
+  const lookup = async () => [{ address: '93.184.215.14', family: 4 }];
 
-  await assert.rejects(
-    resolveTarget('ipv4-only.example', { family: 6, lookup }),
-    {
-      code: 'dnsFailed',
-      message: 'target has no usable IPv6 address',
-    },
-  );
+  await assert.rejects(resolveTarget('ipv4-only.example', { family: 6, lookup }), {
+    code: 'dnsFailed',
+    message: 'target has no usable IPv6 address',
+  });
 });
 
 test('literal addresses must match the requested family', async () => {
-  assert.equal(
-    await resolveTarget('1.1.1.1', { family: 4 }),
-    '1.1.1.1',
-  );
+  assert.equal(await resolveTarget('1.1.1.1', { family: 4 }), '1.1.1.1');
 
-  assert.equal(
-    await resolveTarget('2606:4700:4700::1111', { family: 6 }),
-    '2606:4700:4700::1111',
-  );
+  assert.equal(await resolveTarget('2606:4700:4700::1111', { family: 6 }), '2606:4700:4700::1111');
 
-  await assert.rejects(
-    resolveTarget('1.1.1.1', { family: 6 }),
-    { code: 'dnsFailed' },
-  );
+  await assert.rejects(resolveTarget('1.1.1.1', { family: 6 }), { code: 'dnsFailed' });
 
-  await assert.rejects(
-    resolveTarget('2606:4700:4700::1111', { family: 4 }),
-    { code: 'dnsFailed' },
-  );
+  await assert.rejects(resolveTarget('2606:4700:4700::1111', { family: 4 }), { code: 'dnsFailed' });
 });
 
 test('family selection does not bypass reserved-address filtering', async () => {
@@ -115,15 +84,9 @@ test('family selection does not bypass reserved-address filtering', async () => 
     { address: 'fd00::5', family: 6 },
   ];
 
-  await assert.rejects(
-    resolveTarget('internal.example', { family: 4, lookup }),
-    { code: 'forbiddenTarget' },
-  );
+  await assert.rejects(resolveTarget('internal.example', { family: 4, lookup }), { code: 'forbiddenTarget' });
 
-  await assert.rejects(
-    resolveTarget('internal.example', { family: 6, lookup }),
-    { code: 'forbiddenTarget' },
-  );
+  await assert.rejects(resolveTarget('internal.example', { family: 6, lookup }), { code: 'forbiddenTarget' });
 });
 
 test('a name with only private addresses is refused; DNS failures are reported', async () => {
@@ -152,15 +115,12 @@ test('auto mode prefers validated IPv6 candidates before IPv4', async () => {
     { address: '2606:4700:4700::1001', family: 6 },
   ];
 
-  assert.deepEqual(
-    await resolveTargets('example.com', { family: 0, lookup }),
-    [
-      { address: '2606:4700:4700::1111', family: 6 },
-      { address: '2606:4700:4700::1001', family: 6 },
-      { address: '93.184.215.14', family: 4 },
-      { address: '1.1.1.1', family: 4 },
-    ],
-  );
+  assert.deepEqual(await resolveTargets('example.com', { family: 0, lookup }), [
+    { address: '2606:4700:4700::1111', family: 6 },
+    { address: '2606:4700:4700::1001', family: 6 },
+    { address: '93.184.215.14', family: 4 },
+    { address: '1.1.1.1', family: 4 },
+  ]);
 });
 
 test('fixed family returns only validated candidates of that family', async () => {
@@ -171,21 +131,15 @@ test('fixed family returns only validated candidates of that family', async () =
     { address: '2606:4700:4700::1001', family: 6 },
   ];
 
-  assert.deepEqual(
-    await resolveTargets('example.com', { family: 6, lookup }),
-    [
-      { address: '2606:4700:4700::1111', family: 6 },
-      { address: '2606:4700:4700::1001', family: 6 },
-    ],
-  );
+  assert.deepEqual(await resolveTargets('example.com', { family: 6, lookup }), [
+    { address: '2606:4700:4700::1111', family: 6 },
+    { address: '2606:4700:4700::1001', family: 6 },
+  ]);
 
-  assert.deepEqual(
-    await resolveTargets('example.com', { family: 4, lookup }),
-    [
-      { address: '93.184.215.14', family: 4 },
-      { address: '1.1.1.1', family: 4 },
-    ],
-  );
+  assert.deepEqual(await resolveTargets('example.com', { family: 4, lookup }), [
+    { address: '93.184.215.14', family: 4 },
+    { address: '1.1.1.1', family: 4 },
+  ]);
 });
 
 test('auto candidate list excludes private and reserved addresses', async () => {
@@ -196,11 +150,8 @@ test('auto candidate list excludes private and reserved addresses', async () => 
     { address: '2606:4700:4700::1111', family: 6 },
   ];
 
-  assert.deepEqual(
-    await resolveTargets('example.com', { family: 0, lookup }),
-    [
-      { address: '2606:4700:4700::1111', family: 6 },
-      { address: '93.184.215.14', family: 4 },
-    ],
-  );
+  assert.deepEqual(await resolveTargets('example.com', { family: 0, lookup }), [
+    { address: '2606:4700:4700::1111', family: 6 },
+    { address: '93.184.215.14', family: 4 },
+  ]);
 });
