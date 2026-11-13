@@ -134,6 +134,19 @@ export function loadConfig(env = process.env) {
     }
   }
 
+  const ipFamilyRaw = (read('IP_FAMILY') || 'auto').toLowerCase();
+  let ipFamily = 0;
+
+  if (ipFamilyRaw === 'auto') {
+    ipFamily = 0;
+  } else if (ipFamilyRaw === '4') {
+    ipFamily = 4;
+  } else if (ipFamilyRaw === '6') {
+    ipFamily = 6;
+  } else {
+    problems.push(`IP_FAMILY must be auto, 4 or 6 (got "${read('IP_FAMILY')}")`);
+  }
+
   const config = {
     port: int('PORT', 8080, 1, 65535),
     host: read('HOST') || '0.0.0.0',
@@ -158,6 +171,7 @@ export function loadConfig(env = process.env) {
     timeoutMs: int('TIMEOUT_SECONDS', 8, 1, 60) * 1000,
     trustProxy: trustProxy === 0 ? false : trustProxy,
     upstreamProxy,
+    ipFamily,
     allowPrivate: flag('ALLOW_PRIVATE'),
     logHosts: flag('LOG_HOSTS'),
   };

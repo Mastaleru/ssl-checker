@@ -34,6 +34,7 @@ test('defaults describe a public notary on port 8080', () => {
   assert.equal(config.timeoutMs, 8000);
   assert.equal(config.trustProxy, false);
   assert.equal(config.signer, null);
+  assert.equal(config.ipFamily, 0);
   assert.ok(Object.isFrozen(config));
 });
 
@@ -93,4 +94,14 @@ test('UPSTREAM_PROXY must be an http:// proxy', () => {
   assert.equal(loadConfig({ UPSTREAM_PROXY: 'http://proxy.internal:3128' }).upstreamProxy.port, '3128');
   assert.equal(problemsOf({ UPSTREAM_PROXY: 'https://proxy.internal' }).length, 1);
   assert.equal(problemsOf({ UPSTREAM_PROXY: 'not a url' }).length, 1);
+});
+
+test('IP_FAMILY accepts auto, 4 or 6', () => {
+  assert.equal(loadConfig({ IP_FAMILY: 'auto' }).ipFamily, 0);
+  assert.equal(loadConfig({ IP_FAMILY: '4' }).ipFamily, 4);
+  assert.equal(loadConfig({ IP_FAMILY: '6' }).ipFamily, 6);
+
+  assert.equal(problemsOf({ IP_FAMILY: '5' }).length, 1);
+  assert.equal(problemsOf({ IP_FAMILY: 'ipv6' }).length, 1);
+  assert.equal(problemsOf({ IP_FAMILY: '-1' }).length, 1);
 });
